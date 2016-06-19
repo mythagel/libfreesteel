@@ -3,8 +3,8 @@
   Program:   Visualization Toolkit
   Module:    $RCSfile: wxVTKRenderWindowInteractor.h,v $
   Language:  C++
-  Date:      $Date: 2004/04/26 10:38:36 $
-  Version:   $Revision: 1.3 $
+  Date:      $Date: 2014/09/12 09:57:47 $
+  Version:   $Revision: 1.25 $
 
   Copyright (c) 1993-2002 Ken Martin, Will Schroeder, Bill Lorensen 
   All rights reserved.
@@ -41,7 +41,7 @@
 #include "wx/wxprec.h"
 
 #ifdef __BORLANDC__
-#pragma hdrstop
+#  pragma hdrstop
 #endif
 
 #ifndef WX_PRECOMP
@@ -50,37 +50,23 @@
 
 #include <wx/timer.h>
 #include <wx/dcclient.h>
-#define ID_wxVTKRenderWindowInteractor_TIMER 1001
 
 // vtk includes
-#include <vtkRenderWindowInteractor.h>
-#include <vtkRenderWindow.h>
-//This is needed for vtk 3.1 :
-#ifndef VTK_MAJOR_VERSION
-#include <vtkVersion.h>
-#endif
+#include "vtkRenderWindowInteractor.h"
+#include "vtkRenderWindow.h"
 
-//For more info on this class please go to:
-//http://www.creatis.insa-lyon.fr/~malaterre/wxVTK/
-//This hack is for some buggy wxGTK version:
-#if wxCHECK_VERSION(2, 3, 2) && !wxCHECK_VERSION(2, 4, 1) && defined(__WXGTK__)
-#  define WX_USE_X_CAPTURE 0
-#else
-#  define WX_USE_X_CAPTURE 1
-#endif
+#define USE_WXGLCANVAS
 
-#ifdef __WXGTK__
+#if defined(__WXGTK__) && defined(USE_WXGLCANVAS)
 #  if wxUSE_GLCANVAS
-#    include "gdk/gdkprivate.h"
-#    include <wx/gtk/win_gtk.h>
 #    include <wx/glcanvas.h>
 #  else
-#    error "problem of wxGLCanvas"
+#    error "problem of wxGLCanvas, you need to build wxWidgets with opengl"
 #  endif //wxUSE_GLCANVAS
 #endif //__WXGTK__
 
-//Motif version (renamed into wxX11 for wxWindow 2.4 and newer)
-#if defined(__WXMOTIF__)
+// Motif version (renamed into wxX11 for wxWindow 2.4 and newer)
+#if defined(__WXMOTIF__) 
 # error This GUI is not supported by wxVTKRenderWindowInteractor for now
 #endif
 
@@ -91,11 +77,11 @@ class wxTimerEvent;
 class wxKeyEvent;
 class wxSizeEvent;
 
-#if defined(__WXMSW__) || defined (__WXMAC__) || defined (__WXCOCOA__)
-class VTK_RENDERING_EXPORT wxVTKRenderWindowInteractor : public wxWindow, virtual public vtkRenderWindowInteractor
+#if defined(__WXGTK__) && defined(USE_WXGLCANVAS)
+class wxVTKRenderWindowInteractor : public wxGLCanvas, public vtkRenderWindowInteractor
 #else
-class VTK_RENDERING_EXPORT wxVTKRenderWindowInteractor : public wxGLCanvas, virtual public vtkRenderWindowInteractor
-#endif
+class wxVTKRenderWindowInteractor : public wxWindow, public vtkRenderWindowInteractor
+#endif //__WXGTK__
 {
   DECLARE_DYNAMIC_CLASS(wxVTKRenderWindowInteractor)
   
@@ -109,15 +95,17 @@ class VTK_RENDERING_EXPORT wxVTKRenderWindowInteractor : public wxGLCanvas, virt
                                 const wxSize &size = wxDefaultSize,
                                 long style = wxWANTS_CHARS | wxNO_FULL_REPAINT_ON_RESIZE,
                                 const wxString &name = wxPanelNameStr);
-	//vtk ::New()
+    vtkTypeMacro(wxVTKRenderWindowInteractor,vtkRenderWindowInteractor);
     static wxVTKRenderWindowInteractor * New();
+    void PrintSelf(ostream& os, vtkIndent indent);
 
-	 //destructor
+	  //destructor
     ~wxVTKRenderWindowInteractor();
 
     // vtkRenderWindowInteractor overrides
     void Initialize();
     void Enable();
+    bool Enable(bool enable);
     void Disable();
     void Start();
     void UpdateSize(int x, int y);
@@ -129,15 +117,19 @@ class VTK_RENDERING_EXPORT wxVTKRenderWindowInteractor : public wxGLCanvas, virt
     void OnPaint(wxPaintEvent &event);
     void OnEraseBackground (wxEraseEvent& event);
     void OnMotion(wxMouseEvent &event);
-    void OnMouseWheel(wxMouseEvent &event);
 
     void OnButtonDown(wxMouseEvent &event);
     void OnButtonUp(wxMouseEvent &event);
 #if !(VTK_MAJOR_VERSION == 3 && VTK_MINOR_VERSION == 1)
     void OnEnter(wxMouseEvent &event);
     void OnLeave(wxMouseEvent &event);
+    void OnMouseWheel(wxMouseEvent& event);
+#if wxCHECK_VERSION(2, 8, 0)
+    void OnMouseCaptureLost(wxMouseCaptureLostEvent& event);
+#endif
     void OnKeyDown(wxKeyEvent &event);
     void OnKeyUp(wxKeyEvent &event);
+    void OnChar(wxKeyEvent &event);
 #endif
     void OnTimer(wxTimerEvent &event);
     void OnSize(wxSizeEvent &event);
@@ -159,11 +151,19 @@ class VTK_RENDERING_EXPORT wxVTKRenderWindowInteractor : public wxGLCanvas, virt
     vtkSetMacro(UseCaptureMouse,int);
     vtkBooleanMacro(UseCaptureMouse,int);
 
+#if VTK_MAJOR_VERSION > 5 || (VTK_MAJOR_VERSION == 5 && VTK_MINOR_VERSION >= 2)
   protected:
-    wxTimer* timer;
+    virtual int InternalCreateTimer(int timerId, int timerType, unsigned long duration);
+    virtual int InternalDestroyTimer(int platformTimerId);
+#endif
+
+  protected:
+#if defined(__WXGTK__) && defined(USE_WXGLCANVAS)
+    wxGLContext *context;
+#endif
+    wxTimer timer;
     int ActiveButton;
-    int RenderAllowed;
-    long GetHandle();
+    long GetHandleHack();
     int Stereo;
     
   private:

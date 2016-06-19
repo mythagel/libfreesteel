@@ -18,10 +18,10 @@
 //
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
-#include "wx/wx.h"
+#include <wx/wx.h>
 void OutputDebugStringG(const char* str)
 {
-    wxLogError(wxT(str));
+    wxLogError(str);
 }
 
 void OutputDebugStringG(const char* str0, const char* strf, int line1) 

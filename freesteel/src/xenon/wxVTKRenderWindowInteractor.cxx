@@ -3,8 +3,8 @@
   Program:   Visualization Toolkit
   Module:    $RCSfile: wxVTKRenderWindowInteractor.cxx,v $
   Language:  C++
-  Date:      $Date: 2004/04/26 10:38:36 $
-  Version:   $Revision: 1.6 $
+  Date:      $Date: 2014/09/12 09:57:46 $
+  Version:   $Revision: 1.54 $
 
   Copyright (c) 1993-2002 Ken Martin, Will Schroeder, Bill Lorensen 
   All rights reserved.
@@ -16,18 +16,39 @@
 
 =========================================================================*/
 
+#include <assert.h>
+
 #include "wxVTKRenderWindowInteractor.h"
 
-#if defined(WIN32) && defined(VTK_BUILD_SHARED_LIBS)
- #error Only use this setting when you build this class into a shared library, if thats true, remove this line
+//This is needed for vtk 3.1 :
+#ifndef VTK_MAJOR_VERSION
+#  include "vtkVersion.h"
 #endif
 
-
-#if (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
-#  include <vtkCommand.h>
+#if VTK_MAJOR_VERSION > 4 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#  include "vtkCommand.h"
 #else
-#  include <vtkInteractorStyle.h>
-#endif //(VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#  include "vtkInteractorStyle.h"
+#endif
+#include "vtkDebugLeaks.h"
+
+// AKT: wxOSX 2.9.x defines __WXOSX_COCOA__ rather than __WXCOCOA__
+#ifdef __WXOSX_COCOA__
+#define __WXCOCOA__
+#endif
+
+#if defined(__WXMAC__) && wxCHECK_VERSION(2,9,0)
+    // ControlDown has been changed to mean Command key down
+    #define ControlDown RawControlDown
+#endif
+
+#ifdef __WXMAC__
+#ifdef __WXCOCOA__
+#include "vtkCocoaRenderWindow.h"
+#else
+#include "vtkCarbonRenderWindow.h"
+#endif
+#endif
 
 //Keep this for compatibilty reason, this was introduced in wxGTK 2.4.0
 #if (!wxCHECK_VERSION(2, 4, 0))
@@ -39,24 +60,73 @@ wxWindow* wxGetTopLevelParent(wxWindow *win)
 }
 #endif
 
-#ifdef WXMAKINGDLL
- #pragma message("making")
-#elif defined(WXUSINGDLL)
- #pragma message("using")
+// To access objc calls on cocoa
+#ifdef __WXCOCOA__
+#ifdef VTK_USE_COCOA
+#import <Cocoa/Cocoa.h>
+// This trick is no longer need in VTK CVS, should get rid of that:
+#define id Id
+#else
+#error Build mismatch you need both wxWidgets and VTK to be configure against Cocoa to work
+#endif //VTK_USE_COCOA
+#endif //__WXCOCOA__
+
+#ifdef __WXGTK__
+ #include <gdk/gdkx.h> // GDK_WINDOW_XWINDOW is found here in wxWidgets 2.8.0
+ #include "gdk/gdkprivate.h"
+ 
+ #if wxCHECK_VERSION(2, 9, 0)
+  // thanks to: http://thomasfischer.biz/?p=382
+  #include <gtk/gtkfixed.h>
+  #include <gtk/gtkwidget.h>
+//  #include <wx/gtk/private/win_gtk.h>
+  #define GetXWindow(wxwin) GDK_WINDOW_XWINDOW(wxwin->GetHandle()->window)
+ #else
+  #if wxCHECK_VERSION(2, 8, 0)
+   #ifdef __WXGTK20__
+    #include <wx/gtk/win_gtk.h>
+   #else
+    #include <wx/gtk1/win_gtk.h>
+   #endif
+  #else
+   #include <wx/gtk/win_gtk.h>
+  #endif
+ 
+  #define GetXWindow(wxwin) (wxwin)->m_wxwindow ? \
+                          GDK_WINDOW_XWINDOW(GTK_PIZZA((wxwin)->m_wxwindow)->bin_window) : \
+                          GDK_WINDOW_XWINDOW((wxwin)->m_widget->window)
+ #endif
 #endif
 
-#if defined(__WXMSW__) || defined (__WXMAC__) || defined (__WXCOCOA__)
-IMPLEMENT_DYNAMIC_CLASS(wxVTKRenderWindowInteractor, wxWindow)
+#ifdef __WXX11__
+#include "wx/x11/privx.h"
+#define GetXWindow(wxwin)   ((Window)(wxwin)->GetHandle())
+#endif
+
+
+//For more info on this class please go to:
+//http://wxvtk.sf.net
+//This hack is for some buggy wxGTK version:
+#if wxCHECK_VERSION(2, 3, 2) && !wxCHECK_VERSION(2, 4, 1) && defined(__WXGTK__)
+#  define WX_USE_X_CAPTURE 0
 #else
+#  define WX_USE_X_CAPTURE 1
+#endif
+
+#define ID_wxVTKRenderWindowInteractor_TIMER 1001
+
+#if defined(__WXGTK__) && defined(USE_WXGLCANVAS)
 IMPLEMENT_DYNAMIC_CLASS(wxVTKRenderWindowInteractor, wxGLCanvas)
-#endif  //__WXMSW__
+#else
+IMPLEMENT_DYNAMIC_CLASS(wxVTKRenderWindowInteractor, wxWindow)
+#endif  //__WXGTK__
 
 //---------------------------------------------------------------------------
-#if defined(__WXMSW__) || defined (__WXMAC__) || defined (__WXCOCOA__)
-BEGIN_EVENT_TABLE(wxVTKRenderWindowInteractor, wxWindow)
-#else
+#if defined(__WXGTK__) && defined(USE_WXGLCANVAS)
 BEGIN_EVENT_TABLE(wxVTKRenderWindowInteractor, wxGLCanvas)
-#endif //__WXMSW__
+#else
+BEGIN_EVENT_TABLE(wxVTKRenderWindowInteractor, wxWindow)
+#endif //__WXGTK__
   //refresh window by doing a Render
   EVT_PAINT       (wxVTKRenderWindowInteractor::OnPaint)
   EVT_ERASE_BACKGROUND(wxVTKRenderWindowInteractor::OnEraseBackground)
@@ -69,38 +139,63 @@ BEGIN_EVENT_TABLE(wxVTKRenderWindowInteractor, wxGLCanvas)
   EVT_LEFT_UP     (wxVTKRenderWindowInteractor::OnButtonUp)
   EVT_MIDDLE_UP   (wxVTKRenderWindowInteractor::OnButtonUp)
   EVT_RIGHT_UP    (wxVTKRenderWindowInteractor::OnButtonUp)
-  EVT_MOUSEWHEEL  (wxVTKRenderWindowInteractor::OnMouseWheel)
 #if !(VTK_MAJOR_VERSION == 3 && VTK_MINOR_VERSION == 1)
   EVT_ENTER_WINDOW(wxVTKRenderWindowInteractor::OnEnter)
   EVT_LEAVE_WINDOW(wxVTKRenderWindowInteractor::OnLeave)
-// If we use EVT_KEY_DOWN instead of EVT_CHAR, capital versions
-// of all characters are always returned.  EVT_CHAR also performs
-// other necessary keyboard-dependent translations.
-// EVT_KEY_DOWN    (wxVTKRenderWindowInteractor::OnKeyDown)
-  EVT_CHAR        (wxVTKRenderWindowInteractor::OnKeyDown)
+  EVT_MOUSEWHEEL  (wxVTKRenderWindowInteractor::OnMouseWheel)
+#if wxCHECK_VERSION(2, 8, 0)
+  EVT_MOUSE_CAPTURE_LOST(wxVTKRenderWindowInteractor::OnMouseCaptureLost)
+#endif
+  EVT_KEY_DOWN    (wxVTKRenderWindowInteractor::OnKeyDown)
   EVT_KEY_UP      (wxVTKRenderWindowInteractor::OnKeyUp)
+  EVT_CHAR        (wxVTKRenderWindowInteractor::OnChar)
 #endif
   EVT_TIMER       (ID_wxVTKRenderWindowInteractor_TIMER, wxVTKRenderWindowInteractor::OnTimer)
   EVT_SIZE        (wxVTKRenderWindowInteractor::OnSize)
 END_EVENT_TABLE()
 
+vtkInstantiatorNewMacro(wxVTKRenderWindowInteractor)
+
+#if defined(__WXGTK__) && defined(USE_WXGLCANVAS)
+static int wxvtk_attributes[]={
+  WX_GL_DOUBLEBUFFER,
+  WX_GL_RGBA,
+  WX_GL_DEPTH_SIZE,
+  16,
+  0
+};
+#endif
+
 //---------------------------------------------------------------------------
-#if defined(__WXMSW__) || defined (__WXMAC__) || defined (__WXCOCOA__)
-wxVTKRenderWindowInteractor::wxVTKRenderWindowInteractor() : wxWindow()
+wxVTKRenderWindowInteractor::wxVTKRenderWindowInteractor() 
+
+#if defined(__WXGTK__) && defined(USE_WXGLCANVAS)
+    #if wxCHECK_VERSION(2, 9, 0) // the order of the parameters to wxGLCanvas::wxGLCanvas has changed
+		: wxGLCanvas(0, -1, wxvtk_attributes, wxDefaultPosition, wxDefaultSize, 0, wxT("wxVTKRenderWindowInteractor")), 
+	#else
+		: wxGLCanvas(0, -1, wxDefaultPosition, wxDefaultSize, 0, wxT("wxVTKRenderWindowInteractor"), wxvtk_attributes), 
+	#endif
 #else
-wxVTKRenderWindowInteractor::wxVTKRenderWindowInteractor() : wxGLCanvas()
-#endif //__WXMSW__
-      , vtkRenderWindowInteractor()
+		: wxWindow(), 
+#endif //__WXGTK__
+
+	  vtkRenderWindowInteractor()
+      , timer(this, ID_wxVTKRenderWindowInteractor_TIMER)
       , ActiveButton(wxEVT_NULL)
-      , RenderAllowed(0)
       , Stereo(0)
       , Handle(0)
       , Created(true)
       , RenderWhenDisabled(1)
       , UseCaptureMouse(0)
 {
-  timer = new wxTimer(this, ID_wxVTKRenderWindowInteractor_TIMER);
-  vtkRenderWindowInteractor::SetRenderWindow(vtkRenderWindow::New());
+#ifdef VTK_DEBUG_LEAKS
+  vtkDebugLeaks::ConstructClass("wxVTKRenderWindowInteractor");
+#endif
+#if defined(__WXGTK__) && defined(USE_WXGLCANVAS)
+  this->context = new wxGLContext(this);
+#endif
+  this->RenderWindow = NULL;
+  this->SetRenderWindow(vtkRenderWindow::New());
   this->RenderWindow->Delete();
 }
 //---------------------------------------------------------------------------
@@ -110,45 +205,65 @@ wxVTKRenderWindowInteractor::wxVTKRenderWindowInteractor(wxWindow *parent,
                                                          const wxSize &size,
                                                          long style,
                                                          const wxString &name)
-#if defined(__WXMSW__) || defined (__WXMAC__) || defined (__WXCOCOA__)
-      : wxWindow(parent, id, pos, size, style, name)
+#if defined(__WXGTK__) && defined(USE_WXGLCANVAS)
+    #if wxCHECK_VERSION(2, 9, 0) // the order of the parameters to wxGLCanvas::wxGLCanvas has changed
+      : wxGLCanvas(parent, id, wxvtk_attributes, pos, size, style, name)
+    #else
+      : wxGLCanvas(parent, id, pos, size, style, name, wxvtk_attributes)
+    #endif
 #else
-      : wxGLCanvas(parent, id, pos, size, style, name)
-#endif
-      , vtkRenderWindowInteractor()
+      : wxWindow(parent, id, pos, size, style, name)
+#endif //__WXGTK__
+	  , vtkRenderWindowInteractor()
+      , timer(this, ID_wxVTKRenderWindowInteractor_TIMER)
       , ActiveButton(wxEVT_NULL)
-      , RenderAllowed(0)
       , Stereo(0)
       , Handle(0)
       , Created(true)
       , RenderWhenDisabled(1)
       , UseCaptureMouse(0)
 {
-  timer = new wxTimer(this, ID_wxVTKRenderWindowInteractor_TIMER);
-  vtkRenderWindowInteractor::SetRenderWindow(vtkRenderWindow::New());
+#ifdef VTK_DEBUG_LEAKS
+  vtkDebugLeaks::ConstructClass("wxVTKRenderWindowInteractor");
+#endif
+#if defined(__WXGTK__) && defined(USE_WXGLCANVAS)
+  this->context = new wxGLContext(this);
+#endif
+  this->RenderWindow = NULL;
+  this->SetRenderWindow(vtkRenderWindow::New());
   this->RenderWindow->Delete();
+#ifdef __WXMAC__
+  // On Mac (Carbon) we don't get notified of the initial window size with an EVT_SIZE event,
+  // so we update the size information of the interactor/renderwindow here
+  this->UpdateSize(size.x, size.y);
+#endif
 }
 //---------------------------------------------------------------------------
 wxVTKRenderWindowInteractor::~wxVTKRenderWindowInteractor()
 {
-  if(this->RenderWindow != NULL)
-  {
-    this->RenderWindow->UnRegister(this);
-  }
-  delete timer;
+  SetRenderWindow(NULL);
+  SetInteractorStyle(NULL);
+#if defined(__WXGTK__) && defined(USE_WXGLCANVAS)
+  delete this->context;
+#endif
 }
 //---------------------------------------------------------------------------
 wxVTKRenderWindowInteractor * wxVTKRenderWindowInteractor::New()
 {
-	// we don't make use of the objectfactory, because we're not registered
+  // we don't make use of the objectfactory, because we're not registered
   return new wxVTKRenderWindowInteractor;
 }
 //---------------------------------------------------------------------------
 void wxVTKRenderWindowInteractor::Initialize()
 {
+  int *size = RenderWindow->GetSize();
   // enable everything and start rendering
   Enable();
-  RenderWindow->Start();
+  //RenderWindow->Start();
+
+  // set the size in the render window interactor
+  Size[0] = size[0];
+  Size[1] = size[1];
 
   // this is initialized
   Initialized = 1;
@@ -162,7 +277,19 @@ void wxVTKRenderWindowInteractor::Enable()
 
   // that's it
   Enabled = 1;
+#if defined(__WXGTK__) && defined(USE_WXGLCANVAS)
+  wxGLCanvas::SetCurrent(*this->context);
+#endif
   Modified();
+}
+//---------------------------------------------------------------------------
+bool wxVTKRenderWindowInteractor::Enable(bool enable)
+{
+#if defined(__WXGTK__) && defined(USE_WXGLCANVAS)
+  return wxGLCanvas::Enable(enable);
+#else
+  return wxWindow::Enable(enable);
+#endif
 }
 //---------------------------------------------------------------------------
 void wxVTKRenderWindowInteractor::Disable()
@@ -179,8 +306,8 @@ void wxVTKRenderWindowInteractor::Disable()
 void wxVTKRenderWindowInteractor::Start()
 {
   // the interactor cannot control the event loop
-  vtkErrorMacro(<<"wxVTKRenderWindowInteractor::Start() \
-    interactor cannot control event loop.");
+  vtkErrorMacro( << "wxVTKRenderWindowInteractor::Start() "
+    "interactor cannot control event loop.");
 }
 //---------------------------------------------------------------------------
 void wxVTKRenderWindowInteractor::UpdateSize(int x, int y)
@@ -188,12 +315,16 @@ void wxVTKRenderWindowInteractor::UpdateSize(int x, int y)
   if( RenderWindow )
   {
     // if the size changed tell render window
-    if (( (x != Size[0]) || (y != Size[1]) ))
+    if ( x != Size[0] || y != Size[1] )
     {
+      // adjust our (vtkRenderWindowInteractor size)
       Size[0] = x;
       Size[1] = y;
       // and our RenderWindow's size
-//      RenderWindow->SetSize(x, y);
+      RenderWindow->SetSize(x, y);
+#if defined(__WXMSW__)
+      this->Refresh();
+#endif //__WXMSW__
     }
   }
 }
@@ -201,12 +332,29 @@ void wxVTKRenderWindowInteractor::UpdateSize(int x, int y)
 int wxVTKRenderWindowInteractor::CreateTimer(int WXUNUSED(timertype))
 {
   // it's a one shot timer
-  if (!timer->Start(10, TRUE))
-    assert(false);
+  if (!timer.Start(10, TRUE))
+    return 0;
 
   return 1;
   
 }
+#if VTK_MAJOR_VERSION > 5 || (VTK_MAJOR_VERSION == 5 && VTK_MINOR_VERSION >= 2)
+//------------------------------------------------------------------
+int wxVTKRenderWindowInteractor::InternalCreateTimer(int timerId, int timerType,
+                                                     unsigned long duration)
+{
+  if (!timer.Start(duration, timerType == OneShotTimer))
+    return 0;
+    
+  return ID_wxVTKRenderWindowInteractor_TIMER;
+}
+//------------------------------------------------------------------
+int wxVTKRenderWindowInteractor::InternalDestroyTimer(int platformTimerId)
+{
+  timer.Stop();
+  return 1;
+}
+#endif
 //---------------------------------------------------------------------------
 int wxVTKRenderWindowInteractor::DestroyTimer()
 {
@@ -219,52 +367,63 @@ void wxVTKRenderWindowInteractor::OnTimer(wxTimerEvent& WXUNUSED(event))
   if (!Enabled)
     return;
     
-#if (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
-    // new style
-    InvokeEvent(vtkCommand::TimerEvent, NULL);
+#if VTK_MAJOR_VERSION > 4 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+  // new style
+#if VTK_MAJOR_VERSION > 5 || (VTK_MAJOR_VERSION == 5 && VTK_MINOR_VERSION >= 2)
+  // pass the right timer id
+  int timerId = this->GetCurrentTimerId();
+  this->InvokeEvent(vtkCommand::TimerEvent, &timerId);
 #else
-    // old style
-    InteractorStyle->OnTimer();
+  this->InvokeEvent(vtkCommand::TimerEvent, NULL);
+#endif
+#else
+  // old style
+  InteractorStyle->OnTimer();
 #endif
 }
+
 //---------------------------------------------------------------------------
-long wxVTKRenderWindowInteractor::GetHandle()
+// NOTE on implementation:
+// Bad luck you ended up in the only tricky place of this code.
+// A few note, wxWidgets still refuse to provide such convenient method
+// so I have to maintain it myself, eventhough this is completely integrated
+// in wxPython...
+// Anyway if this happen to break for you then compare to a recent version of wxPython
+// and look for the function long wxPyGetWinHandle(wxWindow* win)
+// in wxPython/src/helpers.cpp
+long wxVTKRenderWindowInteractor::GetHandleHack()
 {
   //helper function to hide the MSW vs GTK stuff
   long handle_tmp = 0;
 
-#ifdef __WXMSW__
-    handle_tmp = (long)this->GetHWND();
+// __WXMSW__ is for Win32
+// __WXMAC__ is for Carbon or Cocoa builds
+// __WXGTK__ is for both gtk 1.2.x and gtk 2.x
+#if defined(__WXMSW__) || defined(__WXMAC__)
+    handle_tmp = (long)this->GetHandle();
 #endif //__WXMSW__
 
-#ifdef __WXMAC__
-#ifdef VTK_USE_COCOA
-    handle_tmp = (long)objc_msgSend(GetNSView(), "window");
-#endif //VTK_USE_COCOA
-#ifdef VTK_USE_CARBON
-    handle_tmp = (long)this->MacGetRootWindow();
-#endif //VTK_USE_CARBON
-#endif //__WXMAC__
+// using above GetHandle() works fine with wxOSX 2.9.x
+#if defined(__WXCOCOA__) && !wxCHECK_VERSION(2, 9, 0)
+   // Here is how to find the NSWindow
+   wxTopLevelWindow* toplevel = dynamic_cast<wxTopLevelWindow*>(wxGetTopLevelParent( this ) );
+   if (toplevel != NULL )
+   {
+      handle_tmp = (long)toplevel->GetNSWindow();
+   }
+   // The NSView will be deducted from 
+   // [(NSWindow*)Handle contentView]
+   // if only I knew how to write that in c++
+#endif //__WXCOCOA__ && !wxCHECK_VERSION(2, 9, 0)
 
     // Find and return the actual X-Window.
-#ifdef __WXGTK__
-    if (m_wxwindow) {
-#ifdef __WXGTK20__
-        handle_tmp = (long) GDK_WINDOW_XWINDOW(GTK_PIZZA(m_wxwindow)->
-          bin_window);
-#else
-        GdkWindowPrivate* bwin = reinterpret_cast<GdkWindowPrivate*>(
-          GTK_PIZZA(m_wxwindow)->bin_window);
-        if (bwin) {
-            handle_tmp = (long)bwin->xwindow;
-        }
-#endif //__WXGTK20__
-    }
-#endif //__WXGTK__
-
-#ifdef __WXMOTIF__
-    handle_tmp = (long)this->GetXWindow();
+#if defined(__WXGTK__) || defined(__WXX11__)
+    return (long)GetXWindow(this);
 #endif
+
+//#ifdef __WXMOTIF__
+//    handle_tmp = (long)this->GetXWindow();
+//#endif
 
   return handle_tmp;
 }
@@ -277,11 +436,50 @@ void wxVTKRenderWindowInteractor::OnPaint(wxPaintEvent& WXUNUSED(event))
   //do it here rather than in the cstor: this is safer.
   if(!Handle)
   {
-    Handle = GetHandle();
+    Handle = GetHandleHack();
     RenderWindow->SetWindowId(reinterpret_cast<void *>(Handle));
+// Cocoa
+// this->GetNSView() <-> DisplayId
+// this->GetTopLevel()->GetNSWindow() <-> WindowId
+#ifdef __WXMSW__
+    RenderWindow->SetParentId(reinterpret_cast<void *>(this->GetParent()->GetHWND()));
+#endif //__WXMSW__
+      
+    // This is another hack to prevent the VTK Render Window from closing the display.
+    // If VTK closes the display, ~wxContext chashes while trying to destroy its
+    // glContext (because the display is closed). The Get -> Set makes this VTK
+    // object think someone else is responsible for the display. 
+    #ifdef __WXCOCOA__
+      // avoid "Method not implemented" messages in Console
+    #else
+      this->RenderWindow->SetDisplayId(this->RenderWindow->GetGenericDisplayId());
+    #endif
   }
   // get vtk to render to the wxWindows
   Render();
+#ifdef __WXMAC__
+  // This solves a problem with repainting after a window resize
+  // See also: http://sourceforge.net/mailarchive/forum.php?thread_id=31690967&forum_id=41789
+#ifdef __WXCOCOA__
+  #if !wxCHECK_VERSION(2, 9, 0)
+    // this doesn't seem necessary with wxOSX 2.9.x
+    vtkCocoaRenderWindow * rwin = vtkCocoaRenderWindow::SafeDownCast(RenderWindow);
+    if( rwin )
+    {
+      rwin->UpdateContext();
+    }
+  #endif
+#else
+  vtkCarbonRenderWindow* rwin = vtkCarbonRenderWindow::SafeDownCast(RenderWindow);
+  if( rwin )
+  {
+#if VTK_MAJOR_VERSION > 4 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 4)
+    // Must be somewhere after VTK 4.4
+    rwin->UpdateGLRegion();
+#endif
+  }
+#endif
+#endif
 }
 //---------------------------------------------------------------------------
 void wxVTKRenderWindowInteractor::OnEraseBackground(wxEraseEvent &event)
@@ -290,7 +488,7 @@ void wxVTKRenderWindowInteractor::OnEraseBackground(wxEraseEvent &event)
   event.Skip(false);
 }
 //---------------------------------------------------------------------------
-void wxVTKRenderWindowInteractor::OnSize(wxSizeEvent &event)
+void wxVTKRenderWindowInteractor::OnSize(wxSizeEvent& WXUNUSED(event))
 {
   int w, h;
   GetClientSize(&w, &h);
@@ -301,11 +499,11 @@ void wxVTKRenderWindowInteractor::OnSize(wxSizeEvent &event)
     return;
     }
 
-#if (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION > 4 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
   InvokeEvent(vtkCommand::ConfigureEvent, NULL);
 #endif
   //this will check for Handle
-  Render();
+  //Render();
 }
 //---------------------------------------------------------------------------
 void wxVTKRenderWindowInteractor::OnMotion(wxMouseEvent &event)
@@ -314,7 +512,7 @@ void wxVTKRenderWindowInteractor::OnMotion(wxMouseEvent &event)
     {
     return;
     }
-#if (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION > 4 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
   SetEventInformationFlipY(event.GetX(), event.GetY(), 
     event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
 
@@ -333,7 +531,7 @@ void wxVTKRenderWindowInteractor::OnEnter(wxMouseEvent &event)
     return;
     }
 
-#if (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION > 4 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
     // new style
   SetEventInformationFlipY(event.GetX(), event.GetY(), 
       event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
@@ -353,7 +551,7 @@ void wxVTKRenderWindowInteractor::OnLeave(wxMouseEvent &event)
     return;
     }
 
-#if (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION > 4 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
     // new style
   SetEventInformationFlipY(event.GetX(), event.GetY(), 
       event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
@@ -373,21 +571,22 @@ void wxVTKRenderWindowInteractor::OnKeyDown(wxKeyEvent &event)
     return;
     }
 
-#if (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION > 4 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
     // new style
   int keycode = event.GetKeyCode();
   char key = '\0';
-  if (keycode < 256)
+  if (((unsigned int)keycode) < 256)
   {
     // TODO: Unicode in non-Unicode mode ??
     key = (char)keycode;
   }
 
-  SetEventInformationFlipY(event.GetX(), event.GetY(), 
-    event.ControlDown(), event.ShiftDown(), key, 0, NULL);
-
+  // we don't get a valid mouse position inside the key event on every platform
+  // so we retrieve the mouse position explicitly and pass it along
+  wxPoint mousePos = ScreenToClient(wxGetMousePosition());
+  SetEventInformationFlipY(mousePos.x, mousePos.y, 
+                           event.ControlDown(), event.ShiftDown(), key, 0, NULL);
   InvokeEvent(vtkCommand::KeyPressEvent, NULL);
-  InvokeEvent(vtkCommand::CharEvent, NULL);
 #else
   InteractorStyle->OnKeyDown(event.ControlDown(), event.ShiftDown(), 
     event.GetKeyCode(), 1);
@@ -402,18 +601,21 @@ void wxVTKRenderWindowInteractor::OnKeyUp(wxKeyEvent &event)
     return;
     }
 
-#if (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION > 4 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
     // new style
   int keycode = event.GetKeyCode();
   char key = '\0';
-  if (keycode < 256)
+  if (((unsigned int)keycode) < 256)
   {
     // TODO: Unicode in non-Unicode mode ??
     key = (char)keycode;
   }
 
-  SetEventInformationFlipY(event.GetX(), event.GetY(), 
-    event.ControlDown(), event.ShiftDown(), key, 0, NULL);
+  // we don't get a valid mouse position inside the key event on every platform
+  // so we retrieve the mouse position explicitly and pass it along
+  wxPoint mousePos = ScreenToClient(wxGetMousePosition());
+  SetEventInformationFlipY(mousePos.x, mousePos.y, 
+                           event.ControlDown(), event.ShiftDown(), key, 0, NULL);
   InvokeEvent(vtkCommand::KeyReleaseEvent, NULL);
 #else
   InteractorStyle->OnKeyUp(event.ControlDown(), event.ShiftDown(), 
@@ -422,6 +624,33 @@ void wxVTKRenderWindowInteractor::OnKeyUp(wxKeyEvent &event)
   event.Skip();
 }
 #endif //!(VTK_MAJOR_VERSION == 3 && VTK_MINOR_VERSION == 1)
+ //---------------------------------------------------------------------------
+void wxVTKRenderWindowInteractor::OnChar(wxKeyEvent &event)
+{
+  if (!Enabled) 
+    {
+    return;
+    }
+    
+#if VTK_MAJOR_VERSION > 4 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+  // new style
+  int keycode = event.GetKeyCode();
+  char key = '\0';
+  if (((unsigned int)keycode) < 256)
+    {
+    // TODO: Unicode in non-Unicode mode ??
+    key = (char)keycode;
+    }
+
+  // we don't get a valid mouse position inside the key event on every platform
+  // so we retrieve the mouse position explicitly and pass it along
+  wxPoint mousePos = ScreenToClient(wxGetMousePosition());
+  SetEventInformationFlipY(mousePos.x, mousePos.y, 
+                           event.ControlDown(), event.ShiftDown(), key, 0, NULL);
+  InvokeEvent(vtkCommand::CharEvent, NULL);
+#endif
+  event.Skip();
+}
 //---------------------------------------------------------------------------
 void wxVTKRenderWindowInteractor::OnButtonDown(wxMouseEvent &event)
 {
@@ -431,14 +660,20 @@ void wxVTKRenderWindowInteractor::OnButtonDown(wxMouseEvent &event)
     }
   ActiveButton = event.GetEventType();
 
-#if (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+    // On Mac (Carbon) and Windows we don't automatically get the focus when
+    // you click inside the window
+    // we therefore set the focus explicitly
+    // Apparently we need that on linux (GTK) too:
+    this->SetFocus();
+
+#if VTK_MAJOR_VERSION > 4 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
   SetEventInformationFlipY(event.GetX(), event.GetY(), 
     event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
 #endif
 
   if(event.RightDown())
   {
-#if (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION > 4 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
     // new style
     InvokeEvent(vtkCommand::RightButtonPressEvent, NULL);
 #else            
@@ -449,7 +684,7 @@ void wxVTKRenderWindowInteractor::OnButtonDown(wxMouseEvent &event)
   }
   else if(event.LeftDown())
   {
-#if (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION > 4 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
     // new style
     InvokeEvent(vtkCommand::LeftButtonPressEvent, NULL);
 #else            
@@ -460,7 +695,7 @@ void wxVTKRenderWindowInteractor::OnButtonDown(wxMouseEvent &event)
   }
   else if(event.MiddleDown())
   {
-#if (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION > 4 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
     // new style
     InvokeEvent(vtkCommand::MiddleButtonPressEvent, NULL);
 #else            
@@ -490,14 +725,17 @@ void wxVTKRenderWindowInteractor::OnButtonUp(wxMouseEvent &event)
     return;
     }
 
-#if (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+  // See report by Shang Mu / Kerry Loux on wxVTK mailing list
+    this->SetFocus();
+
+#if VTK_MAJOR_VERSION > 4 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
   SetEventInformationFlipY(event.GetX(), event.GetY(), 
     event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
 #endif
   
   if(ActiveButton == wxEVT_RIGHT_DOWN)
   {
-#if (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION > 4 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
     // new style
     InvokeEvent(vtkCommand::RightButtonReleaseEvent, NULL);
 #else            
@@ -508,7 +746,7 @@ void wxVTKRenderWindowInteractor::OnButtonUp(wxMouseEvent &event)
   }
   else if(ActiveButton == wxEVT_LEFT_DOWN)
   {
-#if (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION > 4 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
     // new style
     InvokeEvent(vtkCommand::LeftButtonReleaseEvent, NULL);
 #else            
@@ -519,7 +757,7 @@ void wxVTKRenderWindowInteractor::OnButtonUp(wxMouseEvent &event)
   }
   else if(ActiveButton == wxEVT_MIDDLE_DOWN)
   {
-#if (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
+#if VTK_MAJOR_VERSION > 4 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 0)
     // new style
     InvokeEvent(vtkCommand::MiddleButtonReleaseEvent, NULL);
 #else            
@@ -536,26 +774,55 @@ void wxVTKRenderWindowInteractor::OnButtonUp(wxMouseEvent &event)
   ActiveButton = wxEVT_NULL;
 }
 //---------------------------------------------------------------------------
-void wxVTKRenderWindowInteractor::OnMouseWheel(wxMouseEvent &event)
+void wxVTKRenderWindowInteractor::OnMouseWheel(wxMouseEvent& event)
 {
-  if (!Enabled) 
+// Mouse wheel was only added after VTK 4.4 (I think...)
+#if VTK_MAJOR_VERSION > 4 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 4)
+  // new style
+  //Set vtk event information ... The numebr of wheel rotations is stored in
+  //the x varible.  y varible is zero
+  SetEventInformationFlipY(event.GetX() , event.GetY(), 
+                           event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
+  if(event.GetWheelRotation() > 0)
     {
-    return;
+      //Send event to VTK
+      InvokeEvent(vtkCommand::MouseWheelForwardEvent, NULL);
     }
-
-  SetEventInformationFlipY(event.GetX(), event.GetY(), 
-    event.ControlDown(), event.ShiftDown(), '\0', 0, NULL);
-
-//  if(event.GetWheelRotation() > 0 )
-//    InvokeEvent(vtkCommand::MouseWheelForwardEvent, NULL);
-//  else
-//    InvokeEvent(vtkCommand::MouseWheelBackwardEvent, NULL);
+  else
+    {
+      //Send event to VTK
+      InvokeEvent(vtkCommand::MouseWheelBackwardEvent, NULL);
+    }
+#endif
+    
 }
+
+//---------------------------------------------------------------------------
+#if wxCHECK_VERSION(2, 8, 0)
+void wxVTKRenderWindowInteractor::OnMouseCaptureLost(wxMouseCaptureLostEvent& event)
+{
+   if (ActiveButton != wxEVT_NULL)
+   {
+       //Maybe also invoke the button release event here
+   }
+   // Reset ActiveButton so that
+   // 1. we do not process mouse button up events any more,
+   // 2. the next button down event will be processed and call CaptureMouse().
+   // Otherwise ReleaseMouse() will be called
+   // without a previous CaptureMouse().
+   ActiveButton = wxEVT_NULL;
+}
+#endif
+
 //---------------------------------------------------------------------------
 void wxVTKRenderWindowInteractor::Render()
 {
-  RenderAllowed = 1;
-  if (!RenderWhenDisabled)
+#if wxCHECK_VERSION(2, 8, 0)
+  int renderAllowed = !IsFrozen();
+#else
+  int renderAllowed = 1;
+#endif
+  if (renderAllowed && !RenderWhenDisabled)
     {
     //the user doesn't want us to render when the toplevel frame
     //is disabled - first find the top level parent
@@ -563,24 +830,27 @@ void wxVTKRenderWindowInteractor::Render()
     if (topParent)
       {
       //if it exists, check whether it's enabled
-      //if it's not enabeld, RenderAllowed will be false
-      RenderAllowed = topParent->IsEnabled();
+      //if it's not enabeld, renderAllowed will be false
+      renderAllowed = topParent->IsEnabled();
       }
     }
 
-  if (RenderAllowed)
+  if (renderAllowed)
     {
-    if(Handle && (Handle == GetHandle()) )
+#if defined(__WXGTK__) && defined(USE_WXGLCANVAS)
+    wxGLCanvas::SetCurrent(*(this->context));
+#endif
+    if(Handle && (Handle == GetHandleHack()) )
       {
       RenderWindow->Render();
       }
-#if (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 2)
-    else if(GetHandle())
+#if VTK_MAJOR_VERSION > 4 || (VTK_MAJOR_VERSION == 4 && VTK_MINOR_VERSION > 2)
+    else if(GetHandleHack())
       {
       //this means the user has reparented us; let's adapt to the
       //new situation by doing the WindowRemap dance
       //store the new situation
-      Handle = GetHandle();
+      Handle = GetHandleHack();
       RenderWindow->SetNextWindowId(reinterpret_cast<void *>(Handle));
       RenderWindow->WindowRemap();
       RenderWindow->Render();
@@ -624,3 +894,12 @@ void wxVTKRenderWindowInteractor::SetStereo(int capable)
     Modified();
     }
 }
+
+//---------------------------------------------------------------------------
+//
+//
+void wxVTKRenderWindowInteractor::PrintSelf(ostream& os, vtkIndent indent)
+{
+  this->Superclass::PrintSelf(os, indent);
+}
+

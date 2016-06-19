@@ -130,10 +130,10 @@ void MainFrame::FileOpen(wxCommandEvent& WXUNUSED(event) )
 		else
 		{
 			// make the surface 
-			const char *fn = dialog.GetPath().c_str();
+			auto fn = dialog.GetPath();
 			GSTsurface *gstsurface = new GSTsurface();
 			gst->gstees.push_back(gstsurface);
-			gstsurface->LoadSTL(fn); 
+			gstsurface->LoadSTL(fn.c_str()); 
 			gstsurface->AddToRenderer(&gst->ren1); 
 
 			// make a bounding box for it
@@ -495,7 +495,7 @@ void MainFrame::UpdateActors()
         }
 }
 
-void MainFrame::OnUpdateActors(wxCommandEvent& event)
+void MainFrame::OnUpdateActors(wxMenuEvent& event)
 {
 	UpdateActors();
 }

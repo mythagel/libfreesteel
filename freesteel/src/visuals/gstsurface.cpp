@@ -91,7 +91,7 @@ void GSTsurface::LoadSTL(const char* fname)
     yrg = I1(values[2], values[3]); 
     zrg = I1(values[4], values[5]); 
 
-	stlMap->SetInput(stl->GetOutput());
+	stlMap->SetInputData(stl->GetOutput());
         
         vo<vtkActor> actor;
 	actor->SetMapper(&stlMap); 
@@ -160,13 +160,12 @@ void GSTtoolpath::UpdateFromPax()
 	ftpolydata->SetLines(&lines);
 
 
-	ftpolydata->Update(); 
 	double* values = ftpolydata->GetBounds();
 	xrg = I1(values[0], values[1]);
 	yrg = I1(values[2], values[3]);
 	zrg = I1(values[4], values[5]); 
 
-	ftpolydataMap->SetInput(&ftpolydata);
+	ftpolydataMap->SetInputData(&ftpolydata);
 
 	vo<vtkActor> actor;
 	actor->SetMapper(&ftpolydataMap);
