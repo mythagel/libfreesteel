@@ -21,8 +21,11 @@
 
 #ifndef AREA2_GEN
 #define AREA2_GEN
-
-
+#include "cages/S2weave.h"
+#include "cages/pathxseries.h"
+#include "bolts/P2.h"
+#include "cages/SurfX.h"
+#include "cages/SurfXboxed.h"
 
 
 

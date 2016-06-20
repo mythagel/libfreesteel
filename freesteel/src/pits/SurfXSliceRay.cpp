@@ -18,11 +18,10 @@
 //
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
-
-#include "bolts/bolts.h"
-#include "cages/cages.h"
-#include "pits/pits.h"
-
+#include "pits/SLi_gen.h"
+#include "cages/SurfX.h"
+#include "cages/SurfXboxed.h"
+#include "cages/Area2_gen.h"
 
 
 
@@ -122,7 +121,7 @@ void SurfXboxed::SliceUFibre(Ray_gen& rgen)
 	I1 urg = I1(rgen.pfib->wp - r, rgen.pfib->wp + r); 
 	if (urg.Intersect(gbxrg)) 
 	{
-		pair<int, int> iurg = xpart.FindPartRG(urg); 
+        std::pair<int, int> iurg = xpart.FindPartRG(urg); 
 
 		// could loop in a more optimal order 
 		for (int iu = iurg.first; iu <= iurg.second; iu++) 
@@ -130,7 +129,7 @@ void SurfXboxed::SliceUFibre(Ray_gen& rgen)
 			I1 vrg = rgen.pfib->wrg.Inflate(r); 
 			if (vrg.Intersect(gbyrg)) 
 			{
-				pair<int, int> ivrg = yparts[iu].FindPartRG(vrg); 
+                std::pair<int, int> ivrg = yparts[iu].FindPartRG(vrg); 
 
 				for (int iv = ivrg.first; iv <= ivrg.second; iv++) 
 					SliceFibreBox(iu, iv, rgen); 
@@ -158,7 +157,7 @@ void SurfXboxed::SliceVFibre(Ray_gen& rgen)
 	I1 urg = rgen.pfib->wrg.Inflate(r); 
 	if (urg.Intersect(gbxrg)) 
 	{
-		pair<int, int> iurg = xpart.FindPartRG(urg); 
+        std::pair<int, int> iurg = xpart.FindPartRG(urg); 
 
 		// could loop in a more optimal order 
 		for (int iu = iurg.first; iu <= iurg.second; iu++) 
@@ -166,7 +165,7 @@ void SurfXboxed::SliceVFibre(Ray_gen& rgen)
 			I1 vrg = I1(rgen.pfib->wp - r, rgen.pfib->wp + r); 
 			if (vrg.Intersect(gbyrg)) 
 			{
-				pair<int, int> ivrg = yparts[iu].FindPartRG(vrg); 
+                std::pair<int, int> ivrg = yparts[iu].FindPartRG(vrg); 
 
 				for (int iv = ivrg.first; iv <= ivrg.second; iv++) 
 					SliceFibreBox(iu, iv, rgen); 
@@ -182,7 +181,7 @@ void SurfXboxed::SliceVFibre(Ray_gen& rgen)
 void Area2_gen::FindInterior(SurfX& sx)  
 {
 	SLi_gen sgen; 
-	vector<I1> res; 
+    std::vector<I1> res; 
 
 	for (int iu = 0; iu < (int)ufibs.size(); iu++) 
 	{
@@ -268,7 +267,7 @@ void Area2_gen::MakeContours(PathXSeries& ftpaths)
 
 			if (ContourNumber(alscan) < firstcontournumber) 
 			{
-				vector<P2> contour;
+                std::vector<P2> contour;
 				TrackContour(contour, alscan); 
 				ftpaths.Append(contour);
 				ftpaths.z = z;

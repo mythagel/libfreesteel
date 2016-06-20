@@ -18,9 +18,7 @@
 //
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
-
-#include "bolts/bolts.h"
-#include "cages/cages.h"
+#include "SurfX.h"
 
 
 

@@ -21,6 +21,8 @@
 
 #ifndef GST_H
 #define GST_H
+#include "bolts/vo.h"
+#include <vector>
 
 class vtkSTLReader; 
 class vtkPolyData; 
@@ -40,7 +42,7 @@ class SurfX;
 class GeometryStuffTogether
 {
 public: 
-	vector<class GSTbase *> gstees; 
+    std::vector<class GSTbase *> gstees; 
 
 	void MakeRectBoundary(const I1& xrg, const I1& yrg, double z); 
 

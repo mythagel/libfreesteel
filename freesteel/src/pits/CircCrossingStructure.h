@@ -21,6 +21,11 @@
 
 #ifndef CircCrossingStructure__h
 #define CircCrossingStructure__h
+#include "bolts/P2.h"
+#include "bolts/S1.h"
+#include "bolts/I1.h"
+#include "bolts/smallfuncs.h"
+#include <vector>
 
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
@@ -55,9 +60,9 @@ struct CircCrossingStructure
 		cpt(lcpt), crad(lcrad), cradsq(Square(lcrad)) {;}; 
 
 	// should be a set of boundaries 
-	void ChopOutBoundary(const vector<P2>& bound); // creates circrange
+	void ChopOutBoundary(const std::vector<P2>& bound); // creates circrange
 
-	vector<CPara> cpara; // around the circle
+    std::vector<CPara> cpara; // around the circle
 
 	// toolpath hacking.  
 	double prad; 

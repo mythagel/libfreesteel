@@ -21,6 +21,7 @@
 
 #ifndef MAINFRAME_H
 #define MAINFRAME_H
+#include "bolts/I1.h"
 
 class AnimationFrame;
 

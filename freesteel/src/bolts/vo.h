@@ -18,6 +18,9 @@
 //
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
+#ifndef VO__H
+#define VO__H
+#include <vector>
 
 template<class V>
 struct vo
@@ -39,7 +42,7 @@ struct vo
 template<class V>
 struct vectorvo 
 {
-	vector<V*> vv; 
+    std::vector<V*> vv; 
 
 #ifndef SWIG
 	V* operator[](int i) 
@@ -58,3 +61,4 @@ struct vectorvo
 		}; 
 }; 
 
+#endif

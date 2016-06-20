@@ -24,7 +24,6 @@
 
 #include "vtkPolyData.h"
 
-#include "bolts/bolts.h"
 
 
 #include "coreroughdlg.h"

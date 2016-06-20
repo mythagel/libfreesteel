@@ -21,6 +21,11 @@
 
 #ifndef S2WEAVECELL_H
 #define S2WEAVECELL_H
+#include "bolts/S1.h"
+#include "bolts/I1.h"
+#include "bolts/P2.h"
+#include <vector>
+#include <utility>
 
 
 //////////////////////////////////////////////////////////////////////
@@ -50,7 +55,7 @@ struct S2weaveCell
 
     // the list of endpoints of fibres in this cell.
     // first int is the edge (left is first), second is the B1 entry in the array.
-    vector< pair<int, B1*> > boundlist;
+    std::vector< std::pair<int, B1*> > boundlist;
     bool bLDin;
     bool bLUin;
     bool bRUin;
@@ -59,7 +64,7 @@ struct S2weaveCell
 	// index into boundlist which marks connects the 
 	// points between the boundary with lines, resolving ambiguities.  
 	// not possible to control for order.  
-	vector< pair<int, int> > bolistpairs; 
+    std::vector< std::pair<int, int> > bolistpairs; 
 
 
 	P2 GetBoundPoint(int ibl); 

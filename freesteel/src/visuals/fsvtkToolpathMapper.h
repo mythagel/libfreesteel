@@ -21,9 +21,10 @@
 
 #ifndef FSTOOLPATHMAPPER_H
 #define FSTOOLPATHMAPPER_H
-
-#include "bolts/bolts.h"
-#include "cages/cages.h"
+#include "bolts/P3.h"
+#include "bolts/P2.h"
+#include "bolts/I1.h"
+#include "cages/S2weave.h"
 #include <vector>
 
 class ToolShape;
@@ -51,7 +52,7 @@ class fsvtkToolpathMapper : public vtkOpenGLPolyDataMapper
 public:
 		static fsvtkToolpathMapper *New();
 
-		vector<PathXSeries>* pftpaths;
+        std::vector<PathXSeries>* pftpaths;
 		ToolShape* ptoolshape;
 		PathXSeries* bound;
 		I1 xrg, yrg;

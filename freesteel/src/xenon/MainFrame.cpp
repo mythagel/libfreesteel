@@ -44,9 +44,6 @@
 #include "vtkPointData.h"
 #include "vtkInteractorStyleSwitch.h"
 
-#include "bolts/bolts.h"
-#include "cages/cages.h"
-#include "pits/pits.h"
 #include "visuals/MakeToolpath.h"
 #include "visuals/fsvtkToolpathMapper.h"
 #include "visuals/gstsurface.h"
@@ -57,6 +54,7 @@
 #include "MainFrame.h"
 #include "AnimationFrame.h"
 #include "MyApp.h"
+#include <utility>
 
 static int MAX_ACTORS = 20;
 #define VTK_WINDOW 501
@@ -121,7 +119,7 @@ void MainFrame::FileOpen(wxCommandEvent& WXUNUSED(event) )
 
     if (dialog.ShowModal() == wxID_OK)    
 	{                      
-		wxString fn(dialog.GetPath().c_str());
+		auto fn = dialog.GetPath();
 		if (fn.Matches("*.xml"))
 		{
 
@@ -130,7 +128,6 @@ void MainFrame::FileOpen(wxCommandEvent& WXUNUSED(event) )
 		else
 		{
 			// make the surface 
-			auto fn = dialog.GetPath();
 			GSTsurface *gstsurface = new GSTsurface();
 			gst->gstees.push_back(gstsurface);
 			gstsurface->LoadSTL(fn.c_str()); 
@@ -455,7 +452,7 @@ void MainFrame::MaximizeView()
     ASSERT(gst->ren1->GetActiveCamera()->GetParallelProjection() != 0);
 
     double scale = gst->ren1->GetActiveCamera()->GetParallelScale();
-    gst->ren1->GetActiveCamera()->SetParallelScale(max(xrg.Leng(), yrg.Leng())); 
+    gst->ren1->GetActiveCamera()->SetParallelScale(std::max(xrg.Leng(), yrg.Leng())); 
 }
 
 void MainFrame::UpdateActors()

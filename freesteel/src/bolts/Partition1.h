@@ -21,10 +21,13 @@
 
 #ifndef Partition1__h
 #define Partition1__h
+#include <vector>
+#include <utility>
+#include "I1.h"
 
 class Partition1 
 {
-	vector<double> b;
+    std::vector<double> b;
 	bool bRegular; 
 
 public: 
@@ -34,7 +37,7 @@ public:
 		{ return I1(b[i], b[i + 1]); }
 
 	int FindPart(double x) const; 
-	pair<int, int> FindPartRG(const I1& xrg) const; 
+    std::pair<int, int> FindPartRG(const I1& xrg) const; 
 
 	Partition1() 
 		{;}; 

@@ -18,11 +18,11 @@
 //
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
-
-#include "bolts/bolts.h"
-#include "cages/cages.h"
-#include "pits/pits.h"
-
+#include "PathX.h"
+#include "bolts/debugfuncs.h"
+#include "pits/SLi_gen.h"
+#include "cages/Area2_gen.h"
+#include <algorithm>
 
 //////////////////////////////////////////////////////////////////////
 void Ray_gen2::HoldFibre(S1* lpfib) 
@@ -36,7 +36,7 @@ void Ray_gen2::ReleaseFibre()
 {
 	if (!scuts.empty())
 	{
-		sort(scuts.begin(), scuts.end()); 
+        std::sort(scuts.begin(), scuts.end()); 
 		ASSERT((scuts.size() % 2) == 0); 
 		for (int i = 1; i < scuts.size(); i += 2) 
 		{

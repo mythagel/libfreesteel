@@ -18,13 +18,11 @@
 //
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
-#include "bolts/bolts.h"
-#include "cages/cages.h"
-#include "pits/pits.h"
-
+#include "pits/S2weaveCell.h"
+#include "cages/S2weave.h"
 
 //////////////////////////////////////////////////////////////////////
-int FindCellParal(const vector<S1>& wfibs, double lw) 
+int FindCellParal(const std::vector<S1>& wfibs, double lw) 
 {
 	int res; 
 	for (res = 1; res < wfibs.size(); res++) 
@@ -208,10 +206,10 @@ bool S2weaveCell::GetBoundLower(int ibl)
 
 //////////////////////////////////////////////////////////////////////
 // we have some const_casts here so we can get at the 
-bool AddBoundListMatches(vector< pair<int, B1*> >& boundlist, const S1& fw, const I1& rg, int edgno, bool bGoingDown, bool bStartIn) 
+bool AddBoundListMatches(std::vector< std::pair<int, B1*> >& boundlist, const S1& fw, const I1& rg, int edgno, bool bGoingDown, bool bStartIn) 
 {
     ASSERT(((edgno & 2) != 0) == bGoingDown);
-    pair<int, int> ilr = fw.Loclohi(rg);
+    std::pair<int, int> ilr = fw.Loclohi(rg);
     
     // pull-back from any boundaries that just cross.
     if ((ilr.first <= ilr.second) && fw[ilr.first].blower && (fw[ilr.first].w == rg.lo))
@@ -232,7 +230,7 @@ bool AddBoundListMatches(vector< pair<int, B1*> >& boundlist, const S1& fw, cons
     {
         for (int i = ilr.first; i <= ilr.second; i++)
         {
-            boundlist.push_back(pair<int, B1*>(edgno, const_cast<B1*>(&(fw[i]))));
+            boundlist.push_back(std::pair<int, B1*>(edgno, const_cast<B1*>(&(fw[i]))));
             ASSERT(rg.Contains(fw[i].w));
         }
     }
@@ -240,7 +238,7 @@ bool AddBoundListMatches(vector< pair<int, B1*> >& boundlist, const S1& fw, cons
     {
         for (int i = ilr.second; i >= ilr.first; i--)
         {
-            boundlist.push_back(pair<int, B1*>(edgno, const_cast<B1*>(&(fw[i]))));
+            boundlist.push_back(std::pair<int, B1*>(edgno, const_cast<B1*>(&(fw[i]))));
             ASSERT(rg.Contains(fw[i].w));
         }
     }
@@ -271,7 +269,7 @@ int S2weaveCell::CreateBoundList()
 		if (GetBoundLower(ibl)) 
 		{
 			ASSERT(!GetBoundLower(ib)); 
-			bolistpairs.push_back(pair<int, int>(ib, ibl)); 
+			bolistpairs.push_back(std::pair<int, int>(ib, ibl)); 
 		}
 		ib = ibl; 
 		DEBUG_ONLY(binD = !binD); 

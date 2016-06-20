@@ -18,14 +18,14 @@
 //
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
-
-#include "bolts/bolts.h"
-#include "cages/cages.h"
-#include "pits/pits.h"
+#include "CircCrossingStructure.h"
+#include "cages/pathxseries.h"
+#include <utility>
+#include <algorithm>
 
 //////////////////////////////////////////////////////////////////////
 // this establishes the circrange
-void CircCrossingStructure::ChopOutBoundary(const vector<P2>& bound)  
+void CircCrossingStructure::ChopOutBoundary(const std::vector<P2>& bound)  
 {
 	// we now make the circrange thing (not quite the appropriate class)  
 	circrange.SetNew(0.0, I1(0, 4), 3); 
@@ -38,7 +38,7 @@ void CircCrossingStructure::ChopOutBoundary(const vector<P2>& bound)
 	}
 
 	// the crossing points 
-	vector< pair<double, bool> > hraypara; // along the horizontal ray (for if wholly in or out).  
+    std::vector< std::pair<double, bool> > hraypara; // along the horizontal ray (for if wholly in or out).  
 
 	ASSERT(bound.front() == bound.back()); 
 	P2 p1 = bound.front() - cpt; 
@@ -66,7 +66,7 @@ void CircCrossingStructure::ChopOutBoundary(const vector<P2>& bound)
 			TOL_ZERO(Along(lam, p0.v, p1.v)); 
 			double cu = Along(lam, p0.u, p1.u); 
 			if (cu >= 0.0) 
-				hraypara.push_back(pair<double, bool>(cu, (p1.v >= 0.0))); 
+				hraypara.push_back(std::pair<double, bool>(cu, (p1.v >= 0.0))); 
 		}
 
 		// discard if inside fully (by convexity).  
@@ -87,7 +87,7 @@ void CircCrossingStructure::ChopOutBoundary(const vector<P2>& bound)
 			// only get away of both endpoints are not in circle.  
 			if ((rad0sq >= cradsq) && (rad1sq >= cradsq)) 
 				continue; 
-			TOL_ZERO(max(cradsq - rad0sq, cradsq - rad1sq)); 
+			TOL_ZERO(std::max(cradsq - rad0sq, cradsq - rad1sq)); 
 		}
 
 		// find lambda of crossing points of line and circle.  
@@ -105,7 +105,7 @@ void CircCrossingStructure::ChopOutBoundary(const vector<P2>& bound)
 		double lamp = sqrt(lampsq); 
 		TOL_ZERO(AlongD(lamz + lamp, p0, p1).Len() - crad); 
 
-		TOL_ZERO(min(I1unit.Distance(lamz + lamp), I1unit.Distance(lamz - lamp))); 
+		TOL_ZERO(std::min(I1unit.Distance(lamz + lamp), I1unit.Distance(lamz - lamp))); 
 
 		// lower crossing
 		if (!brad0in) 
@@ -128,8 +128,8 @@ void CircCrossingStructure::ChopOutBoundary(const vector<P2>& bound)
 
 
 	// we now have a series of points in cpara and hraypara
-	sort(cpara.begin(), cpara.end()); 
-	sort(hraypara.begin(), hraypara.end()); 
+    std::sort(cpara.begin(), cpara.end()); 
+    std::sort(hraypara.begin(), hraypara.end()); 
 
 
 	// find if the point (crad, 0) is inside the contour (clockwise)
@@ -158,7 +158,7 @@ void CircCrossingStructure::ChopOutBoundary(const vector<P2>& bound)
 		}
 		else if (rghrayinmcrad.hi >= 0.0) 
 		{
-			hrayinvaldist = min(rghrayinmcrad.lo, -rghrayinmcrad.hi); 
+			hrayinvaldist = std::min(rghrayinmcrad.lo, -rghrayinmcrad.hi); 
 			break; 
 		}
 		else 
@@ -379,7 +379,7 @@ void CircCrossingStructure::HackToolRectangle(const P2& p0, const P2& p1)
 		// line may cross the circle.  
 		double lamrp = sqrt(lamrpsq); 
 		TOL_ZERO(AlongD(lamz + lamrp, p0r, p1r).Len() - crad); 
-		TOL_ZERO(min(I1unit.Distance(lamz + lamrp), I1unit.Distance(lamz - lamrp))); 
+		TOL_ZERO(std::min(I1unit.Distance(lamz + lamrp), I1unit.Distance(lamz - lamrp))); 
 
 		// lower crossing
 		if (!brad0rin) 
@@ -410,7 +410,7 @@ void CircCrossingStructure::HackToolRectangle(const P2& p0, const P2& p1)
 		// line may cross the circle.  
 		double lam1p = sqrt(lam1psq); 
 		TOL_ZERO((p1 + APerp(v) * (lamz_p + lam1p)).Len() - crad); 
-		TOL_ZERO(min(I1(-perpvfac, perpvfac).Distance(lamz_p + lam1p), I1(-perpvfac, perpvfac).Distance(lamz_p - lam1p))); 
+		TOL_ZERO(std::min(I1(-perpvfac, perpvfac).Distance(lamz_p + lam1p), I1(-perpvfac, perpvfac).Distance(lamz_p - lam1p))); 
 
 		// lower crossing
 		if (!brad1rin) 
@@ -441,7 +441,7 @@ void CircCrossingStructure::HackToolRectangle(const P2& p0, const P2& p1)
 		double lamlpsq = (cradsq - cdlsq) / vsq; 
 		double lamlp = -sqrt(lamlpsq); 
 		TOL_ZERO(AlongD(lamz + lamlp, p0l, p1l).Len() - crad); 
-		TOL_ZERO(min(I1unit.Distance(lamz + lamlp), I1unit.Distance(lamz - lamlp))); 
+		TOL_ZERO(std::min(I1unit.Distance(lamz + lamlp), I1unit.Distance(lamz - lamlp))); 
 
 		// lower crossing
 		if (!brad1lin) 
@@ -474,7 +474,7 @@ void CircCrossingStructure::HackToolRectangle(const P2& p0, const P2& p1)
 		// line may cross the circle.  
 		double lam0p = -sqrt(lam0psq); 
 		TOL_ZERO((p0 + APerp(v) * (lamz_p + lam0p)).Len() - crad); 
-		TOL_ZERO(min(I1(-perpvfac, perpvfac).Distance(lamz_p + lam0p), I1(-perpvfac, perpvfac).Distance(lamz_p - lam0p))); 
+		TOL_ZERO(std::min(I1(-perpvfac, perpvfac).Distance(lamz_p + lam0p), I1(-perpvfac, perpvfac).Distance(lamz_p - lam0p))); 
 
 		// lower crossing
 		if (!brad0lin) 
@@ -516,7 +516,7 @@ void CircCrossingStructure::HackToolRectangle(const P2& p0, const P2& p1)
 	#endif
 
 	// could use the knowledge from the above loop to work it out 
-	sort(cpara.begin(), cpara.end()); 
+        std::sort(cpara.begin(), cpara.end()); 
 
 	ASSERT((cpara.size() % 2) == 0); 
 	ASSERT(cpara.front().bClockwiseIn != cpara.back().bClockwiseIn); 
@@ -590,7 +590,7 @@ void HackCCSx(CircCrossingStructure& ccs, const PathXboxed& pathxb)
 	pathxb.maxidup++; 
 
 	// work through the ranges 		
-	pair<int, int> iurg = pathxb.upart.FindPartRG(urg); 
+    std::pair<int, int> iurg = pathxb.upart.FindPartRG(urg); 
 	for (int iu = iurg.first; iu <= iurg.second; iu++) 
 	{
 		const pucketX& pucx = pathxb.puckets[iu]; 
@@ -619,7 +619,7 @@ void HackCCSx(CircCrossingStructure& ccs, const PathXboxed& pathxb)
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 // returns a series of points which interfere with the metal along the circumference.  
-void CircleIntersectNew(vector<I1>& res, const P2& cpt, double crad, const PathXSeries& bound, const PathXboxed& pathxb, double prad)  
+void CircleIntersectNew(std::vector<I1>& res, const P2& cpt, double crad, const PathXSeries& bound, const PathXboxed& pathxb, double prad)  
 {
 	CircCrossingStructure ccs(cpt, crad); 
 

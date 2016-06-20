@@ -18,9 +18,8 @@
 //
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
-
-#include "bolts/bolts.h"
-#include "cages/cages.h"
+#include "cages/SurfX.h"
+#include <algorithm>
 
 
 
@@ -92,6 +91,8 @@ struct triangXr
 /////////////////////////////////////////////////////////////////////
 triangXr::triangXr(P3& p0, P3& p1, P3& p2) 
 {
+    using std::swap;
+
 	a = &p0; 
 	b1 = &p1; 
 	b2 = &p2; 
@@ -198,11 +199,11 @@ void SurfX::BuildComponents()
 {
 	// first sort all the points by increasing x
 	int np = lvd.size(); // 3 times the number of triangles.  
-	vector<P3*> p3X;
+    std::vector<P3*> p3X;
   int i; 
 	for (i = 0; i < np; i++)
 		p3X.push_back(&(lvd[i])); 
-	sort(p3X.begin(), p3X.end(), p3X_order()); 
+    std::sort(p3X.begin(), p3X.end(), p3X_order()); 
 
 	// make the indexes into this array with duplicates removed 
 	ltd.resize(np);
@@ -221,12 +222,12 @@ void SurfX::BuildComponents()
 
 	// build up oriented triangles with normals and remove degenerate ones
 	int nt = np / 3; 
-	vector<triangXr> ttx; 
+    std::vector<triangXr> ttx; 
 	for (i = 0; i < nt; i++) 
 		ttx.push_back(triangXr(vdX[ltd[i * 3]], vdX[ltd[i * 3 + 1]], vdX[ltd[i * 3 + 2]])); 
 
 	// now make the array of linked edges
-	vector<edgeXr> edXr; 
+    std::vector<edgeXr> edXr; 
 	for (i = 0; i < (int)ttx.size(); i++) 
 	{
 		edXr.push_back(edgeXr(ttx[i].a, ttx[i].b1, i)); 
@@ -234,10 +235,10 @@ void SurfX::BuildComponents()
 		edXr.push_back(edgeXr(ttx[i].b2, ttx[i].a, i)); 
 	}
 
-	vector<edgeXr*> pedXr; 
+    std::vector<edgeXr*> pedXr; 
 	for (i = 0; i < (int)edXr.size(); i++) 
 		pedXr.push_back(&(edXr[i])); 
-	sort(pedXr.begin(), pedXr.end(), edgeXr_order()); 
+    std::sort(pedXr.begin(), pedXr.end(), edgeXr_order()); 
 
 
 	// build the final array of triangles into which the edges will point 

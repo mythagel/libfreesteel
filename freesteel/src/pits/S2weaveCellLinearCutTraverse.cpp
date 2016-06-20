@@ -18,9 +18,8 @@
 //
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
-#include "bolts/bolts.h"
-#include "cages/cages.h"
-#include "pits/pits.h"
+#include "pits/S2weaveCellLinearCut.h"
+#include "bolts/smallfuncs.h"
 
 //////////////////////////////////////////////////////////////////////
 void S2weaveCellLinearCutTraverse::Findibbfore(int libb) 
@@ -146,7 +145,7 @@ bool S2weaveCellLinearCutTraverse::SetCellCutContinue(const P2& lvbearing)
 					break; 
 			ASSERT(libb < bolistcrossings.size()); 
 			#ifdef MDEBUG
-			pair<int, int> ccrD = bolistpairs[bolistcrossings[libb].first];  
+            std::pair<int, int> ccrD = bolistpairs[bolistcrossings[libb].first];  
 			TOL_ZERO((Along(lambb, GetBoundPoint(ccrD.first), GetBoundPoint(ccrD.second)) - ptcpbb).Len()); 
 			#endif
 
@@ -169,7 +168,7 @@ bool S2weaveCellLinearCutTraverse::SetCellCutContinue(const P2& lvbearing)
 	#ifdef MDEBUG
 	if (ibb != -1) 
 	{
-		pair<int, int> ccrD = bolistpairs[bolistcrossings[ibb].first];  
+        std::pair<int, int> ccrD = bolistpairs[bolistcrossings[ibb].first];  
 		TOL_ZERO((Along(lambb, GetBoundPoint(ccrD.first), GetBoundPoint(ccrD.second)) - ptcpbb).Len()); 
 	}
 	#endif
@@ -239,7 +238,7 @@ void S2weaveCellLinearCutTraverse::AdvanceToContourCut()
 	bContouribfvisited = false; // we join in the middle.  
 
 	TOL_ZERO((ptcst + vbearing * lamcp - ptcp).Len()); 
-	pair<int, int> ccr = bolistpairs[ib];  
+    std::pair<int, int> ccr = bolistpairs[ib];  
 	TOL_ZERO((Along(lambb, GetBoundPoint(ccr.first), GetBoundPoint(ccr.second)) - ptcp).Len()); 
 
 	// set the bearing now 
@@ -256,7 +255,7 @@ void S2weaveCellLinearCutTraverse::AdvanceAlongContourToLamPos(double llambn)
 	ASSERT(bOnContour); 
 	ASSERT(bolistcrossings.empty()); 
 	ASSERT(I1(lambb, 1.0).Contains(llambn)); 
-	pair<int, int> ccr = bolistpairs[ib];  
+    std::pair<int, int> ccr = bolistpairs[ib];  
 	TOL_ZERO((Along(lambb, GetBoundPoint(ccr.first), GetBoundPoint(ccr.second)) - ptcpbb).Len()); 
 	
 	lambb = llambn; 
@@ -271,7 +270,7 @@ void S2weaveCellLinearCutTraverse::AdvanceAlongContourAcrossCell()
 	ASSERT(bOnContour); 
 	ASSERT(bolistcrossings.empty()); 
 	#ifdef MDEBUG
-	pair<int, int> ccrD = bolistpairs[ib];  
+    std::pair<int, int> ccrD = bolistpairs[ib];  
 	TOL_ZERO((Along(lambb, GetBoundPoint(ccrD.first), GetBoundPoint(ccrD.second)) - ptcpbb).Len()); 
 	#endif
 
@@ -320,7 +319,7 @@ bool S2weaveCellLinearCutTraverse::OnContourFollowBearing(double dch, double fol
 	// if we're on contour, decide whether to stick with it.  
 	ASSERT(bOnContour); 
 
-	pair<int, int> ccr = bolistpairs[ib];  
+    std::pair<int, int> ccr = bolistpairs[ib];  
 	P2 vnl = GetBoundPoint(ccr.second) - GetBoundPoint(ccr.first); 
 
 	// choose to leave the contour because we're not pushed in.  

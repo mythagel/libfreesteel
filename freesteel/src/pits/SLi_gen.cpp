@@ -18,10 +18,9 @@
 //
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
-
-#include "bolts/bolts.h"
-#include "cages/cages.h"
-#include "pits/pits.h"
+#include "pits/SLi_gen.h"
+#include "cages/SurfX.h"
+#include <algorithm>
 
 
 //////////////////////////////////////////////////////////////////////
@@ -97,7 +96,7 @@ void SLi_gen::SliceTriangle(const P3& a, const P3& b1, const P3& b2)
 }
 
 //////////////////////////////////////////////////////////////////////
-void SLi_gen::Convert(vector<I1>& res, const I1& xrg, const I1& yrg, const I1& zrg)  
+void SLi_gen::Convert(std::vector<I1>& res, const I1& xrg, const I1& yrg, const I1& zrg)  
 {
 	// find the operating range 
 	I1 rg(Dot(v01n, p0), Dot(v01n, p1)); 
@@ -108,7 +107,7 @@ void SLi_gen::Convert(vector<I1>& res, const I1& xrg, const I1& yrg, const I1& z
 	if ((v01n.z != 0.0) && !rg.Intersect(zrg / v01n.z)) 
 		return; 
 
-	sort(inter.begin(), inter.end()); 
+    std::sort(inter.begin(), inter.end()); 
 	ASSERT(inter.empty() || (inter.front() <= inter.back())); 
 	for (int i = 1; i < (int)inter.size(); i += 2) 
 	{

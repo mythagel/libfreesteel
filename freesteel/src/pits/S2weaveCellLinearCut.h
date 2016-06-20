@@ -21,6 +21,10 @@
 
 #ifndef S2WEAVECELLLINEARCUT_H
 #define S2WEAVECELLLINEARCUT_H
+#include "bolts/P2.h"
+#include "pits/S2weaveCell.h"
+#include <vector>
+#include <utility>
 
 
 //////////////////////////////////////////////////////////////////////
@@ -50,7 +54,7 @@ struct S2weaveCellLinearCut : S2weaveCell
 
 	// indexes into bolistpairs and says whether the crossing is from left (false) or from right 
 	// bolistpair has the area on the right hand side.  
-	vector< pair<int, bool> > bolistcrossings; 
+    std::vector< std::pair<int, bool> > bolistcrossings; 
 
 		void SetCellCutBack(); 
 		void SetCellCutFore(bool bOnBoundF); 

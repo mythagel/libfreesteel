@@ -21,7 +21,11 @@
 
 #ifndef S2WEAVE_H
 #define S2WEAVE_H
-
+#include "bolts/P2.h"
+#include "bolts/I1.h"
+#include "bolts/S1.h"
+#include "cages/pathxseries.h"
+#include <vector>
 
 //////////////////////////////////////////////////////////////////////
 // point location which iterates through the weave.  
@@ -52,8 +56,8 @@ public:
 	// the fibres
 	// look forward to handling subdividing types.  
 	// maybe a bucket between each of the main framework.  
-	vector<S1> ufibs; 
-	vector<S1> vfibs; 
+    std::vector<S1> ufibs; 
+    std::vector<S1> vfibs; 
 	int firstcontournumber; // contour numbers less than this are counted as unvisited.  
 	int lastcontournumber; 
 
@@ -63,7 +67,7 @@ public:
 	// contouring type functions 
 	void Advance(S2weaveB1iter& al); 
 	int& ContourNumber(S2weaveB1iter& al); 
-	void TrackContour(vector<P2>& pth, S2weaveB1iter al); 
+	void TrackContour(std::vector<P2>& pth, S2weaveB1iter al); 
 
 	void SetAllCutCodes(int lcutcode);
         void Invert();
@@ -72,7 +76,7 @@ public:
 
 
 //////////////////////////////////////////////////////////////////////
-void CircleIntersectNew(vector<I1>& res, const P2& cpt, double crad, const PathXSeries& bound, const PathXboxed& pathxb, double prad); 
+void CircleIntersectNew(std::vector<I1>& res, const P2& cpt, double crad, const PathXSeries& bound, const PathXboxed& pathxb, double prad); 
 
 // working with lines tracking and heading into the contour weave.
 //double RayIntersectWeave(const S2weave& s2w, const P2& a, const P2& v);

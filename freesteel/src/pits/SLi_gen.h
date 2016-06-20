@@ -21,7 +21,12 @@
 
 #ifndef SLI_GEN_H
 #define SLI_GEN_H
-
+#include "bolts/I1.h"
+#include "bolts/P3.h"
+#include "bolts/S1.h"
+#include "bolts/P2.h"
+#include "bolts/smallfuncs.h"
+#include <vector>
 
 
 //////////////////////////////////////////////////////////////////////
@@ -91,7 +96,7 @@ class Ray_gen2
 {
 public:
 	S1* pfib; 
-	vector<B1> scuts; // local for cutting and offsetting.  
+    std::vector<B1> scuts; // local for cutting and offsetting.  
 
 	// the endpoints of the ray are at (0,0,zrg.lo) and (0, 0, zrg.hi)
 	I1 urg; 
@@ -134,13 +139,13 @@ public:
 	P3 p0p; 
 
 	// position of intersections 
-	vector<double> inter; 
+    std::vector<double> inter; 
 
 	void SetSlicePos(const P3& lp0, const P3& lp1); 
 
 	void SliceTriangle(const P3& a, const P3& b1, const P3& b2); 
 
-	void Convert(vector<I1>& res, const I1& xrg, const I1& yrg, const I1& zrg); 
+	void Convert(std::vector<I1>& res, const I1& xrg, const I1& yrg, const I1& zrg); 
 };
 
 

@@ -36,9 +36,6 @@
 #include "vtkCellArray.h"
 #include "vtkSTLReader.h"
 
-#include "bolts/bolts.h"
-#include "cages/cages.h"
-#include "pits/pits.h"
 #include "visuals/MakeToolpath.h"
 #include "visuals/gst.h"
 #include "visuals/gstsurface.h"

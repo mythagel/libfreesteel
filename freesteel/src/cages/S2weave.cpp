@@ -18,10 +18,8 @@
 //
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
-
-#include "bolts/bolts.h"
-#include "cages/cages.h"
-#include "pits/pits.h"
+#include "S2weave.h"
+#include "bolts/I1.h"
 
 
 
@@ -58,7 +56,7 @@ P2 S2weaveB1iter::GetPoint()
 
 
 //////////////////////////////////////////////////////////////////////
-int FindInwards(const vector<S1>& wfibs, double lw, bool blower, double lwp, double lwpend, bool bedge) 
+int FindInwards(const std::vector<S1>& wfibs, double lw, bool blower, double lwp, double lwpend, bool bedge) 
 {
 	// just do this as an inefficient loop for now.  
 	if (blower)
@@ -123,7 +121,7 @@ void S2weave::Advance(S2weaveB1iter& al)
 
 
 //////////////////////////////////////////////////////////////////////
-void S2weave::TrackContour(vector<P2>& pth, S2weaveB1iter al)  
+void S2weave::TrackContour(std::vector<P2>& pth, S2weaveB1iter al)  
 {
 	lastcontournumber++; 
 	ASSERT(pth.empty()); 

@@ -21,6 +21,7 @@
 
 #ifndef I1__h
 #define I1__h
+#include "debugfuncs.h"
 
 //////////////////////////////////////////////////////////////////////
 struct I1	// Interval
@@ -29,10 +30,11 @@ struct I1	// Interval
 	double hi;
 
 	I1()
-		{;}
+     : lo(), hi()
+	{}
 	I1(double llo, double lhi)
-		{ lo = llo; hi = lhi; 
-		  ASSERT(lo <= hi); } 
+     : lo(llo), hi(lhi)
+	{ ASSERT(lo <= hi); } 
 	void SetRan(double llo, double lhi)
 		{ lo = llo; hi = lhi; 
 		  ASSERT(lo <= hi); } 

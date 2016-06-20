@@ -21,7 +21,9 @@
 
 #ifndef S1_H
 #define S1_H
-
+#include <vector>
+#include <utility>
+#include "I1.h"
 
 //////////////////////////////////////////////////////////////////////
 // an endpoint in the fibre.  
@@ -45,7 +47,7 @@ struct B1
 
 //////////////////////////////////////////////////////////////////////
 // this is a fibre 
-struct S1 : vector<B1> 
+struct S1 : std::vector<B1> 
 {
 	double wp; // the perpendicular position.  
 	I1 wrg; 
@@ -57,7 +59,7 @@ struct S1 : vector<B1>
 	void Minus(const I1& rg); 
 	void Minus(double rglo, bool binterncellboundlo, double rghi, bool binterncellboundhi);
 
-	pair<int, int> Loclohi(const I1& rg) const;
+    std::pair<int, int> Loclohi(const I1& rg) const;
 
 
 	void Invert(); 

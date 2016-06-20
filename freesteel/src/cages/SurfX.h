@@ -21,7 +21,10 @@
 
 #ifndef SurfX__h
 #define SurfX__h
-
+#include <vector>
+#include "bolts/P3.h"
+#include "bolts/I1.h"
+#include "pits/SLi_gen.h"
 
 struct triangX; 
 class SurfX; 
@@ -63,8 +66,9 @@ struct triangX // : public Facet
 	P3 tnorm;	// displacement of the triangle to hit the tool
 	double tp;  // plane of the triangle
 
-	triangX(const P3& ltnorm) : 
-		tnorm(ltnorm) { ab1 = NULL; ab2 = NULL; b12 = NULL; }; 
+	triangX(const P3& ltnorm)
+     : ab1(), ab2(), b12(), tnorm(ltnorm)
+    { }; 
 
 	void SetEdge(edgeX* pe, struct triangXr& r); 
 
@@ -94,14 +98,14 @@ public:
 	// these are the arrays we initially load the points and the triangles 
 	// as triples of points, from which we then work.  
 	// they are erased after the components have been built.  
-	vector<P3> lvd; 
-	vector<int> ltd; 
+    std::vector<P3> lvd; 
+    std::vector<int> ltd; 
 	void PushTriangle(const P3& p0, const P3& p1, const P3& p2); 
 
 	// vectors components
-	vector<P3> vdX;  
-	vector<edgeX> edX; 
-	vector<triangX> trX; 
+    std::vector<P3> vdX;  
+    std::vector<edgeX> edX; 
+    std::vector<triangX> trX; 
 
 	// the functions which pull it all together in the 3 arrays above.  
 	void BuildComponents(); 

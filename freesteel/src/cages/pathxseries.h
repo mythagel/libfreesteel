@@ -21,7 +21,11 @@
 
 #ifndef PathXSeries__h
 #define PathXSeries__h
-
+#include <vector>
+#include "bolts/P2.h"
+#include "bolts/P3.h"
+#include "bolts/I1.h"
+#include "bolts/Partition1.h"
 
 //////////////////////////////////////////////////////////////////////
 // a series of toolpaths
@@ -30,12 +34,12 @@ class PathXSeries
 public: 
 	double z; 
 
-	vector<P2> pths;  // individual 2D points ~ the actual path
-	vector<int> brks; // breaks - indices where pths is non-consecutive 
+    std::vector<P2> pths;  // individual 2D points ~ the actual path
+    std::vector<int> brks; // breaks - indices where pths is non-consecutive 
 
 	// 3D paths linking 2D paths at breaks
   // runs parallel to the brks array.  
-	vector< vector<P3> > linkpths; 
+    std::vector< std::vector<P3> > linkpths; 
 
 	PathXSeries() 
 		{;}; 
@@ -48,7 +52,7 @@ public:
 		pths.push_back(pt);
 	}
 
-	void Append(const vector<P2>& lpths)
+	void Append(const std::vector<P2>& lpths)
 	{
 		pths.insert(pths.end(), lpths.begin(), lpths.end());
 		Break();
@@ -57,7 +61,7 @@ public:
 	void Break()
 	{
 		brks.push_back(pths.size());
-		linkpths.push_back(vector<P3>());
+		linkpths.push_back(std::vector<P3>());
 	}
 
 	void Pop_back()
@@ -130,8 +134,8 @@ struct ckpline
 //////////////////////////////////////////////////////////////////////
 struct pucketX
 {
-	vector<int> ckpoints; 
-	vector<ckpline> cklines; 
+    std::vector<int> ckpoints; 
+    std::vector<ckpline> cklines; 
 }; 
 
 
@@ -148,11 +152,11 @@ public:
 	Partition1 upart; 
 
 	// simple buckets running parallel to the partitions.  
-	vector<pucketX> puckets; 
+    std::vector<pucketX> puckets; 
 
 	// integer places where the duplicate counters are looked up.  
 	PathXSeries tsbound; 
-	vector<int> idups; 
+    std::vector<int> idups; 
 	mutable int maxidup; 
 
   PathXboxed() {}

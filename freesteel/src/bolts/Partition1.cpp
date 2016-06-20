@@ -18,8 +18,7 @@
 //
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
-#include "bolts/bolts.h"
-
+#include "Partition1.h"
 
 
 //////////////////////////////////////////////////////////////////////
@@ -58,8 +57,8 @@ int Partition1::FindPart(double x) const
 
 //////////////////////////////////////////////////////////////////////
 // this can be optimized when binary searching 
-pair<int, int> Partition1::FindPartRG(const I1& xrg) const  
+std::pair<int, int> Partition1::FindPartRG(const I1& xrg) const  
 {
-	return pair<int, int>(FindPart(xrg.lo), FindPart(xrg.hi)); 
+	return { FindPart(xrg.lo), FindPart(xrg.hi) };
 }
 

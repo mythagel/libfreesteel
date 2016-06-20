@@ -19,9 +19,6 @@
 #include <vtkProperty.h>
 #include <vtkCellArray.h>
 
-#include "bolts/bolts.h"
-#include "cages/cages.h"
-#include "pits/pits.h"
 
 #include "visuals/fsvtkToolpathMapper.h"
 //#include "visuals/gst.h"

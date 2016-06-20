@@ -18,10 +18,8 @@
 //
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
-#include "bolts/bolts.h"
-#include "cages/cages.h"
-#include "pits/pits.h"
-
+#include "pits/S2weaveCellLinearCut.h"
+#include "bolts/smallfuncs.h"
 
 
 //////////////////////////////////////////////////////////////////////
@@ -147,7 +145,7 @@ void S2weaveCellLinearCut::AdvanceThroughForeCut(bool bOnBoundF)
 double S2weaveCellLinearCut::Getbolistcrossing(double& lambb, P2& ptcross, int ibb)  
 {
 	int ib = bolistcrossings[ibb].first; 
-	pair<int, int> ibp = bolistpairs[ib]; 
+    std::pair<int, int> ibp = bolistpairs[ib]; 
 	double lamc0 = Dot(apvb, GetBoundPoint(ibp.first)); 
 	double lamc1 = Dot(apvb, GetBoundPoint(ibp.second)); 
 	ASSERT(bolistcrossings[ibb].second ? ((lamc0 >= ptcDapvb) && (lamc1 <= ptcDapvb)) : ((lamc0 <= ptcDapvb) && (lamc1 >= ptcDapvb))); 
@@ -290,7 +288,7 @@ void S2weaveCellLinearCut::FindBolistCrossings()
 			lamcutposD = NlamcutposD; 
 			#endif
 
-			bolistcrossings.push_back(pair<int, bool>(i, bDownCut)); 
+			bolistcrossings.push_back(std::pair<int, bool>(i, bDownCut)); 
 		}
 
 		// advance to next boundlist element.  

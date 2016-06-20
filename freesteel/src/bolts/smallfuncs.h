@@ -21,6 +21,9 @@
 
 #ifndef smallfuncs__h
 #define smallfuncs__h
+#include "bolts/P3.h"
+#include "bolts/P2.h"
+#include "debugfuncs.h"
 
 
 

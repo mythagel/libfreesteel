@@ -21,7 +21,6 @@
 
 #include "wx/wx.h"
 
-#include "bolts/bolts.h"
 
 #include "MainFrame.h"
 #include "AnimationFrame.h"

@@ -20,6 +20,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef GSTSURFACE_H
 #define GSTSURFACE_H
+#include "bolts/I1.h"
+#include "bolts/vo.h"
+#include "cages/SurfX.h"
+#include "pits/toolshape.h"
+#include <vector>
 
 //struct vector_PathX : vector<PathX> {;}; 
 
@@ -55,7 +60,7 @@ public:
 class GSTtoolpath : public GSTbase
 {
 public: 
-	vector<PathXSeries> ftpaths;
+    std::vector<PathXSeries> ftpaths;
 
 	vo<vtkPolyData> ftpolydata;
 	vo<fsvtkToolpathMapper> ftpolydataMap;

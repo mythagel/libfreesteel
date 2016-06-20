@@ -18,10 +18,8 @@
 //
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
-
-#include "bolts/bolts.h"
-#include "cages/cages.h"
-#include "pits/pits.h"
+#include "cages/SurfXboxed.h"
+#include <algorithm>
 
 
 //////////////////////////////////////////////////////////////////////
@@ -106,7 +104,7 @@ void SurfXboxed::AddEdgeBucket(edgeX* ped)
 
 
 	// loop through the strips 
-	pair<int, int> ixrg = xpart.FindPartRG(xrg); 
+    std::pair<int, int> ixrg = xpart.FindPartRG(xrg); 
 	P2 rzr = TcrossX(xpart.GetPart(ixrg.first).lo, pp0, pp1);  
 	for (int ix = ixrg.first; ix <= ixrg.second; ix++) 
 	{
@@ -131,7 +129,7 @@ void SurfXboxed::AddEdgeBucket(edgeX* ped)
 			continue; 
 
 		// find the vcells in this ustrip.  
-		pair<int, int> iyrg = yparts[ix].FindPartRG(yrg); 
+        std::pair<int, int> iyrg = yparts[ix].FindPartRG(yrg); 
 		double zhu = TcrossY(yparts[ix].GetPart(iyrg.first).lo, rzl, rzr); 
 		for (int iy = iyrg.first; iy <= iyrg.second; iy++) 
 		{
@@ -150,7 +148,7 @@ void SurfXboxed::AddEdgeBucket(edgeX* ped)
 			}
 
 			// get the zh crossing value 
-			double zh = max(zhd, zhu); 
+			double zh = std::max(zhd, zhu); 
 
 			// put in this box 
 			buckets[ix][iy].ckedges.push_back(ckedgeX(zh, ped, ipfck)); 
@@ -161,18 +159,18 @@ void SurfXboxed::AddEdgeBucket(edgeX* ped)
 
 
 //////////////////////////////////////////////////////////////////////
-pair<P2, P2> TcrossX(double lx, P3* pp0, P3* pp1, P3* pp2) 
+std::pair<P2, P2> TcrossX(double lx, P3* pp0, P3* pp1, P3* pp2) 
 {
 	ASSERT((pp0->x <= pp1->x) && (pp1->x <= pp2->x)); 
 	P2 fp0(pp0->z, pp0->y); 
 	P2 fp1(pp1->z, pp1->y); 
 	P2 fp2(pp2->z, pp2->y); 
 	if (lx <= pp0->x) 
-		return pair<P2, P2>(fp0, fp0);  
+		return std::pair<P2, P2>(fp0, fp0);  
 	if (lx >= pp2->x) 
-		return pair<P2, P2>(fp2, fp2);  
+		return std::pair<P2, P2>(fp2, fp2);  
 
-	pair<P2, P2> res; 
+    std::pair<P2, P2> res; 
 	double lam02 = InvAlong(lx, pp0->x, pp2->x); 
 	res.first = Along(lam02, fp0, fp2); 
 
@@ -191,7 +189,7 @@ pair<P2, P2> TcrossX(double lx, P3* pp0, P3* pp1, P3* pp2)
 }
 
 //////////////////////////////////////////////////////////////////////
-double TcrossY(double ly, pair<P2, P2>& fp) 
+double TcrossY(double ly, std::pair<P2, P2>& fp) 
 {
 	if (fp.first.v <= fp.second.v)  
 	{
@@ -248,20 +246,20 @@ void SurfXboxed::AddTriangBucket(triangX* ptr)
 
 
 	// loop through the strips 
-	pair<int, int> ixrg = xpart.FindPartRG(xrg); 
-	pair<P2, P2> fpr = TcrossX(xpart.GetPart(ixrg.first).lo, pp0, pp1, pp2);  
+    std::pair<int, int> ixrg = xpart.FindPartRG(xrg); 
+    std::pair<P2, P2> fpr = TcrossX(xpart.GetPart(ixrg.first).lo, pp0, pp1, pp2);  
 	I1 yrgr = I1::SCombine(fpr.first.v, fpr.second.v); 
 	for (int ix = ixrg.first; ix <= ixrg.second; ix++) 
 	{
 		// copy over the spare parts of 
-		pair<P2, P2> fpl = fpr; 
+        std::pair<P2, P2> fpl = fpr; 
 		fpr = TcrossX(xpart.GetPart(ixrg.first).hi, pp0, pp1, pp2);  
 		I1 yrgl = yrgr; 
 		yrgr = I1::SCombine(fpr.first.v, fpr.second.v); 
 	
 		// now find the range in y we must scan through.  
 		ASSERT(((fpl.first.v <= fpl.second.v) == (fpl.second.v <= fpl.second.v)) || ((fpl.first.v >= fpl.second.v) == (fpl.second.v >= fpl.second.v)));  
-		I1 yrg(min(yrgl.lo, yrgr.lo), max(yrgl.hi, yrgr.hi)); 
+		I1 yrg(std::min(yrgl.lo, yrgr.lo), std::max(yrgl.hi, yrgr.hi)); 
 		bool brgc1 = xpart.GetPart(ix).Contains(pp1->x); 
 		if (brgc1) 
 			yrg.Absorb(pp1->y); 
@@ -281,15 +279,15 @@ void SurfXboxed::AddTriangBucket(triangX* ptr)
 			continue; 
 
 		// find the vcells in this ustrip.  
-		pair<int, int> iyrg = yparts[ix].FindPartRG(yrg); 
-		double zhu = max(TcrossY(yparts[ix].GetPart(iyrg.first).lo, fpl), TcrossY(yparts[ix].GetPart(iyrg.first).lo, fpr)); 
+        std::pair<int, int> iyrg = yparts[ix].FindPartRG(yrg); 
+		double zhu = std::max(TcrossY(yparts[ix].GetPart(iyrg.first).lo, fpl), TcrossY(yparts[ix].GetPart(iyrg.first).lo, fpr)); 
 		for (int iy = iyrg.first; iy <= iyrg.second; iy++) 
 		{
 			double zhd = zhu; 
-			double zhu = max(TcrossY(yparts[ix].GetPart(iyrg.first).hi, fpl), TcrossY(yparts[ix].GetPart(iyrg.first).hi, fpr)); 
+			double zhu = std::max(TcrossY(yparts[ix].GetPart(iyrg.first).hi, fpl), TcrossY(yparts[ix].GetPart(iyrg.first).hi, fpr)); 
 
 			// get the max point of this triangle in this cell.  
-			double zh = max(zhd, zhu); 
+			double zh = std::max(zhd, zhu); 
 if ((pp1->z > zh) && xpart.GetPart(ix).Contains(pp1->x)) 
 				zh = pp1->z; 
 
@@ -332,7 +330,7 @@ void SurfXboxed::BuildBoxes(double boxwidth)
 	{
 		yparts.push_back(Partition1(gbyrg, boxwidth)); 
 
-		buckets.push_back(vector<bucketX>()); 
+		buckets.push_back(std::vector<bucketX>()); 
 		buckets.back().resize(yparts.back().NumParts()); 
 	}
 
@@ -378,9 +376,9 @@ void SurfXboxed::SortBuckets()
 	for (int iy = 0; iy < yparts[ix].NumParts(); iy++) 
 	{
 		bucketX& bu = buckets[ix][iy]; 
-		sort(bu.ckpoints.begin(), bu.ckpoints.begin(), sortboxv()); 
-		sort(bu.ckedges.begin(), bu.ckedges.begin(), sortboxe()); 
-		sort(bu.cktriangs.begin(), bu.cktriangs.begin(), sortboxt()); 
+        std::sort(bu.ckpoints.begin(), bu.ckpoints.begin(), sortboxv()); 
+        std::sort(bu.ckedges.begin(), bu.ckedges.begin(), sortboxe()); 
+        std::sort(bu.cktriangs.begin(), bu.cktriangs.begin(), sortboxt()); 
 	}
 }
 

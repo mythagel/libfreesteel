@@ -18,6 +18,8 @@
 //
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
+#include "pits/toolshape.h"
+#include "pits/CircCrossingStructure.h"
 
 #include "vtkOpenGLPolyDataMapper.h"
 #include "visuals/fsvtkToolpathMapper.h"
@@ -38,9 +40,6 @@
 #include "vtkTriangle.h"
 #include "vtkFloatArray.h"
 #include "vtkSTLReader.h"
-#include "bolts/bolts.h"
-#include "cages/cages.h"
-#include "pits/pits.h"
 #include "visuals/gstsurface.h"
 
 #ifndef VTK_IMPLEMENT_MESA_CXX
@@ -66,7 +65,7 @@ double ToolShape::RadAtHeight(double lz)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void ToolShape::ConstructToolShape(vector< vector <P3> >& slcs)
+void ToolShape::ConstructToolShape(std::vector< std::vector <P3> >& slcs)
 {
     ASSERT(slcs.empty());
     slcs.resize(ntoolslices);
@@ -133,7 +132,7 @@ void ToolShape::ConstructToolShape(vtkPolyData* ppd, vtkFloatArray* pdcontactsca
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void ToolShape::Draw(const P3& iptpath, vector<PathXSeries>* pftpaths, int ipath, int iseg, const vector<P2>& bound)
+void ToolShape::Draw(const P3& iptpath, std::vector<PathXSeries>* pftpaths, int ipath, int iseg, const std::vector<P2>& bound)
 {
     glDisable(GL_LIGHTING);
 
@@ -155,7 +154,7 @@ void ToolShape::Draw(const P3& iptpath, vector<PathXSeries>* pftpaths, int ipath
                 continue;
             double relrad = RadAtHeight(relz);
 
-            vector<P2>& path = pathxs.pths;
+            std::vector<P2>& path = pathxs.pths;
             ccs.SetPrad(relrad); // the cutting radius
 
             bool bAnim = (ip == ipath);

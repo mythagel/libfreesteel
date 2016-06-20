@@ -21,8 +21,8 @@
 
 #ifndef P2__h
 #define P2__h
-
 #include "debugfuncs.h"
+#include <cmath>
 
 //////////////////////////////////////////////////////////////////////
 // gotta find the real places for this, or use a const value 

@@ -18,8 +18,7 @@
 //
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
-
-#include "bolts/bolts.h"
+#include "S1.h"
 
 
 //////////////////////////////////////////////////////////////////////
@@ -49,9 +48,9 @@ void S1::Minus(const I1& rg)
 }
 
 //////////////////////////////////////////////////////////////////////
-pair<int, int> S1::Loclohi(const I1& rg) const
+std::pair<int, int> S1::Loclohi(const I1& rg) const
 {
-	pair<int, int> res; 
+    std::pair<int, int> res; 
 	for (res.first = 0; res.first < (int)size(); res.first++) 
 		if (operator[](res.first).w >= rg.lo)
 			break; 
@@ -87,7 +86,7 @@ pair<int, int> S1::Loclohi(const I1& rg) const
 // we could have many speeding up cases  
 void S1::Merge(double rglo, bool binterncellboundlo, double rghi, bool binterncellboundhi)  
 {
-	pair<int, int> ilr = Loclohi(I1(rglo, rghi));
+    std::pair<int, int> ilr = Loclohi(I1(rglo, rghi));
 	int il = ilr.first; 
 	int ir = ilr.second; 
 
@@ -132,7 +131,7 @@ void S1::Merge(double rglo, bool binterncellboundlo, double rghi, bool binternce
 //////////////////////////////////////////////////////////////////////
 void S1::Minus(double rglo, bool binterncellboundlo, double rghi, bool binterncellboundhi)  
 {
-	pair<int, int> ilr = Loclohi(I1(rglo, rghi));
+    std::pair<int, int> ilr = Loclohi(I1(rglo, rghi));
 	int il = ilr.first; 
 	int ir = ilr.second; 
 

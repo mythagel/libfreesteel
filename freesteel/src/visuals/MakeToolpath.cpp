@@ -27,9 +27,6 @@
 #include "vtkPolyDataMapper.h"
 #include "vtkOpenGLPolyDataMapper.h"
 
-#include "bolts/bolts.h"
-#include "cages/cages.h"
-#include "pits/pits.h"
 #include "visuals/MakeToolpath.h"
 #include "visuals/fsvtkToolpathMapper.h"
 #include "visuals/gstsurface.h"
@@ -39,7 +36,7 @@
 
 
 /////////////////////////////////////////////////////////// 
-void MakeCorerough(vector<PathXSeries>& vpathseries, SurfX& sx, const PathXSeries&  bound, const MachineParams& params) 
+void MakeCorerough(std::vector<PathXSeries>& vpathseries, SurfX& sx, const PathXSeries&  bound, const MachineParams& params) 
 {
 	// boxed surfaces 
 	SurfXboxed sxb(&sx); 
@@ -113,7 +110,7 @@ void CoreRoughGeneration::AddPoint(const P2& ppt)
 
 
 /////////////////////////////////////////////////////////// 
-void BuildRetract(vector<P3>& lnkpth, const P3& pts, const P3& pte, const MachineParams& params)
+void BuildRetract(std::vector<P3>& lnkpth, const P3& pts, const P3& pte, const MachineParams& params)
 {
 	ASSERT((params.retractzheight > pts.z) && (params.retractzheight > pte.z));
 	lnkpth.push_back(pts);
@@ -123,7 +120,7 @@ void BuildRetract(vector<P3>& lnkpth, const P3& pts, const P3& pte, const Machin
 }
 
 /////////////////////////////////////////////////////////// 
-void BuildCurl(vector<P2>& lnkpth, const P2& pts, const P2& dirs, const MachineParams& params, bool bCurlIn)
+void BuildCurl(std::vector<P2>& lnkpth, const P2& pts, const P2& dirs, const MachineParams& params, bool bCurlIn)
 {
 	TOL_ZERO(dirs.Len() - 1.0);
 
@@ -164,7 +161,7 @@ void BuildCurl(vector<P2>& lnkpth, const P2& pts, const P2& dirs, const MachineP
 	}
 }
 
-void BuildLink(vector<P2>& lnkpth, const P2& pts, const P2& dirs, const P2& pte, const P2& dire, const MachineParams& params)
+void BuildLink(std::vector<P2>& lnkpth, const P2& pts, const P2& dirs, const P2& pte, const P2& dire, const MachineParams& params)
 {
 	TOL_ZERO(dirs.Len() - 1.0);
 	TOL_ZERO(dire.Len() - 1.0);
@@ -225,7 +222,7 @@ void BuildLink(vector<P2>& lnkpth, const P2& pts, const P2& dirs, const P2& pte,
 		lnkpth.push_back(pte);
 }
 
-void BuildLinkZ(vector<P3>& lnkpth, const vector<P2>& lnk2D, double z, const MachineParams& params) 
+void BuildLinkZ(std::vector<P3>& lnkpth, const std::vector<P2>& lnk2D, double z, const MachineParams& params) 
 {
 	// total length
 	double totallen = 0;
@@ -240,7 +237,7 @@ void BuildLinkZ(vector<P3>& lnkpth, const vector<P2>& lnk2D, double z, const Mac
 	if (totallen < (2.0 * params.leadofflen))
 		leadofflen = 0.5 * totallen;
 
-	vector<P3> lnkStart;
+    std::vector<P3> lnkStart;
 	int ixstart = 1;
 	double len = 0;
 	lnkStart.push_back(ConvertGZ(lnk2D[0], z));
@@ -264,7 +261,7 @@ void BuildLinkZ(vector<P3>& lnkpth, const vector<P2>& lnk2D, double z, const Mac
 		lnkStart.push_back(ConvertGZ(pt, z + params.leadoffdz));
 	}
 
-	vector<P3> lnkEnd;
+    std::vector<P3> lnkEnd;
 	int ixend = lnk2D.size() - 2;
 	len = 0;
 	lnkEnd.push_back(ConvertGZ(lnk2D.back(), z));
@@ -304,7 +301,7 @@ void BuildLinkZ(vector<P3>& lnkpth, const vector<P2>& lnk2D, double z, const Mac
 /////////////////////////////////////////////////////////// 
 // returns index to which we can go until we interfere with stock or contour
 // wclink passed by value to get a local copy
-int CoreRoughGeneration::TrackLink(const vector<P2>& lnk2D, S2weaveCellLinearCutTraverse wclink, bool bFromEnd, const MachineParams& params)
+int CoreRoughGeneration::TrackLink(const std::vector<P2>& lnk2D, S2weaveCellLinearCutTraverse wclink, bool bFromEnd, const MachineParams& params)
 {
 	bool bOnStock = false;
 	int ix = bFromEnd ? (lnk2D.size() - 2) : 1;
@@ -320,7 +317,7 @@ int CoreRoughGeneration::TrackLink(const vector<P2>& lnk2D, S2weaveCellLinearCut
 		else
 		{
 			// does it cut any stock
-			vector<I1> res;
+            std::vector<I1> res;
 			P2 vec = (lnk2D[ix] - lnk2D[ix - 1]);
 			double len = vec.Len();
 			P2 nvec = vec / len;
@@ -465,7 +462,7 @@ void CoreRoughGeneration::GrabberAlg(const MachineParams& params)
 
 		// need to build a linking motion from wclink.ptcp to wc.ptcp
 		// S2weaveCellLinearCutTraverse wclink = wc; 
-		vector<P2> lnk2D;
+        std::vector<P2> lnk2D;
 		P2 ptOut = wclink.ptcp;
 		P2 drOut = wclink.vbearing;
 		P2 ptIn = wc.ptcp;
@@ -479,16 +476,16 @@ void CoreRoughGeneration::GrabberAlg(const MachineParams& params)
 		int itracked = TrackLink(lnk2D, wclink, false, params); 
 
 		ASSERT(pathxb.ppathx->linkpths.size() == pathxb.ppathx->brks.size()); 
-		vector<P3>& lnkpth = pathxb.ppathx->linkpths.back();
+        std::vector<P3>& lnkpth = pathxb.ppathx->linkpths.back();
 		if (itracked < (int)lnk2D.size()) 
 		{
 			// retract, but try using curls
-			vector<P2> curlout;
+            std::vector<P2> curlout;
 			BuildCurl(curlout, ptOut, drOut, params, false);
 			int resout = TrackLink(curlout, wclink, false, params);
 			bool bUseOut = (resout == (int)curlout.size()); 
 
-			vector<P2> curlin;
+            std::vector<P2> curlin;
 			BuildCurl(curlin, ptIn, drIn, params, true);
 			int resin = TrackLink(curlin, wc, true, params);
 			bool bUseIn = (resin == (int)curlin.size()); 
@@ -565,7 +562,7 @@ bool CoreRoughGeneration::RestartAtBCI(BCellIndex& bci, const MachineParams& par
 
 		// check if this point is really going into new stuff.  
 		P2 tept = wc.ptcp + wc.vbearing * params.samplestep; 
-		vector<I1> lccpath; 
+        std::vector<I1> lccpath; 
 		CircleIntersectNew(lccpath, tept, trad, tsbound, pathxb, trad); 
 		if (!bConnectAtStart) 
 		{
@@ -626,7 +623,7 @@ double CoreRoughGeneration::ChangeBearing(const P2& pt, const P2& ltvec, const M
 	P2 tvecright = CPerp(tvec); 
 
 	// find the part of the tool which is touching the stock.  
-	vector<I1> lccpath; 
+    std::vector<I1> lccpath; 
 	CircleIntersectNew(lccpath, pt, trad, tsbound, pathxb, trad); 
 	ASSERT(lccpath.empty() || ((lccpath.front().lo == 0.0) == (lccpath.back().hi == 4.0))); 
 
@@ -664,7 +661,7 @@ double CoreRoughGeneration::ChangeBearing(const P2& pt, const P2& ltvec, const M
 		if (ghi >= datvec) 
 		{
 			ASSERT(ldch <= MDTOL); 
-			dch = max(ldch, params.dchangleft); 
+			dch = std::max(ldch, params.dchangleft); 
 		}
 
 		// if the front of the tool is going out of the stock, 
@@ -672,7 +669,7 @@ double CoreRoughGeneration::ChangeBearing(const P2& pt, const P2& ltvec, const M
 		else if (Dot(gpt, tvec) > 0.0) 
 		{
 			ASSERT(ldch >= -MDTOL); 
-			dch = min(ldch, (wc.bOnContour ? params.dchangrightoncontour : params.dchangright)); 
+			dch = std::min(ldch, (wc.bOnContour ? params.dchangrightoncontour : params.dchangright)); 
 		}
 
 		// touching at some place almost behind, turn to the right anyway

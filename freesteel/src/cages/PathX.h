@@ -21,13 +21,15 @@
 
 #ifndef PathX__h
 #define PathX__h
+#include <vector>
+#include "bolts/P2.h"
 
 //////////////////////////////////////////////////////////////////////
 // simple case of a toolpath 
 class PathX		
 {
 public: 
-	vector<P2> pth; 
+    std::vector<P2> pth; 
 //	double z; 
 
 	PathX() 

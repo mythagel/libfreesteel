@@ -21,8 +21,12 @@
 
 #ifndef MakeToolpath__h
 #define MakeToolpath__h
+#include "cages/pathxseries.h"
+#include "cages/SurfX.h"
+#include "pits/CoreRoughGeneration.h"
+#include <vector>
 
-void MakeCorerough(vector<PathXSeries>& vpathseries, SurfX& sx, const PathXSeries& bound, const MachineParams& params);
+void MakeCorerough(std::vector<PathXSeries>& vpathseries, SurfX& sx, const PathXSeries& bound, const MachineParams& params);
 //void MakeAreaclear(vtkPolyData* res);
 //void MakeStock(vtkPolyData* res, PathX& px);
 

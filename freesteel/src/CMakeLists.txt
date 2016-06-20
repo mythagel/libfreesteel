@@ -14,7 +14,6 @@ include_directories(
 add_definitions(-Wall)
 
 add_library(actp STATIC
-    bolts/bolts.h
     bolts/debugfuncs.h
     bolts/I1.h
     bolts/P2.h
@@ -26,12 +25,10 @@ add_library(actp STATIC
     bolts/smallfuncs.h
     bolts/vo.h
     cages/Area2_gen.h
-    cages/cages.h
     cages/PathXboxed.cpp
     cages/PathX.cpp
     cages/PathX.h
     cages/pathxseries.h
-    cages/S1stockcircle.cpp
     cages/S2weave.cpp
     cages/S2weave.h
     cages/SurfXboxed.cpp
@@ -39,9 +36,9 @@ add_library(actp STATIC
     cages/SurfX.cpp
     cages/SurfX.h
     pits/CircCrossingStructure.h
+    pits/CircCrossingStructure.cpp
     pits/CoreRoughGeneration.h
     pits/NormRay_gen.cpp
-    pits/pits.h
     pits/S2weaveCell.cpp
     pits/S2weaveCell.h
     pits/S2weaveCellLinearCut.cpp

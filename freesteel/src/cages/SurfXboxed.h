@@ -21,6 +21,11 @@
 
 #ifndef SurfXboxed__h
 #define SurfXboxed__h
+#include <vector>
+#include "SurfX.h"
+#include "bolts/P3.h"
+#include "bolts/I1.h"
+#include "bolts/Partition1.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 struct ckedgeX
@@ -49,9 +54,9 @@ struct cktriX
 ////////////////////////////////////////////////////////////////////////////////
 struct bucketX
 {
-	vector<P3*> ckpoints; 
-	vector<ckedgeX> ckedges; 
-	vector<cktriX> cktriangs; 
+    std::vector<P3*> ckpoints; 
+    std::vector<ckedgeX> ckedges; 
+    std::vector<cktriX> cktriangs; 
 };
 
 
@@ -71,13 +76,13 @@ public:
 
 
 	Partition1 xpart; 
-	vector<Partition1> yparts; 
+    std::vector<Partition1> yparts; 
 
 	// raw buckets (corresponding to the partitions).  
-	vector< vector<bucketX> > buckets; 
+    std::vector< std::vector<bucketX> > buckets; 
 
 	// integer places where the duplicate counters are looked up.  
-	vector<int> idups; 
+    std::vector<int> idups; 
 	int maxidup; 
 
 	// raw case where all we have is the surface itself.  

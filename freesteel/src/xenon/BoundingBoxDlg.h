@@ -20,6 +20,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef BOUNDINGBOXDLG_H
 #define BOUNDINGBOXDLG_H
+#include "bolts/I1.h"
 
 class CBoundingBoxDlg : public wxDialog
 {

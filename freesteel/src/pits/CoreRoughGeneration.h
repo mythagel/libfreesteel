@@ -21,6 +21,11 @@
 
 #ifndef COREROUGHGENERATION_H
 #define COREROUGHGENERATION_H
+#include "bolts/I1.h"
+#include "cages/pathxseries.h"
+#include "cages/Area2_gen.h"
+#include "pits/S2weaveCellLinearCut.h"
+#include <vector>
 
 
 //////////////////////////////////////////////////////////////////////
@@ -86,7 +91,7 @@ public:
 
 	// markers of going out points which would be good to 
 	// retract back down to and continue contour machining.  
-	vector<BCellIndex> bcellixs; 
+    std::vector<BCellIndex> bcellixs; 
 	bool bPrevPointDoubleRange; 
 
 	CoreRoughGeneration(PathXSeries* px, const I1& lxrg, const I1& lyrg); 
@@ -98,7 +103,7 @@ public:
 	double ChangeBearing(const P2& pt, const P2& tvec, const MachineParams& params); 
 	void AddPoint(const P2& ppt); 
 	void GrabberAlg(const struct MachineParams& params); 
-	int TrackLink(const vector<P2>& lnk2D, S2weaveCellLinearCutTraverse wclink, bool bFromEnd, const MachineParams& params);
+	int TrackLink(const std::vector<P2>& lnk2D, S2weaveCellLinearCutTraverse wclink, bool bFromEnd, const MachineParams& params);
 
   void setWeave(S2weave* weave) { wc.ps2w = weave; }
 }; 

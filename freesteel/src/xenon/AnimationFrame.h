@@ -20,6 +20,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef ANIMATIONFRAME__H
 #define ANIMATIONFRAME__H
+#include <vector>
 
 class AnimationFrame: public wxFrame
 {
@@ -68,7 +69,7 @@ enum
 	CALC_STOCK = 400
 };
 
-void PostProcess(FILE* fpost, const vector<class PathXSeries>& pathxseries, const struct MachineParams& params);
+void PostProcess(FILE* fpost, const std::vector<class PathXSeries>& pathxseries, const struct MachineParams& params);
 
 #endif
 

@@ -32,9 +32,6 @@
 #include "vtkPolyDataMapper.h"
 #include "vtkOpenGLPolyDataMapper.h"
 
-#include "bolts/bolts.h"
-#include "cages/cages.h"
-#include "pits/pits.h"
 #include "visuals/MakeToolpath.h"
 #include "visuals/MakeToolpath.h"
 #include "visuals/fsvtkToolpathMapper.h"
@@ -43,6 +40,7 @@
 
 #include "MainFrame.h"
 #include "AnimationFrame.h"
+#include <utility>
 
 static char *cformat = "LX%.3fY%.3fZ%.3fF%d\n";
 static char *cformatNoF = "LX%.3fY%.3fZ%.3f\n";
@@ -54,7 +52,7 @@ public:
 	double z;
 	int fcut;
 	double sqdevtol;
-	vector<P2> pts;
+    std::vector<P2> pts;
 	int ixstart;
 
 	ThinAlg(double devtol, double lz, int lfcut)
@@ -106,7 +104,7 @@ public:
 	}
 };
 
-bool Advance(AnimatedPos& res, const vector<P2>& pths, const vector< vector<P3> >& links, const vector<int>& brks, double z, double adv, double& advanced, FILE* fn = NULL, int fcut = -1, int fretract = -1, double tol = 0.0)
+bool Advance(AnimatedPos& res, const std::vector<P2>& pths, const std::vector< std::vector<P3> >& links, const std::vector<int>& brks, double z, double adv, double& advanced, FILE* fn = NULL, int fcut = -1, int fretract = -1, double tol = 0.0)
 {
     advanced = 0;
 	res.ilink = -1;
@@ -154,7 +152,7 @@ bool Advance(AnimatedPos& res, const vector<P2>& pths, const vector< vector<P3> 
 			do
 			{
 				res.ilink = j;
-				const vector<P3>& link = links[j];
+				const std::vector<P3>& link = links[j];
 				if (fn && !link.empty())
 				{
 					thin.End(fn);
@@ -192,7 +190,7 @@ bool Advance(AnimatedPos& res, const vector<P2>& pths, const vector< vector<P3> 
 	do
 	{
 		res.ilink = j;
-		const vector<P3>& link = links[j];
+		const std::vector<P3>& link = links[j];
 		if (fn && !link.empty())
 		{
 			thin.End(fn);
@@ -228,7 +226,7 @@ bool Advance(AnimatedPos& res, const vector<P2>& pths, const vector< vector<P3> 
 	 return true; 
 }
 
-void PostProcess(FILE* file, const vector<PathXSeries>& pathxseries, const MachineParams& params)
+void PostProcess(FILE* file, const std::vector<PathXSeries>& pathxseries, const MachineParams& params)
 {
 	AnimatedPos pos;
 	for (int ip = 0; ip < pathxseries.size(); ++ip)
@@ -340,7 +338,7 @@ void AnimationFrame::OnAnimateTP(wxScrollEvent& event)
                     break;
                 }
             }
-			pthanimated->ftpolydataMap->pos.ipathx = min(ip, (int)pthanimated->ftpaths.size() - 1);
+			pthanimated->ftpolydataMap->pos.ipathx = std::min(ip, (int)pthanimated->ftpaths.size() - 1);
             status.Clear();
 //            status << _T("Length: ") << animatedlength << _T("     Location: ") << ppos.first.x << _T(", ") << ppos.first.y << _T(", ") << ppos.first.z;
 

@@ -30,9 +30,6 @@
 #include "vtkProperty.h"
 #include "vtkCellArray.h"
 
-#include "bolts/bolts.h"
-#include "cages/cages.h"
-#include "pits/pits.h"
 
 #include "visuals/gstsurface.h"
 
@@ -139,8 +136,8 @@ void GSTtoolpath::UpdateFromPax()
 	for (int ip = 0; ip < ftpaths.size(); ++ip)
 	{
 		const PathXSeries& ftpath = ftpaths[ip];
-		const vector<int>& brks = ftpath.brks;
-		const vector<P2>& pths = ftpath.pths;
+		const std::vector<int>& brks = ftpath.brks;
+		const std::vector<P2>& pths = ftpath.pths;
 		int i0 = 0;
 		for (int j = 0; j < brks.size(); j++) 
 		{

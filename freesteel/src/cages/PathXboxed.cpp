@@ -18,11 +18,8 @@
 //
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
-
-#include "bolts/bolts.h"
-#include "cages/cages.h"
-#include "pits/pits.h"
-
+#include "pathxseries.h"
+#include "bolts/smallfuncs.h"
 
 //////////////////////////////////////////////////////////////////////
 void PathXboxed::BuildBoxes(const I1& lgburg, double boxwidth)  
@@ -97,7 +94,7 @@ void PathXboxed::PutSegment(int iseg, bool bFirst, bool bRemove)
 	if (!urg.Intersect(gburg)) 
 		return; 
 
-	pair<int, int> iurg = upart.FindPartRG(urg); 
+    std::pair<int, int> iurg = upart.FindPartRG(urg); 
 
 	// take away this index from each of the strips 
 	if (bRemove)

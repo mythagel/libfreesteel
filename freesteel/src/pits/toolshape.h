@@ -21,6 +21,12 @@
 
 #ifndef TOOLSHAPE_H
 #define TOOLSHAPE_H
+#include "bolts/P3.h"
+#include "bolts/P2.h"
+#include "bolts/S1.h"
+#include "cages/pathxseries.h"
+#include <vector>
+
 //////////////////////////////////////////////////////////////////////
 class ToolShape	
 {
@@ -45,10 +51,10 @@ public:
 
 	double RadAtHeight(double lz); 
 
-	void ConstructToolShape(vector< vector <P3> >& slcs);
+	void ConstructToolShape(std::vector< std::vector <P3> >& slcs);
 	void ConstructToolShape(class vtkPolyData* ppd, class vtkFloatArray* pdcontactsca); 
 
-	void Draw(const P3& iptpath, vector<PathXSeries>* pftpaths, int ipath, int iseg, const vector<P2>& bound);
+	void Draw(const P3& iptpath, std::vector<PathXSeries>* pftpaths, int ipath, int iseg, const std::vector<P2>& bound);
 	void Draw(const P3& pt);
 	void DrawColourRange(const P3& iptpath, double z, double rad, const S1& rg);
 

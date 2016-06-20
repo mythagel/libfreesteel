@@ -21,6 +21,8 @@
 
 #include "vtkOpenGLPolyDataMapper.h"
 #include "visuals/fsvtkToolpathMapper.h"
+#include "cages/Area2_gen.h"
+#include "cages/PathX.h"
 
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
@@ -39,9 +41,6 @@
 #include "vtkTriangle.h"
 #include "vtkOpenGLRenderWindow.h"
 #include "vtkSTLReader.h"
-#include "bolts/bolts.h"
-#include "cages/cages.h"
-#include "pits/pits.h"
 
 #include "visuals/gstsurface.h"
 
@@ -144,7 +143,7 @@ int fsvtkToolpathMapper::DrawPathSegment()
 		glColor3d(0.09,	0.91, 0.02); 
 		for (int jl = 0; (jl < (bFinal ? pos.ilink : pathxs.brks.size())); jl++) 
 		{
-			const vector<P3>& lnkpth = pathxs.linkpths[jl];
+			const std::vector<P3>& lnkpth = pathxs.linkpths[jl];
 			if (!lnkpth.empty())
 			{
 				glBegin(GL_LINE_STRIP);
@@ -155,7 +154,7 @@ int fsvtkToolpathMapper::DrawPathSegment()
 		}
 		if (bFinal && (pos.ilink < pathxs.brks.size()))
 		{
-			const vector<P3>& lnkpth = pathxs.linkpths[pos.ilink];
+			const std::vector<P3>& lnkpth = pathxs.linkpths[pos.ilink];
 			if (!lnkpth.empty())
 			{
 				glBegin(GL_LINE_STRIP);
