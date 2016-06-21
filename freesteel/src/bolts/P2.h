@@ -35,12 +35,15 @@ struct P2	// 2D point
 {
 	double u, v; 
 
-	P2()
-		{;}
+    P2()
+     : u(), v()
+    {}
 	P2(double lu, double lv)
-		{ u = lu; v = lv; } 
+     : u(lu), v(lv)
+    {}
 	P2(const P2& a)
-		{ u = a.u; v = a.v; } 
+     : u(a.u), v(a.v)
+    {}
 	void SetVal(double lu, double lv)
 		{ u = lu; v = lv; } 
 
@@ -124,7 +127,7 @@ inline P2 P2::InvDarg(double a)
 inline double P2::Arg() const
 {
 	// Use atan2 instead of old Arg code - check that they give the same result for now
-	double res = atan2(v, u); 
+    double res = std::atan2(v, u);
 	if (res < 0.0F)  
 		res += 2 * M2PI;
     return res;

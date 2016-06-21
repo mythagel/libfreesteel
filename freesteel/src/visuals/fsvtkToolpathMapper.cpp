@@ -215,7 +215,7 @@ void fsvtkToolpathMapper::CalculateStock(double zstock)
 void fsvtkToolpathMapper::DrawFibre(S1& fib, I1& wrg, double z)
 {
     glBegin(GL_LINE_STRIP);
-    for (int i = 0; i < fib.size(); i++)
+    for (std::size_t i = 0; i < fib.ep.size(); i++)
     {
         if ((i % 2) == 0)
         {
@@ -223,7 +223,7 @@ void fsvtkToolpathMapper::DrawFibre(S1& fib, I1& wrg, double z)
             glBegin(GL_LINE_STRIP);
         }
         //P2 p = ((fib.value_type == 1) ? P2(fib[i].w, fib.wp) : P2(fib.wp, fib[i].w));
-        P2 p = ((fib.ftype == 2) ? P2(fib[i].w, fib.wp) : P2(fib.wp, fib[i].w));
+        P2 p = ((fib.ftype == 2) ? P2(fib.ep[i].w, fib.wp) : P2(fib.wp, fib.ep[i].w));
         glVertex3d(p.u, p.v, z);
     }
 

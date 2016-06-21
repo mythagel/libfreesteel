@@ -551,7 +551,7 @@ void HackCCSx(CircCrossingStructure& ccs, const PathXSeries& paths)
 	for (int i = 1; i < paths.pths.size(); i++) 
 	{
 		// is our area full?  
-		if (ccs.circrange.empty()) 
+        if (ccs.circrange.ep.empty())
 			break; 
 
 		P2 p0 = p1; 
@@ -634,11 +634,11 @@ void CircleIntersectNew(std::vector<I1>& res, const P2& cpt, double crad, const 
 	HackCCSx(ccs, pathxb); 
 
 	// convert this into a range of Dargs that model the material.  
-	if (ccs.circrange.empty()) 
+    if (ccs.circrange.ep.empty())
 		ASSERT(1); 
 
-	for (int i = 1; i < ccs.circrange.size(); i += 2) 
-		res.push_back(I1(ccs.circrange[i - 1].w, ccs.circrange[i].w)); 
+    for (std::size_t i = 1; i < ccs.circrange.ep.size(); i += 2)
+        res.push_back(I1(ccs.circrange.ep[i - 1].w, ccs.circrange.ep[i].w));
 }
 
 

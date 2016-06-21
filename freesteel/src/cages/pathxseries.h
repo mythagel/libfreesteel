@@ -35,14 +35,13 @@ public:
 	double z; 
 
     std::vector<P2> pths;  // individual 2D points ~ the actual path
-    std::vector<int> brks; // breaks - indices where pths is non-consecutive 
+    std::vector<std::size_t> brks; // breaks - indices where pths is non-consecutive
 
 	// 3D paths linking 2D paths at breaks
   // runs parallel to the brks array.  
     std::vector< std::vector<P3> > linkpths; 
 
-	PathXSeries() 
-		{;}; 
+    PathXSeries(){}
 	PathXSeries(double lz) : 
 		z(lz) {;} 
 

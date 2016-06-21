@@ -209,36 +209,36 @@ bool S2weaveCell::GetBoundLower(int ibl)
 bool AddBoundListMatches(std::vector< std::pair<int, B1*> >& boundlist, const S1& fw, const I1& rg, int edgno, bool bGoingDown, bool bStartIn) 
 {
     ASSERT(((edgno & 2) != 0) == bGoingDown);
-    std::pair<int, int> ilr = fw.Loclohi(rg);
+    auto ilr = fw.Loclohi(rg);
     
     // pull-back from any boundaries that just cross.
-    if ((ilr.first <= ilr.second) && fw[ilr.first].blower && (fw[ilr.first].w == rg.lo))
+    if ((ilr.first <= ilr.second) && fw.ep[ilr.first].blower && (fw.ep[ilr.first].w == rg.lo))
         ilr.first++;
-    if ((ilr.first <= ilr.second) && !fw[ilr.second].blower && (fw[ilr.second].w == rg.hi))
+    if ((ilr.first <= ilr.second) && !fw.ep[ilr.second].blower && (fw.ep[ilr.second].w == rg.hi))
         ilr.second--;
         
     // deal with the inside/outside info
-    ASSERT(fw.empty() || fw.front().blower);
-    ASSERT(fw.empty() || !fw.back().blower);
-    bool bLeftIn = (ilr.first == 0 ? false : fw[ilr.first - 1].blower);
-    bool bRightIn = (ilr.second == fw.size() - 1 ? false : !fw[ilr.second + 1].blower);
+    ASSERT(fw.ep.empty() || fw.ep.front().blower);
+    ASSERT(fw.ep.empty() || !fw.ep.back().blower);
+    bool bLeftIn = (ilr.first == 0 ? false : fw.ep[ilr.first - 1].blower);
+    bool bRightIn = (ilr.second == fw.ep.size() - 1 ? false : !fw.ep[ilr.second + 1].blower);
     ASSERT(bStartIn == (bGoingDown ? bRightIn : bLeftIn));
     bool bEndIn = (bGoingDown ? bLeftIn : bRightIn);
 
     // feed in the indexes of the entries
     if (!bGoingDown)
     {
-        for (int i = ilr.first; i <= ilr.second; i++)
+        for (auto i = ilr.first; i <= ilr.second; i++)
         {
-            boundlist.push_back(std::pair<int, B1*>(edgno, const_cast<B1*>(&(fw[i]))));
-            ASSERT(rg.Contains(fw[i].w));
+            boundlist.push_back(std::pair<int, B1*>(edgno, const_cast<B1*>(&(fw.ep[i]))));
+            ASSERT(rg.Contains(fw.ep[i].w));
         }
     }
     else
     {
-        for (int i = ilr.second; i >= ilr.first; i--)
+        for (auto i = ilr.second; i >= ilr.first; i--)
         {
-            boundlist.push_back(std::pair<int, B1*>(edgno, const_cast<B1*>(&(fw[i]))));
+            boundlist.push_back(std::pair<int, B1*>(edgno, const_cast<B1*>(&(fw.ep[i]))));
             ASSERT(rg.Contains(fw[i].w));
         }
     }

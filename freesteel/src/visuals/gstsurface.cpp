@@ -135,22 +135,22 @@ void GSTtoolpath::UpdateFromPax()
 
 	for (int ip = 0; ip < ftpaths.size(); ++ip)
 	{
-		const PathXSeries& ftpath = ftpaths[ip];
-		const std::vector<int>& brks = ftpath.brks;
-		const std::vector<P2>& pths = ftpath.pths;
+        const auto& ftpath = ftpaths[ip];
+        const auto& brks = ftpath.brks;
+        const auto& pths = ftpath.pths;
 		int i0 = 0;
-		for (int j = 0; j < brks.size(); j++) 
+        for (auto brk : brks)
 		{
-			int n = brks[j] - i0;
+            int n = brk - i0;
 			lines->InsertNextCell(n);
-			for(int i = i0; i < brks[j]; i++) 
+            for(int i = i0; i < brk; i++)
 			{
  				P3 p = ConvertGZ(pths[i], ftpath.z); 
 				int id = points->InsertNextPoint(p.x, p.y, p.z); 
 				lines->InsertCellPoint(id);
 			}
 
-			i0 = brks[j];
+            i0 = brk;
 		}
 	}
 	ftpolydata->SetPoints(&points);

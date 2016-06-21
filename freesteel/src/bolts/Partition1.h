@@ -39,8 +39,9 @@ public:
 	int FindPart(double x) const; 
     std::pair<int, int> FindPartRG(const I1& xrg) const; 
 
-	Partition1() 
-		{;}; 
+    Partition1()
+     : bRegular()
+    {}
 	Partition1(const I1& lrg, double w); 
 
 	I1 Getrg() const 

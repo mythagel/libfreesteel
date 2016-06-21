@@ -70,9 +70,9 @@ struct I1	// Interval
 	void Combine(double a, double b, double c)
 		{ Combine(a, b); Absorb(c); } 
 	static I1 SCombine(double a, double b) 
-		{ I1 res; res.Combine(a, b); return res; }; 
+        { I1 res; res.Combine(a, b); return res; }
 	static I1 SCombine(double a, double b, double c) 
-		{ I1 res; res.Combine(a, b, c); return res; }; 
+        { I1 res; res.Combine(a, b, c); return res; }
 
 
 	I1 Inflate(double x) const 
@@ -90,20 +90,20 @@ struct I1	// Interval
 		{ return ((lo <= v.lo) && (v.hi <= hi)); } 
 
 	double Leng() const
-		{ return hi - lo; }; 
+        { return hi - lo; }
 	double Along(double lam) const
-		{ return lo * (1.0 - lam) + hi * lam; }; 
+        { return lo * (1.0 - lam) + hi * lam; }
 	double Half() const
-		{ return (lo + hi) * 0.5; }; 
+        { return (lo + hi) * 0.5; }
 	double InvAlong(double x) const
-		{ ASSERT((Leng() != 0.0) && Contains(x)); return (x - lo) / Leng(); }; 
+        { ASSERT((Leng() != 0.0) && Contains(x)); return (x - lo) / Leng(); }
 	double Distance(double x) const 
-		{ return (x > lo ? (x < hi ? 0.0 : x - hi) : lo - x); }; 
+        { return (x > lo ? (x < hi ? 0.0 : x - hi) : lo - x); }
 	double PushInto(double x) const 
-		{ return (x < lo ? lo : (x > hi ? hi : x)); }; 
+        { return (x < lo ? lo : (x > hi ? hi : x)); }
 	double PushIntoSmall(double x) const 
 		{ TOL_ZERO(Distance(x)); 
-		  return PushInto(x); }; 
+          return PushInto(x); }
 
 	I1 operator+(double d) const
 		{ return I1(lo + d, hi + d); } 
@@ -111,9 +111,9 @@ struct I1	// Interval
 		{ return I1(lo - d, hi - d); } 
 
 	I1 operator*(double d) const 
-		{ return (d > 0 ? I1(lo * d, hi * d) : I1(hi * d, lo * d)); }; 
+        { return (d > 0 ? I1(lo * d, hi * d) : I1(hi * d, lo * d)); }
 	I1 operator/(double d) const 
-		{ return operator*(1 / d); }; 
+        { return operator*(1 / d); }
 
 	bool operator==(const I1& b) const 
 		{ return ((lo == b.lo) && (hi == b.hi)); } 

@@ -37,18 +37,18 @@ struct B1
 
 	mutable int cutcode; 
 
-	B1() {;}; 
-	B1(double lw, bool lblower, bool lbinterncellbound = false) : 
-		w(lw), blower(lblower), binterncellbound(lbinterncellbound), contournumber(-1) {;}; 
+    B1(double lw, bool lblower, bool lbinterncellbound = false)
+     : w(lw), blower(lblower), binterncellbound(lbinterncellbound), contournumber(-1), cutcode()
+    {}
 
-	bool operator<(const B1& b) const 
-		{ return (w < b.w); }; 
+	bool operator<(const B1& b) const { return (w < b.w); }
 }; 
 
 //////////////////////////////////////////////////////////////////////
 // this is a fibre 
-struct S1 : std::vector<B1> 
+struct S1
 {
+    std::vector<B1> ep;
 	double wp; // the perpendicular position.  
 	I1 wrg; 
 
@@ -59,8 +59,7 @@ struct S1 : std::vector<B1>
 	void Minus(const I1& rg); 
 	void Minus(double rglo, bool binterncellboundlo, double rghi, bool binterncellboundhi);
 
-    std::pair<int, int> Loclohi(const I1& rg) const;
-
+    std::pair<std::size_t, std::size_t> Loclohi(const I1& rg) const;
 
 	void Invert(); 
 
@@ -70,11 +69,13 @@ struct S1 : std::vector<B1>
 	I1 ContainsRG(double lw) const; 
 
 	void SetNew(double lwp, const I1& lwrg, int lftype)
-		{ wp = lwp; wrg = lwrg; ftype = lftype; clear(); }; 
+        { wp = lwp; wrg = lwrg; ftype = lftype; ep.clear(); }
 
-	S1() {;}; 
+    S1()
+     : ep(), wp(), wrg(I1unit), ftype()
+    {}
 	S1(double lwp, I1& lwrg, int lftype) 
-		{ SetNew(lwp, lwrg, lftype); }; 
+        { SetNew(lwp, lwrg, lftype); }
 
 	void SetAllCutCodes(int lcutcode); 
 }; 

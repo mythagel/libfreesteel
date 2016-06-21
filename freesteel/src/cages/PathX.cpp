@@ -29,7 +29,7 @@ void Ray_gen2::HoldFibre(S1* lpfib)
 {	
 	pfib = lpfib; 
 	ASSERT(scuts.empty()); 
-}; 
+}
 
 //////////////////////////////////////////////////////////////////////
 void Ray_gen2::ReleaseFibre()  
@@ -38,7 +38,7 @@ void Ray_gen2::ReleaseFibre()
 	{
         std::sort(scuts.begin(), scuts.end()); 
 		ASSERT((scuts.size() % 2) == 0); 
-		for (int i = 1; i < scuts.size(); i += 2) 
+        for (std::size_t i = 1; i < scuts.size(); i += 2)
 		{
 			ASSERT(scuts[i - 1].blower && !scuts[i].blower); 
 			pfib->Merge(scuts[i - 1].w, true, scuts[i].w, true); 
@@ -167,10 +167,10 @@ void Ray_gen2::DiscSliceCapN(const P2& a, const P2& b)
 //////////////////////////////////////////////////////////////////////
 void HackAreaOffset(Ray_gen2& rgen2, const PathXSeries paths)  
 {
-	int j = 0;
+    std::size_t j = 0;
 	P2 tb; 
 	bool bFirstPoint = true; 
-	for (int i = 0; i < paths.pths.size(); i++) 
+    for (std::size_t i = 0; i < paths.pths.size(); i++)
 	{
 		P2 ta = tb; 
 		tb = rgen2.Transform(paths.pths[i]); 
@@ -224,10 +224,10 @@ void HackAreaOffset(S2weave& wve, const PathXSeries& paths, double rad)
 //////////////////////////////////////////////////////////////////////
 void HackToolpath(Ray_gen2& rgen2, const PathXSeries& pathxs, int iseg, const P2& ptpath)
 {
-	int j = 0;
+    int j = 0;
 	P2 tb; 
 	bool bFirstPoint = true; 
-	for (int i = 0; i < iseg; i++) 
+    for (int i = 0; i < iseg; i++)
 	{
 		P2 ta = tb; 
 		tb = rgen2.Transform(pathxs.pths[i]); 

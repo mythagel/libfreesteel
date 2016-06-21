@@ -260,10 +260,10 @@ void Area2_gen::MakeContours(PathXSeries& ftpaths)
 	for (alscan.ixwp = 0; alscan.ixwp < (int)ufibs.size(); alscan.ixwp++) 
 	{
 		alscan.wp = ufibs[alscan.ixwp].wp; 
-		for (int i = 0; i < (int)ufibs[alscan.ixwp].size(); i++) 
+        for (std::size_t i = 0; i < ufibs[alscan.ixwp].ep.size(); i++)
 		{
-			alscan.w = ufibs[alscan.ixwp][i].w; 
-			alscan.blower = ufibs[alscan.ixwp][i].blower; 
+            alscan.w = ufibs[alscan.ixwp].ep[i].w;
+            alscan.blower = ufibs[alscan.ixwp].ep[i].blower;
 
 			if (ContourNumber(alscan) < firstcontournumber) 
 			{

@@ -104,7 +104,7 @@ public:
 	}
 };
 
-bool Advance(AnimatedPos& res, const std::vector<P2>& pths, const std::vector< std::vector<P3> >& links, const std::vector<int>& brks, double z, double adv, double& advanced, FILE* fn = NULL, int fcut = -1, int fretract = -1, double tol = 0.0)
+bool Advance(AnimatedPos& res, const std::vector<P2>& pths, const std::vector< std::vector<P3> >& links, const std::vector<std::size_t>& brks, double z, double adv, double& advanced, FILE* fn = NULL, int fcut = -1, int fretract = -1, double tol = 0.0)
 {
     advanced = 0;
 	res.ilink = -1;

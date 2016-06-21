@@ -163,7 +163,7 @@ void ToolShape::Draw(const P3& iptpath, std::vector<PathXSeries>* pftpaths, int 
             for (int i = 1; i < iterm; i++)
             {
                 // is our cleared?
-                if (ccs.circrange.empty())
+                if (ccs.circrange.ep.empty())
                     break;
 
                 P2 p0 = p1;

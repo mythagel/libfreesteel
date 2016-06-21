@@ -29,14 +29,18 @@ struct P3	// 3D point
 	double x, y, z; 
 	bool operator==(const P3& b) const
 		{ return ((x == b.x) && (y == b.y) && (z == b.z)); }
-	P3()
-		{;}
+    P3()
+     : x(), y(), z()
+    {}
 	P3(double* a)
-		{ x = a[0]; y = a[1]; z = a[2]; } 
+     : x(a[0]), y(a[1]), z(a[2])
+    {}
 	P3(double lx, double ly, double lz)
-		{ x = lx; y = ly; z = lz; } 
+     : x(lx), y(ly), z(lz)
+    {}
 	P3(const P3& a)
-		{ x = a.x; y = a.y; z = a.z; } 
+     : x(a.x), y(a.y), z(a.z)
+    {}
 
 	P3 operator-(const P3& a) const
 		{ return P3(x - a.x, y - a.y, z - a.z); } 

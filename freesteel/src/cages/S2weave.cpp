@@ -142,37 +142,29 @@ void S2weave::TrackContour(std::vector<P2>& pth, S2weaveB1iter al)
 int& S2weave::ContourNumber(S2weaveB1iter& al)  
 {
 	S1& wfib = (al.ftype == 1 ? ufibs : vfibs)[al.ixwp]; 
-	for (int i = (al.blower ? 0 : 1); i < (int)wfib.size(); i += 2) 
-		if (wfib[i].w == al.w) 
-			return wfib[i].contournumber; 
+    for (std::size_t i = (al.blower ? 0 : 1); i < wfib.ep.size(); i += 2)
+        if (wfib.ep[i].w == al.w)
+            return wfib.ep[i].contournumber;
 	static int balls = 1; 
 	ASSERT(0); 
 	return balls; 
 }
 
 //////////////////////////////////////////////////////////////////////
-void S1::SetAllCutCodes(int lcutcode) 
-{
-	for (int i = 0; i < size(); i++) 
-		operator[](i).cutcode = lcutcode; 
-}
-
-//////////////////////////////////////////////////////////////////////
 void S2weave::SetAllCutCodes(int lcutcode)  
 {
-	for (int iu = 0; iu < ufibs.size(); iu++) 
-		ufibs[iu].SetAllCutCodes(lcutcode); 
-	for (int iv = 0; iv < vfibs.size(); iv++) 
-		vfibs[iv].SetAllCutCodes(lcutcode); 
+    for (auto& ufib : ufibs)
+        ufib.SetAllCutCodes(lcutcode);
+    for (auto& vfib : vfibs)
+        vfib.SetAllCutCodes(lcutcode);
 }
 
 void S2weave::Invert()
 {
-    for (int iu = 0; iu < ufibs.size(); iu++)
-        ufibs[iu].Invert();
-
-    for (int iv = 0; iv < vfibs.size(); iv++)
-        vfibs[iv].Invert();
+    for (auto& ufib : ufibs)
+        ufib.Invert();
+    for (auto& vfib : vfibs)
+        vfib.Invert();
 }
 
 
