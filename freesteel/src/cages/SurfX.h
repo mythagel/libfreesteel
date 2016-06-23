@@ -68,7 +68,7 @@ struct triangX // : public Facet
 
 	triangX(const P3& ltnorm)
      : ab1(), ab2(), b12(), tnorm(ltnorm)
-    { }; 
+    { }
 
 	void SetEdge(edgeX* pe, struct triangXr& r); 
 

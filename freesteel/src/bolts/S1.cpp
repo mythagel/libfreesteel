@@ -47,14 +47,14 @@ void S1::Minus(const I1& rg)
 }
 
 //////////////////////////////////////////////////////////////////////
-std::pair<std::size_t, std::size_t> S1::Loclohi(const I1& rg) const
+std::pair<std::ptrdiff_t, std::ptrdiff_t> S1::Loclohi(const I1& rg) const
 {
-    std::pair<std::size_t, std::size_t> res;
-    for (res.first = 0; res.first < ep.size(); ++res.first)
+    std::pair<std::ptrdiff_t, std::ptrdiff_t> res;
+    for (res.first = 0; static_cast<std::size_t>(res.first) < ep.size(); ++res.first)
         if (ep[res.first].w >= rg.lo)
 			break; 
 
-    if (res.first < ep.size())
+    if (static_cast<std::size_t>(res.first) < ep.size())
 	{
         for (res.second = ep.size() - 1; res.second >= res.first; --res.second)
             if (ep[res.second].w <= rg.hi)
@@ -66,15 +66,15 @@ std::pair<std::size_t, std::size_t> S1::Loclohi(const I1& rg) const
 	#ifdef MDEBUG
 	ASSERT(res.first <= res.second + 1); 
 
-	if (res.first < (int)size()) 
-		ASSERT(rg.lo <= operator[](res.first).w); 
+    if (static_cast<std::size_t>(res.first) < ep.size())
+        ASSERT(rg.lo <= ep[res.first].w);
 	if (res.first - 1 >= 0) 
-		ASSERT(rg.lo > operator[](res.first - 1).w); 
+        ASSERT(rg.lo > ep[res.first - 1].w);
 
-	if ((res.second >= 0) && (res.second < (int)size())) 
-		ASSERT(rg.hi >= operator[](res.second).w); 
-	if (res.second + 1 < (int)size()) 
-		ASSERT(rg.hi < operator[](res.second + 1).w); 
+    if ((res.second >= 0) && (static_cast<std::size_t>(res.second) < ep.size()))
+        ASSERT(rg.hi >= ep[res.second].w);
+    if (static_cast<std::size_t>(res.second + 1) < ep.size())
+        ASSERT(rg.hi < ep[res.second + 1].w);
 	#endif
 
 	return res; 
@@ -90,7 +90,7 @@ void S1::Merge(double rglo, bool binterncellboundlo, double rghi, bool binternce
     auto ir = ilr.second;
 
 	// off the end
-    if (il == ep.size())
+    if (static_cast<std::size_t>(il) == ep.size())
 	{
         ep.push_back(B1(rglo, true, binterncellboundlo));
         ep.push_back(B1(rghi, false, binterncellboundhi));
@@ -125,7 +125,7 @@ void S1::Merge(double rglo, bool binterncellboundlo, double rghi, bool binternce
 	if (il <= ir) 
         ep.erase(ep.begin() + il, ep.begin() + ir + 1);
 	ASSERT(Check()); 
-}; 
+}
 
 //////////////////////////////////////////////////////////////////////
 void S1::Minus(double rglo, bool binterncellboundlo, double rghi, bool binterncellboundhi)  
@@ -134,7 +134,7 @@ void S1::Minus(double rglo, bool binterncellboundlo, double rghi, bool binternce
     auto il = ilr.first;
     auto ir = ilr.second;
 
-    if (il == ep.size())
+    if (static_cast<std::size_t>(il) == ep.size())
 		return; 
 
 	if (ir < il) 
@@ -163,7 +163,7 @@ void S1::Minus(double rglo, bool binterncellboundlo, double rghi, bool binternce
 	if (il <= ir) 
         ep.erase(ep.begin() + il, ep.begin() + ir + 1);
 	ASSERT(Check()); 
-}; 
+}
 
 
 //////////////////////////////////////////////////////////////////////

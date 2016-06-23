@@ -59,7 +59,7 @@ struct S1
 	void Minus(const I1& rg); 
 	void Minus(double rglo, bool binterncellboundlo, double rghi, bool binterncellboundhi);
 
-    std::pair<std::size_t, std::size_t> Loclohi(const I1& rg) const;
+    std::pair<std::ptrdiff_t, std::ptrdiff_t> Loclohi(const I1& rg) const;
 
 	void Invert(); 
 

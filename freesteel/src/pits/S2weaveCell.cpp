@@ -239,7 +239,7 @@ bool AddBoundListMatches(std::vector< std::pair<int, B1*> >& boundlist, const S1
         for (auto i = ilr.second; i >= ilr.first; i--)
         {
             boundlist.push_back(std::pair<int, B1*>(edgno, const_cast<B1*>(&(fw.ep[i]))));
-            ASSERT(rg.Contains(fw[i].w));
+            ASSERT(rg.Contains(fw.ep[i].w));
         }
     }
 
