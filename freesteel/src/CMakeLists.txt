@@ -24,6 +24,7 @@ add_library(actp STATIC
     bolts/S1.h
     bolts/smallfuncs.h
     bolts/vo.h
+    cages/Area2_gen.cpp
     cages/Area2_gen.h
     cages/PathXboxed.cpp
     cages/PathX.cpp

@@ -25,40 +25,38 @@
 template<class V>
 struct vo
 {
-	V* v; 
-	vo(bool bInit = true) : 
-		v(bInit ? V::New() : NULL) {;}; 
-	~vo() 
-		{ if (v != NULL)  v->Delete(); }; 
-	V* operator->() 
-		{ return v; }; 
-	V* operator&() 
-		{ return v; }; 
-	void Renew() 
-		{ if (v != NULL)  v->Delete(); 
-		  v = V::New(); }; 
+    V* v;
+    vo(bool bInit = true)
+     : v(bInit ? V::New() : NULL)
+    {}
+    ~vo() { if (v != NULL)  v->Delete(); }
+    V* operator->() { return v; }
+    V* operator&() { return v; }
+    void Renew()
+    {
+        if (v != NULL) v->Delete();
+        v = V::New();
+    }
 }; 
 
 template<class V>
 struct vectorvo 
 {
-    std::vector<V*> vv; 
+    std::vector<V*> vv;
 
-#ifndef SWIG
-	V* operator[](int i) 
-		{ return vv[i]; }; 
-#endif
+    V* operator[](std::size_t i) { return vv[i]; }
 
-  void resize(int n) 
-		{ ASSERT(vv.empty()); 
-		  vv.resize(n); 
-		  for (int i = 0; i < n; i++) 
-			vv[i] = V::New(); 
-		}
-	~vectorvo() 
-		{ for (int i = 0; i < vv.size(); i++) 
-			vv[i]->Delete(); 
-		}; 
+    void resize(int n)
+    {
+        ASSERT(vv.empty());
+        vv.resize(n);
+        for (auto& v : vv) vv = V::New();
+    }
+    ~vectorvo()
+    {
+        for (auto& v : vv) v->Delete();
+        vv.clear();
+    }
 }; 
 
 #endif

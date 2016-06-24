@@ -24,7 +24,7 @@
 //////////////////////////////////////////////////////////////////////
 int FindCellParal(const std::vector<S1>& wfibs, double lw) 
 {
-	int res; 
+    std::size_t res;
 	for (res = 1; res < wfibs.size(); res++) 
 		if (wfibs[res].wp > lw) 
 			break; 
@@ -141,7 +141,7 @@ int S2weaveCell::GetBoundListPosition(int sic, const P2& ptb, bool bOnBoundOutsi
 {
 	if (boundlist.empty()) 
 		return -1; 
-	int res = 0; 
+    std::size_t res = 0;
 	bool bgoingup = ((sic & 2) == 0); 
 	bool binV = ((sic & 1) == 0); 
 
@@ -221,7 +221,7 @@ bool AddBoundListMatches(std::vector< std::pair<int, B1*> >& boundlist, const S1
     ASSERT(fw.ep.empty() || fw.ep.front().blower);
     ASSERT(fw.ep.empty() || !fw.ep.back().blower);
     bool bLeftIn = (ilr.first == 0 ? false : fw.ep[ilr.first - 1].blower);
-    bool bRightIn = (ilr.second == fw.ep.size() - 1 ? false : !fw.ep[ilr.second + 1].blower);
+    bool bRightIn = (static_cast<std::size_t>(ilr.second) == fw.ep.size() - 1 ? false : !fw.ep[ilr.second + 1].blower);
     ASSERT(bStartIn == (bGoingDown ? bRightIn : bLeftIn));
     bool bEndIn = (bGoingDown ? bLeftIn : bRightIn);
 

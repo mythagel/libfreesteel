@@ -37,7 +37,7 @@ struct S2weaveB1iter
 	double w; // in fibre
 	double wp; // perpendicular to fibre.  
 
-	int ixwp; // index of fibre
+    std::size_t ixwp; // index of fibre
 	//int ixw;  // index of point in fibre  
 
 	P2 GetPoint(); 

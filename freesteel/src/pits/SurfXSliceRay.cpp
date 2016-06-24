@@ -38,7 +38,7 @@ void Ray_gen::BallSlice(const P3& a)
 {
 	if (NormRay_gen::BallSlice(Transform(a)))
 		pfib->Merge(reslo, binterncellboundlo, reshi, binterncellboundhi); 
-}; 
+}
 
 
 //////////////////////////////////////////////////////////////////////
@@ -49,7 +49,7 @@ void Ray_gen::BallSlice(const P3& a, const P3& b)
 	bool bres = (ta.z < tb.z ? NormRay_gen::BallSlice(ta, tb) : NormRay_gen::BallSlice(tb, ta)); 
 	if (bres) 
 		pfib->Merge(reslo, binterncellboundlo, reshi, binterncellboundhi); 
-}; 
+}
 
 
 //////////////////////////////////////////////////////////////////////
@@ -173,109 +173,3 @@ void SurfXboxed::SliceVFibre(Ray_gen& rgen)
 		}
 	}
 }
-
-
-
-
-//////////////////////////////////////////////////////////////////////
-void Area2_gen::FindInterior(SurfX& sx)  
-{
-	SLi_gen sgen; 
-    std::vector<I1> res; 
-
-	for (int iu = 0; iu < (int)ufibs.size(); iu++) 
-	{
-		sgen.SetSlicePos(P3(ufibs[iu].wp, vrg.lo, z), P3(ufibs[iu].wp, vrg.hi, z)); 
-		sx.SliceRay(sgen); 
-		sgen.Convert(res, urg, vrg, sx.gzrg); 
-
-		while (!res.empty())
-		{
-			ufibs[iu].Merge(res.back());
-			res.pop_back();
-		}
-	}
-
-	for (int iv = 0; iv < (int)vfibs.size(); iv++) 
-	{
-		sgen.SetSlicePos(P3(urg.lo, vfibs[iv].wp, z), P3(urg.hi, vfibs[iv].wp, z)); 
-		sx.SliceRay(sgen); 
-		sgen.Convert(res, urg, urg, sx.gzrg); 
-
-		while (!res.empty())
-		{
-			vfibs[iv].Merge(res.back());
-			res.pop_back();
-		}
-	}
-}
-
-
-
-//////////////////////////////////////////////////////////////////////
-void Area2_gen::SetSurfaceTop(SurfXboxed* lpsxb, double lr) 
-{
-	r = lr; 
-	psxb = lpsxb; 
-	z = psxb->psurfx->gzrg.hi; 
-}
-
-
-//////////////////////////////////////////////////////////////////////
-void Area2_gen::HackDowntoZ(float lz) 
-{
-	ASSERT(lz <= z); 
-	z = lz; 
-
-	Ray_gen uryg(r, vrg);
-	for (int iu = 0; iu < (int)ufibs.size(); iu++) 
-	{
-		uryg.HoldFibre(&ufibs[iu], z); 
-		psxb->SliceUFibre(uryg); 
-	}
-
-	Ray_gen vryg(r, urg); 
-	for (int iv = 0; iv < (int)vfibs.size(); iv++) 
-	{
-		vryg.HoldFibre(&vfibs[iv], z); 
-		psxb->SliceVFibre(vryg); 
-	}
-}
-
-
-
-//////////////////////////////////////////////////////////////////////
-
-
-
-
-
-//////////////////////////////////////////////////////////////////////
-void Area2_gen::MakeContours(PathXSeries& ftpaths)  
-{
-	firstcontournumber = lastcontournumber + 1; 
-
-	S2weaveB1iter alscan; 
-	alscan.ftype = 1; 
-	for (alscan.ixwp = 0; alscan.ixwp < (int)ufibs.size(); alscan.ixwp++) 
-	{
-		alscan.wp = ufibs[alscan.ixwp].wp; 
-        for (std::size_t i = 0; i < ufibs[alscan.ixwp].ep.size(); i++)
-		{
-            alscan.w = ufibs[alscan.ixwp].ep[i].w;
-            alscan.blower = ufibs[alscan.ixwp].ep[i].blower;
-
-			if (ContourNumber(alscan) < firstcontournumber) 
-			{
-                std::vector<P2> contour;
-				TrackContour(contour, alscan); 
-				ftpaths.Append(contour);
-				ftpaths.z = z;
-			}
-		}
-	}
-}
-	
-
-
-

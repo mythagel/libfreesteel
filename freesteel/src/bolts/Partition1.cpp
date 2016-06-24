@@ -29,7 +29,7 @@ Partition1::Partition1(const I1& lrg, double w) :
 	for (int i = 0; i <= n; i++)
 		b.push_back(lrg.Along((double)i / n)); 
 	ASSERT(GetPart(0).Leng() <= w); 
-};
+}
 
 //////////////////////////////////////////////////////////////////////
 int Partition1::FindPart(double x) const 

@@ -226,19 +226,15 @@ void BuildLinkZ(std::vector<P3>& lnkpth, const std::vector<P2>& lnk2D, double z,
 {
 	// total length
 	double totallen = 0;
-	int ix = 1;
-	while (ix < lnk2D.size())
-	{
+    for (std::size_t ix = 1; ix < lnk2D.size(); ++ix)
 		totallen += (lnk2D[ix] - lnk2D[ix - 1]).Len();
-		++ix;
-	}
 
 	double leadofflen = params.leadofflen;
 	if (totallen < (2.0 * params.leadofflen))
 		leadofflen = 0.5 * totallen;
 
     std::vector<P3> lnkStart;
-	int ixstart = 1;
+    std::size_t ixstart = 1;
 	double len = 0;
 	lnkStart.push_back(ConvertGZ(lnk2D[0], z));
 	while (ixstart < lnk2D.size())

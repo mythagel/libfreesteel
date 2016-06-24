@@ -46,7 +46,7 @@ void CircCrossingStructure::ChopOutBoundary(const std::vector<P2>& bound)
 	bool bradfirstin = (rad1sq < cradsq); 
 	bool brad1in = bradfirstin; 
 
-	for (int i = 1; i < bound.size(); i++) 
+    for (std::size_t i = 1; i < bound.size(); i++)
 	{
 		// move to next point in contour.  (done here due to the continue commands).  
 		P2 p0 = p1; 
@@ -190,7 +190,7 @@ void CircCrossingStructure::ChopOutBoundary(const std::vector<P2>& bound)
 	// loop through pairs in cpara, getting the range that goes over the start right.  
 	// we keep the parts that are outside the stock, 
 	// because we will union in the further cuts.  when it's from 0 to 4 there's no material left.  
-	int kcp = 1; 
+    std::size_t kcp = 1;
 	ASSERT((cpara.size() % 2) == 0); 
 	ASSERT(cpara.front().bClockwiseIn != cpara.back().bClockwiseIn); 
 
@@ -505,7 +505,7 @@ void CircCrossingStructure::HackToolRectangle(const P2& p0, const P2& p1)
 	// show it is out of order only once (it is properly clockwise) 
 	#ifdef MDEBUG
 		bool bOrder = false; 
-		for (int ii = 1; ii < cpara.size(); ii++) 
+        for (std::size_t ii = 1; ii < cpara.size(); ii++)
 		{
 			if (cpara[ii - 1].darg > cpara[ii].darg) 
 			{
@@ -520,7 +520,7 @@ void CircCrossingStructure::HackToolRectangle(const P2& p0, const P2& p1)
 
 	ASSERT((cpara.size() % 2) == 0); 
 	ASSERT(cpara.front().bClockwiseIn != cpara.back().bClockwiseIn); 
-	int k = 1; 
+    std::size_t k = 1;
 	if (cpara.front().bClockwiseIn) 
 	{
 		circrange.Minus(I1(0.0, cpara.front().darg)); 
@@ -546,9 +546,9 @@ void CircCrossingStructure::HackToolRectangle(const P2& p0, const P2& p1)
 void HackCCSx(CircCrossingStructure& ccs, const PathXSeries& paths) 
 {
 	// leaving out the toolcircle for the first point.  
-	int j = 0;
+    std::size_t j = 0;
 	P2 p1 = paths.pths[0] - ccs.cpt; 
-	for (int i = 1; i < paths.pths.size(); i++) 
+    for (std::size_t i = 1; i < paths.pths.size(); i++)
 	{
 		// is our area full?  
         if (ccs.circrange.ep.empty())
@@ -594,7 +594,7 @@ void HackCCSx(CircCrossingStructure& ccs, const PathXboxed& pathxb)
 	for (int iu = iurg.first; iu <= iurg.second; iu++) 
 	{
 		const pucketX& pucx = pathxb.puckets[iu]; 
-		for (int k = 0; k < pucx.cklines.size(); k++) 
+        for (std::size_t k = 0; k < pucx.cklines.size(); k++)
 		{
 			if ((pucx.cklines[k].idup != -1) || (pucx.cklines[k].idup != pathxb.maxidup))
 			{

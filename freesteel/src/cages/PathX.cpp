@@ -224,10 +224,10 @@ void HackAreaOffset(S2weave& wve, const PathXSeries& paths, double rad)
 //////////////////////////////////////////////////////////////////////
 void HackToolpath(Ray_gen2& rgen2, const PathXSeries& pathxs, int iseg, const P2& ptpath)
 {
-    int j = 0;
+    std::size_t j = 0;
 	P2 tb; 
 	bool bFirstPoint = true; 
-    for (int i = 0; i < iseg; i++)
+    for (std::size_t i = 0; i < iseg; ++i)
 	{
 		P2 ta = tb; 
 		tb = rgen2.Transform(pathxs.pths[i]); 

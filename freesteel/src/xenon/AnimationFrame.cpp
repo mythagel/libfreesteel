@@ -229,10 +229,9 @@ bool Advance(AnimatedPos& res, const std::vector<P2>& pths, const std::vector< s
 void PostProcess(FILE* file, const std::vector<PathXSeries>& pathxseries, const MachineParams& params)
 {
 	AnimatedPos pos;
-	for (int ip = 0; ip < pathxseries.size(); ++ip)
+    for (const auto& pathxs : pathxseries)
 	{
 		double levellen = 0;
-		const PathXSeries& pathxs = pathxseries[ip];
 		Advance(pos, pathxs.pths, pathxs.linkpths, pathxs.brks, pathxs.z, -1.0, levellen, file, params.fcut, params.fretract, params.thintol);
 	}
 }
