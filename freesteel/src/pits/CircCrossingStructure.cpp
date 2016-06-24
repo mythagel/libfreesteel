@@ -19,7 +19,7 @@
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
 #include "CircCrossingStructure.h"
-#include "cages/pathxseries.h"
+#include "cages/PathXSeries.h"
 #include <utility>
 #include <algorithm>
 
@@ -66,7 +66,7 @@ void CircCrossingStructure::ChopOutBoundary(const std::vector<P2>& bound)
 			TOL_ZERO(Along(lam, p0.v, p1.v)); 
 			double cu = Along(lam, p0.u, p1.u); 
 			if (cu >= 0.0) 
-				hraypara.push_back(std::pair<double, bool>(cu, (p1.v >= 0.0))); 
+                hraypara.emplace_back(cu, (p1.v >= 0.0));
 		}
 
 		// discard if inside fully (by convexity).  
@@ -113,7 +113,7 @@ void CircCrossingStructure::ChopOutBoundary(const std::vector<P2>& bound)
 			double lam = I1unit.PushIntoSmall(lamz - lamp); 
 			P2 rpt = Along(lam, p0, p1); 
 			TOL_ZERO(rpt.Len() - crad); 
-			cpara.push_back(CPara(rpt, rpt.DArg(), true)); 
+            cpara.emplace_back(rpt, rpt.DArg(), true);
 		}
 		
 		// upper crossing
@@ -122,7 +122,7 @@ void CircCrossingStructure::ChopOutBoundary(const std::vector<P2>& bound)
 			double lam = I1unit.PushIntoSmall(lamz + lamp); 
 			P2 rpt = Along(lam, p0, p1); 
 			TOL_ZERO(rpt.Len() - crad); 
-			cpara.push_back(CPara(rpt, rpt.DArg(), false)); 
+            cpara.emplace_back(rpt, rpt.DArg(), false);
 		}
 	}
 
@@ -387,7 +387,7 @@ void CircCrossingStructure::HackToolRectangle(const P2& p0, const P2& p1)
 			double lam = I1unit.PushIntoSmall(lamz - lamrp); 
 			P2 rpt = Along(lam, p0r, p1r); 
 			TOL_ZERO(rpt.Len() - crad); 
-			cpara.push_back(CPara(rpt, rpt.DArg(), true)); 
+            cpara.emplace_back(rpt, rpt.DArg(), true);
 		}
 		
 		// upper crossing
@@ -396,7 +396,7 @@ void CircCrossingStructure::HackToolRectangle(const P2& p0, const P2& p1)
 			double lam = I1unit.PushIntoSmall(lamz + lamrp); 
 			P2 rpt = Along(lam, p0r, p1r); 
 			TOL_ZERO(rpt.Len() - crad); 
-			cpara.push_back(CPara(rpt, rpt.DArg(), false)); 
+            cpara.emplace_back(rpt, rpt.DArg(), false);
 		}
 	}
 
@@ -418,7 +418,7 @@ void CircCrossingStructure::HackToolRectangle(const P2& p0, const P2& p1)
 			double lam = I1unit.PushIntoSmall(((lamz_p - lam1p) / perpvfac + 1) / 2); 
 			P2 rpt = Along(lam, p1r, p1l); 
 			TOL_ZERO(rpt.Len() - crad); 
-			cpara.push_back(CPara(rpt, rpt.DArg(), true)); 
+            cpara.emplace_back(rpt, rpt.DArg(), true);
 		}
 		
 		// upper crossing
@@ -427,7 +427,7 @@ void CircCrossingStructure::HackToolRectangle(const P2& p0, const P2& p1)
 			double lam = I1unit.PushIntoSmall(((lamz_p + lam1p) / perpvfac + 1) / 2); 
 			P2 rpt = Along(lam, p1r, p1l); 
 			TOL_ZERO(rpt.Len() - crad); 
-			cpara.push_back(CPara(rpt, rpt.DArg(), false)); 
+            cpara.emplace_back(rpt, rpt.DArg(), false);
 		}
 	}
 
@@ -449,7 +449,7 @@ void CircCrossingStructure::HackToolRectangle(const P2& p0, const P2& p1)
 			double lam = I1unit.PushIntoSmall(lamz - lamlp); 
 			P2 rpt = Along(lam, p0l, p1l); 
 			TOL_ZERO(rpt.Len() - crad); 
-			cpara.push_back(CPara(rpt, rpt.DArg(), true)); 
+            cpara.emplace_back(rpt, rpt.DArg(), true);
 		}
 		
 		// upper crossing
@@ -458,7 +458,7 @@ void CircCrossingStructure::HackToolRectangle(const P2& p0, const P2& p1)
 			double lam = I1unit.PushIntoSmall(lamz + lamlp); 
 			P2 rpt = Along(lam, p0l, p1l); 
 			TOL_ZERO(rpt.Len() - crad); 
-			cpara.push_back(CPara(rpt, rpt.DArg(), false)); 
+            cpara.emplace_back(rpt, rpt.DArg(), false);
 		}
 	}
 
@@ -482,7 +482,7 @@ void CircCrossingStructure::HackToolRectangle(const P2& p0, const P2& p1)
 			double lam = I1unit.PushIntoSmall(((lamz_p - lam0p) / perpvfac + 1) / 2); 
 			P2 rpt = Along(lam, p0r, p0l); 
 			TOL_ZERO(rpt.Len() - crad); 
-			cpara.push_back(CPara(rpt, rpt.DArg(), true)); 
+            cpara.emplace_back(rpt, rpt.DArg(), true);
 		}
 		
 		// upper crossing
@@ -491,7 +491,7 @@ void CircCrossingStructure::HackToolRectangle(const P2& p0, const P2& p1)
 			double lam = I1unit.PushIntoSmall(((lamz_p + lam0p) / perpvfac + 1) / 2); 
 			P2 rpt = Along(lam, p0r, p0l); 
 			TOL_ZERO(rpt.Len() - crad); 
-			cpara.push_back(CPara(rpt, rpt.DArg(), false)); 
+            cpara.emplace_back(rpt, rpt.DArg(), false);
 		}
 	}
 
@@ -590,8 +590,8 @@ void HackCCSx(CircCrossingStructure& ccs, const PathXboxed& pathxb)
 	pathxb.maxidup++; 
 
 	// work through the ranges 		
-    std::pair<int, int> iurg = pathxb.upart.FindPartRG(urg); 
-	for (int iu = iurg.first; iu <= iurg.second; iu++) 
+    auto iurg = pathxb.upart.FindPartRG(urg);
+    for (auto iu = iurg.first; iu <= iurg.second; iu++)
 	{
 		const pucketX& pucx = pathxb.puckets[iu]; 
         for (std::size_t k = 0; k < pucx.cklines.size(); k++)
@@ -638,7 +638,7 @@ void CircleIntersectNew(std::vector<I1>& res, const P2& cpt, double crad, const 
 		ASSERT(1); 
 
     for (std::size_t i = 1; i < ccs.circrange.ep.size(); i += 2)
-        res.push_back(I1(ccs.circrange.ep[i - 1].w, ccs.circrange.ep[i].w));
+        res.emplace_back(ccs.circrange.ep[i - 1].w, ccs.circrange.ep[i].w);
 }
 
 

@@ -88,18 +88,18 @@ void SurfX::SliceFibre(Ray_gen& rgen)
 
 
 //////////////////////////////////////////////////////////////////////
-void SurfXboxed::SliceFibreBox(int iu, int iv, Ray_gen& rgen) 
+void SurfXboxed::SliceFibreBox(std::size_t iu, std::size_t iv, Ray_gen& rgen)
 {
 	bucketX& bu = buckets[iu][iv]; 
 
-	for (int ip = 0; ip < (int)bu.ckpoints.size(); ip++)
-		rgen.BallSlice(*(bu.ckpoints[ip])); 
+    for (auto& p : bu.ckpoints)
+        rgen.BallSlice(*p);
 
-	for (int ie = 0; ie < (int)bu.ckedges.size(); ie++)
-		rgen.BallSlice(*(bu.ckedges[ie].edx->p0), *(bu.ckedges[ie].edx->p1)); 
+    for (auto& edge : bu.ckedges)
+        rgen.BallSlice(*(edge.edx->p0), *(edge.edx->p1));
 
-	for (int ic = 0; ic < (int)bu.cktriangs.size(); ic++) 
-		rgen.BallSlice(*(bu.cktriangs[ic].trx->b12->p0), *(bu.cktriangs[ic].trx->b12->p1), *(bu.cktriangs[ic].trx->ThirdPoint())); 
+    for (auto& tri : bu.cktriangs)
+        rgen.BallSlice(*(tri.trx->b12->p0), *(tri.trx->b12->p1), *(tri.trx->ThirdPoint()));
 }
 
 
@@ -121,10 +121,10 @@ void SurfXboxed::SliceUFibre(Ray_gen& rgen)
 	I1 urg = I1(rgen.pfib->wp - r, rgen.pfib->wp + r); 
 	if (urg.Intersect(gbxrg)) 
 	{
-        std::pair<int, int> iurg = xpart.FindPartRG(urg); 
+        auto iurg = xpart.FindPartRG(urg);
 
 		// could loop in a more optimal order 
-		for (int iu = iurg.first; iu <= iurg.second; iu++) 
+        for (auto iu = iurg.first; iu <= iurg.second; iu++)
 		{
 			I1 vrg = rgen.pfib->wrg.Inflate(r); 
 			if (vrg.Intersect(gbyrg)) 
@@ -157,10 +157,10 @@ void SurfXboxed::SliceVFibre(Ray_gen& rgen)
 	I1 urg = rgen.pfib->wrg.Inflate(r); 
 	if (urg.Intersect(gbxrg)) 
 	{
-        std::pair<int, int> iurg = xpart.FindPartRG(urg); 
+        auto iurg = xpart.FindPartRG(urg);
 
 		// could loop in a more optimal order 
-		for (int iu = iurg.first; iu <= iurg.second; iu++) 
+        for (auto iu = iurg.first; iu <= iurg.second; iu++)
 		{
 			I1 vrg = I1(rgen.pfib->wp - r, rgen.pfib->wp + r); 
 			if (vrg.Intersect(gbyrg)) 

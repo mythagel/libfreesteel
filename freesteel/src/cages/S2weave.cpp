@@ -39,9 +39,9 @@ void S2weave::SetShape(const I1& lurg, const I1& lvrg, double res)
 
 	// generate the fibres
 	for (int i = 0; i <= nufib; i++) 
-		ufibs.push_back(S1(urg.Along((double)i / nufib), vrg, 1)); 
+        ufibs.emplace_back(urg.Along((double)i / nufib), vrg, 1);
 	for (int j = 0; j <= nvfib; j++) 
-		vfibs.push_back(S1(vrg.Along((double)j / nvfib), urg, 2)); 
+        vfibs.emplace_back(vrg.Along((double)j / nvfib), urg, 2);
 
 	firstcontournumber = 0; 
 	lastcontournumber = firstcontournumber - 1; 

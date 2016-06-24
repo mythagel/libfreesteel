@@ -21,7 +21,7 @@
 
 #ifndef MakeToolpath__h
 #define MakeToolpath__h
-#include "cages/pathxseries.h"
+#include "cages/PathXSeries.h"
 #include "cages/SurfX.h"
 #include "pits/CoreRoughGeneration.h"
 #include <vector>

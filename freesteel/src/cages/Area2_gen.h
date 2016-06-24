@@ -22,7 +22,7 @@
 #ifndef AREA2_GEN
 #define AREA2_GEN
 #include "cages/S2weave.h"
-#include "cages/pathxseries.h"
+#include "cages/PathXSeries.h"
 #include "bolts/P2.h"
 #include "cages/SurfX.h"
 #include "cages/SurfXboxed.h"
@@ -31,7 +31,7 @@
 
 //////////////////////////////////////////////////////////////////////
 void HackAreaOffset(S2weave& wve, const PathXSeries& paths, double rad);
-void HackToolpath(S2weave& wve, const PathXSeries& paths, int ixseg, const P2& ptpath, double rad);
+void HackToolpath(S2weave& wve, const PathXSeries& paths, std::size_t ixseg, const P2& ptpath, double rad);
 
 
 

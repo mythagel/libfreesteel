@@ -22,7 +22,6 @@
 #include "vtkOpenGLPolyDataMapper.h"
 #include "visuals/fsvtkToolpathMapper.h"
 #include "cages/Area2_gen.h"
-#include "cages/PathX.h"
 
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
@@ -241,19 +240,6 @@ void fsvtkToolpathMapper::DrawStock()
         DrawFibre(stockweave.ufibs[iu], stockweave.vrg, (*pftpaths)[pos.ipathx].z);
     for (int iv = 0; iv < stockweave.vfibs.size(); iv++)
         DrawFibre(stockweave.vfibs[iv], stockweave.urg, (*pftpaths)[pos.ipathx].z);
-}
-
-///////////////////////////////////////////////////////////
-void BadGenBound(PathX& pxstockbound)
-{
-    for (int j = -10; j < 10; j++)
-    {
-        double th = M2PI * j / 30;
-        pxstockbound.pth.push_back(P2(1.5, 1.5) + P2(cos(th), sin(th)) * 1.5);
-    }
-    pxstockbound.pth.push_back(pxstockbound.pth.back() - P2(1.3, 0.0));
-    pxstockbound.pth.push_back(pxstockbound.pth.front() + P2(0.0, 1.0));
-    pxstockbound.pth.push_back(pxstockbound.pth.front());
 }
 
 /*

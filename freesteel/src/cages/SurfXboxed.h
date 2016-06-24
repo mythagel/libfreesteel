@@ -99,7 +99,7 @@ public:
 	double searchbox_epsilon; 
 
 	// apply boxed triangles to a weave ray.  
-		void SliceFibreBox(int iu, int iv, class Ray_gen& rgen); 
+    void SliceFibreBox(std::size_t iu, std::size_t iv, class Ray_gen& rgen);
 	void SliceUFibre(Ray_gen& rgen); 
 	void SliceVFibre(Ray_gen& rgen); 
 }; 

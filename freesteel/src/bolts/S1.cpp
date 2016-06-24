@@ -92,8 +92,8 @@ void S1::Merge(double rglo, bool binterncellboundlo, double rghi, bool binternce
 	// off the end
     if (static_cast<std::size_t>(il) == ep.size())
 	{
-        ep.push_back(B1(rglo, true, binterncellboundlo));
-        ep.push_back(B1(rghi, false, binterncellboundhi));
+        ep.emplace_back(rglo, true, binterncellboundlo);
+        ep.emplace_back(rghi, false, binterncellboundhi);
 		ASSERT(Check()); 
 		return; 
 	}
@@ -142,8 +142,8 @@ void S1::Minus(double rglo, bool binterncellboundlo, double rghi, bool binternce
         if (ep[il].blower)
 			return;
 
-        ep.insert(ep.begin() + il, B1(rghi, true, binterncellboundhi));
-        ep.insert(ep.begin() + il, B1(rglo, false, binterncellboundlo));
+        ep.emplace(ep.begin() + il, rghi, true, binterncellboundhi);
+        ep.emplace(ep.begin() + il, rglo, false, binterncellboundlo);
 		ASSERT(Check()); 
 		return; 
 	}
@@ -191,15 +191,14 @@ void S1::Invert()
 {
     if (ep.empty())
 	{
-        ep.push_back(B1(wrg.lo, true));
-        ep.push_back(B1(wrg.hi, false));
+        ep.emplace_back(wrg.lo, true);
+        ep.emplace_back(wrg.hi, false);
 		ASSERT(Check()); 
 		return; 
 	}
 
 	// invert the flags 
-    for (std::size_t i = 0; i < ep.size(); i++)
-        ep[i].blower = !ep[i].blower;
+    for (auto& p : ep) p.blower = !p.blower;
 
 	// the front condition  
     if (ep.front().w == wrg.lo)
@@ -208,7 +207,7 @@ void S1::Invert()
         ep.erase(ep.begin());
 	}
 	else
-        ep.insert(ep.begin(), B1(wrg.lo, true));
+        ep.emplace(ep.begin(), wrg.lo, true);
 
 	// the back condition 
     if (ep.back().w == wrg.hi)
@@ -217,7 +216,7 @@ void S1::Invert()
         ep.pop_back();
 	}
 	else
-        ep.push_back(B1(wrg.hi, false));
+        ep.emplace_back(wrg.hi, false);
 
 	ASSERT(Check()); 
 }

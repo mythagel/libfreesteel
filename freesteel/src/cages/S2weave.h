@@ -24,7 +24,7 @@
 #include "bolts/P2.h"
 #include "bolts/I1.h"
 #include "bolts/S1.h"
-#include "cages/pathxseries.h"
+#include "cages/PathXSeries.h"
 #include <vector>
 
 //////////////////////////////////////////////////////////////////////

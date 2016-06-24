@@ -41,10 +41,10 @@ public:
   // runs parallel to the brks array.  
     std::vector< std::vector<P3> > linkpths; 
 
-    PathXSeries(){}
-	PathXSeries(double lz) : 
-		z(lz) {;} 
-
+    PathXSeries() {}
+    PathXSeries(double lz)
+     : z(lz)
+    {}
 
 	void Add(const P2& pt)
 	{
@@ -60,7 +60,7 @@ public:
 	void Break()
 	{
 		brks.push_back(pths.size());
-		linkpths.push_back(std::vector<P3>());
+        linkpths.emplace_back();
 	}
 
 	void Pop_back()
@@ -69,48 +69,47 @@ public:
 			pths.pop_back();
 	}
 
-
 // accessor functions for post-processing
-	int GetNbrks()
+    std::size_t GetNbrks() const
 	{
 		return brks.size(); 
 	}
 
-	int GetBrkIndex(int i)
+    std::size_t GetBrkIndex(std::size_t i) const
 	{
 		return brks[i]; 
 	}
 
-	int GetNlnks(int i)
+    std::size_t GetNlnks(std::size_t i) const
 	{
 		return linkpths[i].size(); 
 	}
 
-	double GetLinkX(int j, int i)
+    double GetLinkX(std::size_t j, std::size_t i) const
 	{
 		return linkpths[j][i].x; 
 	}
 
-	double GetLinkY(int j, int i)
+    double GetLinkY(std::size_t j, std::size_t i) const
 	{
 		return linkpths[j][i].y; 
 	}
 
-	double GetLinkZ(int j, int i)
+    double GetLinkZ(std::size_t j, std::size_t i) const
 	{
 		return linkpths[j][i].z; 
 	}
 
-	int GetNpts()
+    std::size_t GetNpts() const
 	{
 		return pths.size(); 
 	}
 
-	double GetX(int i)
+    double GetX(std::size_t i) const
 	{
 		return pths[i].u; 
 	}
-	double GetY(int i)
+    double GetY(std::size_t i) const
 	{
 		return pths[i].v; 
 	}
@@ -126,14 +125,15 @@ struct ckpline
 	double vmid; // the vrange is (vmid - vrad, vmid + vrad) 
 	double vrad; 
 
-	ckpline(int liseg, int lidup, double lvmid, double lvrad) : 
-		iseg(liseg), idup(lidup), vmid(lvmid), vrad(lvrad) {;}; 
+    ckpline(int liseg, int lidup, double lvmid, double lvrad)
+     : iseg(liseg), idup(lidup), vmid(lvmid), vrad(lvrad)
+    {}
 }; 
 
 //////////////////////////////////////////////////////////////////////
 struct pucketX
 {
-    std::vector<int> ckpoints; 
+    std::vector<std::size_t> ckpoints;
     std::vector<ckpline> cklines; 
 }; 
 
@@ -159,12 +159,13 @@ public:
 	mutable int maxidup; 
 
   PathXboxed() {}
-  PathXboxed(PathXSeries* lppathx) : 
-		ppathx(lppathx) {;}; 
+  PathXboxed(PathXSeries* lppathx)
+   : ppathx(lppathx)
+  {}
 
 	void BuildBoxes(const I1& lgburg, double boxwidth); 
 
-		void PutSegment(int iseg, bool bFirst, bool bRemove); 
+    void PutSegment(std::size_t iseg, bool bFirst, bool bRemove);
 	void Add(const P2& p1); 
 	void Break(); 
 	void Pop_back(); 

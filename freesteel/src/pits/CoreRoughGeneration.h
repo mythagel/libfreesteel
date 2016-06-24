@@ -22,7 +22,7 @@
 #ifndef COREROUGHGENERATION_H
 #define COREROUGHGENERATION_H
 #include "bolts/I1.h"
-#include "cages/pathxseries.h"
+#include "cages/PathXSeries.h"
 #include "cages/Area2_gen.h"
 #include "pits/S2weaveCellLinearCut.h"
 #include <vector>

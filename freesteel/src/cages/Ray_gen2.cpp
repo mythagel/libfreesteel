@@ -18,11 +18,15 @@
 //
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
-#include "PathX.h"
+#include "Ray_gen2.h"
 #include "bolts/debugfuncs.h"
+#include "bolts/smallfuncs.h"
 #include "pits/SLi_gen.h"
 #include "cages/Area2_gen.h"
 #include <algorithm>
+
+Ray_gen2::Ray_gen2(double lraddisc) :
+    raddisc(lraddisc), raddiscsq(Square(raddisc)) {}
 
 //////////////////////////////////////////////////////////////////////
 void Ray_gen2::HoldFibre(S1* lpfib) 
@@ -59,7 +63,7 @@ void Ray_gen2::LineCut(const P2& a, const P2& b)
 		double al = a.u / (a.u - b.u); 
 		double lw = Along(al, a.v, b.v); 
 		bool lblower = ((a.u < 0.0) != (pfib->ftype == 1)); // account for reflection 
-scuts.push_back(B1(lw, !lblower)); 
+        scuts.emplace_back(lw, !lblower);
 	}
 }
 
@@ -161,130 +165,83 @@ void Ray_gen2::DiscSliceCapN(const P2& a, const P2& b)
 	}
 }
 
-
-
-
 //////////////////////////////////////////////////////////////////////
-void HackAreaOffset(Ray_gen2& rgen2, const PathXSeries paths)  
+void HackToolpath(Ray_gen2& rgen2, const PathXSeries& pathxs, std::size_t iseg, const P2& ptpath)
 {
     std::size_t j = 0;
-	P2 tb; 
-	bool bFirstPoint = true; 
-    for (std::size_t i = 0; i < paths.pths.size(); i++)
-	{
-		P2 ta = tb; 
-		tb = rgen2.Transform(paths.pths[i]); 
-
-		if ((j == paths.brks.size()) || (i < paths.brks[j]))
-		{
-			if (!bFirstPoint) 
-			{
-				rgen2.LineCut(ta, tb); 
-				rgen2.DiscSliceCapN(ta, tb); 
-			}
-			else 
-				bFirstPoint = false; 
-		}
-
-		// advance through possible multiple markings on this segment.  
-		else
-		{
-			ASSERT(i == paths.brks[j]); 
-			do
-				j++;
-			while ((j < paths.brks.size()) && (i == paths.brks[j])); 
-
-			bFirstPoint = true; 
-		}
-	}
-	ASSERT(rgen2.pfib->Check()); 
-}
-
-
-//////////////////////////////////////////////////////////////////////
-void HackAreaOffset(S2weave& wve, const PathXSeries& paths, double rad)
-{
-    Ray_gen2 ryg2(rad);
-
-    for (int iu = 0; iu < (int)wve.ufibs.size(); iu++)
-    {
-        ryg2.HoldFibre(&wve.ufibs[iu]);
-        HackAreaOffset(ryg2, paths);
-        ryg2.ReleaseFibre();
-    }
-
-    for (int iv = 0; iv < (int)wve.vfibs.size(); iv++)
-    {
-        ryg2.HoldFibre(&wve.vfibs[iv]);
-        HackAreaOffset(ryg2, paths);
-        ryg2.ReleaseFibre();
-    }
-}
-
-//////////////////////////////////////////////////////////////////////
-void HackToolpath(Ray_gen2& rgen2, const PathXSeries& pathxs, int iseg, const P2& ptpath)
-{
-    std::size_t j = 0;
-	P2 tb; 
-	bool bFirstPoint = true; 
+    P2 tb;
+    bool bFirstPoint = true;
     for (std::size_t i = 0; i < iseg; ++i)
-	{
-		P2 ta = tb; 
-		tb = rgen2.Transform(pathxs.pths[i]); 
+    {
+        P2 ta = tb;
+        tb = rgen2.Transform(pathxs.pths[i]);
 
-		if ((j == pathxs.brks.size()) || (i < pathxs.brks[j]))
-		{
-			if (!bFirstPoint) 
-				rgen2.DiscSliceCapN(ta, tb); 
-			else 
-				bFirstPoint = false; 
-		}
+        if ((j == pathxs.brks.size()) || (i < pathxs.brks[j]))
+        {
+            if (!bFirstPoint)
+                rgen2.DiscSliceCapN(ta, tb);
+            else
+                bFirstPoint = false;
+        }
 
-		// advance through possible multiple markings on this segment.  
-		else
-		{
-			ASSERT(i == pathxs.brks[j]); 
-			do
-				j++;
-			while ((j < pathxs.brks.size()) && (i == pathxs.brks[j])); 
+        // advance through possible multiple markings on this segment.
+        else
+        {
+            ASSERT(i == pathxs.brks[j]);
+            do
+                j++;
+            while ((j < pathxs.brks.size()) && (i == pathxs.brks[j]));
 
-			bFirstPoint = true; 
-		}
-	}
-	
-	if (iseg < pathxs.pths.size())
-	{
-		ASSERT(!bFirstPoint);
-		P2 ta = tb;
-		tb = rgen2.Transform(ptpath); 
-		rgen2.DiscSliceCapN(ta, tb); 
-	}
-	
-	ASSERT(rgen2.pfib->Check()); 
+            bFirstPoint = true;
+        }
+    }
+
+    if (iseg < pathxs.pths.size())
+    {
+        ASSERT(!bFirstPoint);
+        P2 ta = tb;
+        tb = rgen2.Transform(ptpath);
+        rgen2.DiscSliceCapN(ta, tb);
+    }
+
+    ASSERT(rgen2.pfib->Check());
 }
+
+
 
 //////////////////////////////////////////////////////////////////////
-void HackToolpath(S2weave& wve, const PathXSeries& pathxs, int iseg, const P2& ptpath, double rad)
+void HackAreaOffset(Ray_gen2& rgen2, const PathXSeries paths)
 {
-    Ray_gen2 ryg2(rad);
-
-    for (int iu = 0; iu < (int)wve.ufibs.size(); iu++)
+    std::size_t j = 0;
+    P2 tb;
+    bool bFirstPoint = true;
+    for (std::size_t i = 0; i < paths.pths.size(); i++)
     {
-        ryg2.HoldFibre(&wve.ufibs[iu]);
-        HackToolpath(ryg2, pathxs, iseg, ptpath);
-        ryg2.ReleaseFibre();
-    }
+        P2 ta = tb;
+        tb = rgen2.Transform(paths.pths[i]);
 
-    for (int iv = 0; iv < (int)wve.vfibs.size(); iv++)
-    {
-        ryg2.HoldFibre(&wve.vfibs[iv]);
-        HackToolpath(ryg2, pathxs, iseg, ptpath);
-        ryg2.ReleaseFibre();
+        if ((j == paths.brks.size()) || (i < paths.brks[j]))
+        {
+            if (!bFirstPoint)
+            {
+                rgen2.LineCut(ta, tb);
+                rgen2.DiscSliceCapN(ta, tb);
+            }
+            else
+                bFirstPoint = false;
+        }
+
+        // advance through possible multiple markings on this segment.
+        else
+        {
+            ASSERT(i == paths.brks[j]);
+            do
+                j++;
+            while ((j < paths.brks.size()) && (i == paths.brks[j]));
+
+            bFirstPoint = true;
+        }
     }
+    ASSERT(rgen2.pfib->Check());
 }
-
-
-
-
-
 

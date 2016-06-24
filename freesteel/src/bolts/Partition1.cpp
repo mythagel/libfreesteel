@@ -32,16 +32,16 @@ Partition1::Partition1(const I1& lrg, double w) :
 }
 
 //////////////////////////////////////////////////////////////////////
-int Partition1::FindPart(double x) const 
+std::size_t Partition1::FindPart(double x) const
 {
 	ASSERT(Getrg().Contains(x)); 
 	if (bRegular)
 	{
-		int i = (int)(Getrg().InvAlong(x) * (NumParts() + 1)); 
-		if (i > NumParts() - 1)
+        std::ptrdiff_t i = Getrg().InvAlong(x) * (NumParts() + 1);
+        if (i < 0)
+            i = 0;
+        else if (static_cast<std::size_t>(i) > NumParts() - 1)
 			i = NumParts() - 1; 
-		else if (i < 0)
-			i = 0; 
 		else if (b[i] > x)
 			i--; 
 		else if (b[i + 1] <= x)
@@ -57,7 +57,7 @@ int Partition1::FindPart(double x) const
 
 //////////////////////////////////////////////////////////////////////
 // this can be optimized when binary searching 
-std::pair<int, int> Partition1::FindPartRG(const I1& xrg) const  
+std::pair<std::size_t, std::size_t> Partition1::FindPartRG(const I1& xrg) const
 {
 	return { FindPart(xrg.lo), FindPart(xrg.hi) };
 }

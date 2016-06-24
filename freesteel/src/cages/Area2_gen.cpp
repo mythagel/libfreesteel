@@ -19,6 +19,7 @@
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
 #include "cages/Area2_gen.h"
+#include "cages/Ray_gen2.h"
 
 //////////////////////////////////////////////////////////////////////
 void Area2_gen::FindInterior(SurfX& sx)
@@ -109,5 +110,47 @@ void Area2_gen::MakeContours(PathXSeries& ftpaths)
                 ftpaths.z = z;
             }
         }
+    }
+}
+
+
+//////////////////////////////////////////////////////////////////////
+void HackToolpath(S2weave& wve, const PathXSeries& pathxs, std::size_t iseg, const P2& ptpath, double rad)
+{
+    Ray_gen2 ryg2(rad);
+
+    for (auto& ufib : wve.ufibs)
+    {
+        ryg2.HoldFibre(&ufib);
+        HackToolpath(ryg2, pathxs, iseg, ptpath);
+        ryg2.ReleaseFibre();
+    }
+
+    for (auto& vfib : wve.vfibs)
+    {
+        ryg2.HoldFibre(&vfib);
+        HackToolpath(ryg2, pathxs, iseg, ptpath);
+        ryg2.ReleaseFibre();
+    }
+}
+
+
+//////////////////////////////////////////////////////////////////////
+void HackAreaOffset(S2weave& wve, const PathXSeries& paths, double rad)
+{
+    Ray_gen2 ryg2(rad);
+
+    for (auto& ufib : wve.ufibs)
+    {
+        ryg2.HoldFibre(&ufib);
+        HackAreaOffset(ryg2, paths);
+        ryg2.ReleaseFibre();
+    }
+
+    for (auto& vfib : wve.vfibs)
+    {
+        ryg2.HoldFibre(&vfib);
+        HackAreaOffset(ryg2, paths);
+        ryg2.ReleaseFibre();
     }
 }

@@ -18,7 +18,7 @@
 //
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
-#include "pathxseries.h"
+#include "PathXSeries.h"
 #include "bolts/smallfuncs.h"
 
 //////////////////////////////////////////////////////////////////////
@@ -63,7 +63,7 @@ double PTcrossU(double lu, P2& p0, P2& p1)
 //////////////////////////////////////////////////////////////////////
 // we should be putting segments expanded by their prad into here
 // and doing the points and the rectangles in separate box components.  
-void PathXboxed::PutSegment(int iseg, bool bFirst, bool bRemove) 
+void PathXboxed::PutSegment(std::size_t iseg, bool bFirst, bool bRemove)
 {
 	// do the point addition 
 	// if we get the next part of the arc, we can narrow it down a lot.  
@@ -77,7 +77,7 @@ void PathXboxed::PutSegment(int iseg, bool bFirst, bool bRemove)
 		ASSERT(gburg.Contains(pp.u)); 
 		int iu = upart.FindPart(pp.u); 
 		ASSERT(iu >= 0 && iu < (int)puckets.size());
-		puckets[iu].ckpoints.push_back(iseg); 
+        puckets[iu].ckpoints.push_back(iseg);
 	}
 
 	// quit if no line to be added with this.  
@@ -94,14 +94,14 @@ void PathXboxed::PutSegment(int iseg, bool bFirst, bool bRemove)
 	if (!urg.Intersect(gburg)) 
 		return; 
 
-    std::pair<int, int> iurg = upart.FindPartRG(urg); 
+    auto iurg = upart.FindPartRG(urg);
 
 	// take away this index from each of the strips 
 	if (bRemove)
 	{
-		for (int iu = iurg.first; iu <= iurg.second; iu++) 
+        for (auto iu = iurg.first; iu <= iurg.second; iu++)
 		{
-			if (puckets[iu].cklines.back().iseg == iseg) 
+            if (puckets[iu].cklines.back().iseg == iseg)
 				puckets[iu].cklines.pop_back(); 
 			else
 			{
@@ -119,16 +119,16 @@ void PathXboxed::PutSegment(int iseg, bool bFirst, bool bRemove)
 	if(iurg.first != iurg.second) 
 	{
 		idup = idups.size(); 
-		idups.push_back(0); 
+        idups.push_back(0);
 	}
 
 	// loop across the strips now.  
 	double v1 = PTcrossU(upart.GetPart(iurg.first).lo, p0, p1);  
-	for (int iu = iurg.first; iu <= iurg.second; iu++) 
+    for (auto iu = iurg.first; iu <= iurg.second; iu++)
 	{
 		double v0 = v1; 
 		v1 = PTcrossU(upart.GetPart(iu).hi, p0, p1);  
-		puckets[iu].cklines.push_back(ckpline(iseg, idup, Half(v0, v1), fabs(v1 - v0) / 2)); 
+        puckets[iu].cklines.emplace_back(iseg, idup, Half(v0, v1), fabs(v1 - v0) / 2);
 	}
 }
 

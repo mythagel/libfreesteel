@@ -19,24 +19,47 @@
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PathX__h
-#define PathX__h
-#include <vector>
+#ifndef Ray_gen2__h
+#define Ray_gen2__h
+#include "bolts/S1.h"
+#include "bolts/I1.h"
 #include "bolts/P2.h"
+#include "cages/PathXSeries.h"
+#include <vector>
 
 //////////////////////////////////////////////////////////////////////
-// simple case of a toolpath 
-class PathX		
+//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+// ray holding for flat cases
+class Ray_gen2
 {
-public: 
-    std::vector<P2> pth; 
-//	double z; 
+public:
+    S1* pfib;
+    std::vector<B1> scuts; // local for cutting and offsetting.
 
-	PathX() 
-		{;}; 
-//	PathX(double lz) : 
-//		z(lz) {;} 
-}; 
+    // the endpoints of the ray are at (0,0,zrg.lo) and (0, 0, zrg.hi)
+    I1 urg;
+
+    // the disc size
+    double raddisc;
+    double raddiscsq;
+
+    // result value (a range), validity from return function.
+    void HoldFibre(S1* lpfib);
+    void ReleaseFibre();
+
+
+    Ray_gen2(double lraddisc);
+
+    void DiscSliceCapN(const P2& a, const P2& b);
+    void LineCut(const P2& a, const P2& b); // fills in the scuts
+
+    P2 Transform(const P2& p)
+        { return (pfib->ftype == 1 ? P2(p.u - pfib->wp, p.v) : P2(p.v - pfib->wp, p.u)); }
+};
+
+void HackToolpath(Ray_gen2& rgen2, const PathXSeries& pathxs, std::size_t iseg, const P2& ptpath);
+void HackAreaOffset(Ray_gen2& rgen2, const PathXSeries paths);
 
 #endif
 

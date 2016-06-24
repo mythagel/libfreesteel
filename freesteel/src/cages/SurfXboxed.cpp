@@ -104,9 +104,9 @@ void SurfXboxed::AddEdgeBucket(edgeX* ped)
 
 
 	// loop through the strips 
-    std::pair<int, int> ixrg = xpart.FindPartRG(xrg); 
+    auto ixrg = xpart.FindPartRG(xrg);
 	P2 rzr = TcrossX(xpart.GetPart(ixrg.first).lo, pp0, pp1);  
-	for (int ix = ixrg.first; ix <= ixrg.second; ix++) 
+    for (auto ix = ixrg.first; ix <= ixrg.second; ix++)
 	{
 		P2 rzl = rzr; 
 		rzr = TcrossX(xpart.GetPart(ix).hi, pp0, pp1);  
@@ -151,7 +151,7 @@ void SurfXboxed::AddEdgeBucket(edgeX* ped)
 			double zh = std::max(zhd, zhu); 
 
 			// put in this box 
-			buckets[ix][iy].ckedges.push_back(ckedgeX(zh, ped, ipfck)); 
+            buckets[ix][iy].ckedges.emplace_back(zh, ped, ipfck);
 		}
 	}
 }
@@ -246,10 +246,10 @@ void SurfXboxed::AddTriangBucket(triangX* ptr)
 
 
 	// loop through the strips 
-    std::pair<int, int> ixrg = xpart.FindPartRG(xrg); 
+    auto ixrg = xpart.FindPartRG(xrg);
     std::pair<P2, P2> fpr = TcrossX(xpart.GetPart(ixrg.first).lo, pp0, pp1, pp2);  
 	I1 yrgr = I1::SCombine(fpr.first.v, fpr.second.v); 
-	for (int ix = ixrg.first; ix <= ixrg.second; ix++) 
+    for (auto ix = ixrg.first; ix <= ixrg.second; ix++)
 	{
 		// copy over the spare parts of 
         std::pair<P2, P2> fpl = fpr; 
@@ -301,7 +301,7 @@ if ((pp1->z > zh) && xpart.GetPart(ix).Contains(pp1->x))
 					idups.push_back(0); 
 				}
 			}
-			buckets[ix][iy].cktriangs.push_back(cktriX(zh, ptr, ipfck)); 
+            buckets[ix][iy].cktriangs.emplace_back(zh, ptr, ipfck);
 		}
 	}
 }
@@ -328,9 +328,9 @@ void SurfXboxed::BuildBoxes(double boxwidth)
 	xpart = Partition1(gbxrg, boxwidth); 
 	for (int ip = 0; ip < xpart.NumParts(); ip++)
 	{
-		yparts.push_back(Partition1(gbyrg, boxwidth)); 
+        yparts.emplace_back(gbyrg, boxwidth);
 
-		buckets.push_back(std::vector<bucketX>()); 
+        buckets.emplace_back();
 		buckets.back().resize(yparts.back().NumParts()); 
 	}
 
