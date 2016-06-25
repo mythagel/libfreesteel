@@ -68,6 +68,7 @@ struct P2	// 2D point
 
 	static P2 InvDarg(double a);
 
+    // TODO double equality
 	bool operator==(const P2& b) const
 		{ return ((u == b.u) && (v == b.v)); }
 	bool operator!=(const P2& b) const

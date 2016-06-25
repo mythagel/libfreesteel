@@ -326,7 +326,7 @@ void SurfXboxed::BuildBoxes(double boxwidth)
 
 	// first setup all the arrays of partitions and boxes  
 	xpart = Partition1(gbxrg, boxwidth); 
-	for (int ip = 0; ip < xpart.NumParts(); ip++)
+    for (std::size_t ip = 0; ip < xpart.NumParts(); ip++)
 	{
         yparts.emplace_back(gbyrg, boxwidth);
 
@@ -335,51 +335,35 @@ void SurfXboxed::BuildBoxes(double boxwidth)
 	}
 
 	// now poke the geometry into the boxes 
-	for (int i0 = 0; i0 < (int)psurfx->vdX.size(); i0++)
-		AddPointBucket(&(psurfx->vdX[i0]));  
-
-	for (int i1 = 0; i1 < (int)psurfx->edX.size(); i1++)
-		AddEdgeBucket(&(psurfx->edX[i1])); 
-
-	for (int i2 = 0; i2 < (int)psurfx->trX.size(); i2++)
-		AddTriangBucket(&(psurfx->trX[i2])); 
+    for (auto& p : psurfx->vdX)     AddPointBucket(&p);
+    for (auto& edge : psurfx->edX)  AddEdgeBucket(&edge);
+    for (auto& tri : psurfx->trX)   AddTriangBucket(&tri);
 
 
 	maxidup = 0; 
 	searchbox_epsilon = 1e-4; 
 }
 
-
-//////////////////////////////////////////////////////////////////////
-struct sortboxv
-{
-	bool operator()(const P3* a, const P3* b) 
-		{ return (a->z < b->z); } 
-}; 
-
-struct sortboxe
-{
-	bool operator()(const ckedgeX& a, const ckedgeX& b) 
-		{ return (a.zh < b.zh); } 
-}; 
-
-struct sortboxt
-{
-	bool operator()(const cktriX& a, const cktriX& b) 
-		{ return (a.zh < b.zh); } 
-}; 
-
 //////////////////////////////////////////////////////////////////////
 void SurfXboxed::SortBuckets()  
 {
-	for (int ix = 0; ix < xpart.NumParts(); ix++) 
-	for (int iy = 0; iy < yparts[ix].NumParts(); iy++) 
-	{
-		bucketX& bu = buckets[ix][iy]; 
-        std::sort(bu.ckpoints.begin(), bu.ckpoints.begin(), sortboxv()); 
-        std::sort(bu.ckedges.begin(), bu.ckedges.begin(), sortboxe()); 
-        std::sort(bu.cktriangs.begin(), bu.cktriangs.begin(), sortboxt()); 
-	}
+    for (std::size_t ix = 0; ix < xpart.NumParts(); ix++)
+        for (std::size_t iy = 0; iy < yparts[ix].NumParts(); iy++)
+        {
+            bucketX& bu = buckets[ix][iy];
+            std::sort(bu.ckpoints.begin(), bu.ckpoints.end(), [](const P3* a, const P3* b)
+            {
+                return a->z < b->z;
+            });
+            std::sort(bu.ckedges.begin(), bu.ckedges.end(), [](const ckedgeX& a, const ckedgeX& b)
+            {
+                return a.zh < b.zh;
+            });
+            std::sort(bu.cktriangs.begin(), bu.cktriangs.end(), [](const cktriX& a, const cktriX& b)
+            {
+                return a.zh < b.zh;
+            });
+        }
 }
 
 

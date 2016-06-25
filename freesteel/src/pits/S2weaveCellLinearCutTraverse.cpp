@@ -145,7 +145,7 @@ bool S2weaveCellLinearCutTraverse::SetCellCutContinue(const P2& lvbearing)
 					break; 
 			ASSERT(libb < bolistcrossings.size()); 
 			#ifdef MDEBUG
-            std::pair<int, int> ccrD = bolistpairs[bolistcrossings[libb].first];  
+            auto ccrD = bolistpairs[bolistcrossings[libb].first];
 			TOL_ZERO((Along(lambb, GetBoundPoint(ccrD.first), GetBoundPoint(ccrD.second)) - ptcpbb).Len()); 
 			#endif
 
@@ -168,7 +168,7 @@ bool S2weaveCellLinearCutTraverse::SetCellCutContinue(const P2& lvbearing)
 	#ifdef MDEBUG
 	if (ibb != -1) 
 	{
-        std::pair<int, int> ccrD = bolistpairs[bolistcrossings[ibb].first];  
+        auto ccrD = bolistpairs[bolistcrossings[ibb].first];
 		TOL_ZERO((Along(lambb, GetBoundPoint(ccrD.first), GetBoundPoint(ccrD.second)) - ptcpbb).Len()); 
 	}
 	#endif
@@ -238,7 +238,7 @@ void S2weaveCellLinearCutTraverse::AdvanceToContourCut()
 	bContouribfvisited = false; // we join in the middle.  
 
 	TOL_ZERO((ptcst + vbearing * lamcp - ptcp).Len()); 
-    std::pair<int, int> ccr = bolistpairs[ib];  
+    auto ccr = bolistpairs[ib];
 	TOL_ZERO((Along(lambb, GetBoundPoint(ccr.first), GetBoundPoint(ccr.second)) - ptcp).Len()); 
 
 	// set the bearing now 
@@ -255,7 +255,7 @@ void S2weaveCellLinearCutTraverse::AdvanceAlongContourToLamPos(double llambn)
 	ASSERT(bOnContour); 
 	ASSERT(bolistcrossings.empty()); 
 	ASSERT(I1(lambb, 1.0).Contains(llambn)); 
-    std::pair<int, int> ccr = bolistpairs[ib];  
+    auto ccr = bolistpairs[ib];
 	TOL_ZERO((Along(lambb, GetBoundPoint(ccr.first), GetBoundPoint(ccr.second)) - ptcpbb).Len()); 
 	
 	lambb = llambn; 
@@ -270,7 +270,7 @@ void S2weaveCellLinearCutTraverse::AdvanceAlongContourAcrossCell()
 	ASSERT(bOnContour); 
 	ASSERT(bolistcrossings.empty()); 
 	#ifdef MDEBUG
-    std::pair<int, int> ccrD = bolistpairs[ib];  
+    auto ccrD = bolistpairs[ib];
 	TOL_ZERO((Along(lambb, GetBoundPoint(ccrD.first), GetBoundPoint(ccrD.second)) - ptcpbb).Len()); 
 	#endif
 
@@ -319,7 +319,7 @@ bool S2weaveCellLinearCutTraverse::OnContourFollowBearing(double dch, double fol
 	// if we're on contour, decide whether to stick with it.  
 	ASSERT(bOnContour); 
 
-    std::pair<int, int> ccr = bolistpairs[ib];  
+    auto ccr = bolistpairs[ib];
 	P2 vnl = GetBoundPoint(ccr.second) - GetBoundPoint(ccr.first); 
 
 	// choose to leave the contour because we're not pushed in.  

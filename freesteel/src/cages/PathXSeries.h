@@ -120,12 +120,12 @@ public:
 //////////////////////////////////////////////////////////////////////
 struct ckpline 
 {
-	int iseg; 
-	mutable int idup; 
+    std::size_t iseg;
+    mutable std::ptrdiff_t idup;
 	double vmid; // the vrange is (vmid - vrad, vmid + vrad) 
 	double vrad; 
 
-    ckpline(int liseg, int lidup, double lvmid, double lvrad)
+    ckpline(std::size_t liseg, std::ptrdiff_t lidup, double lvmid, double lvrad)
      : iseg(liseg), idup(lidup), vmid(lvmid), vrad(lvrad)
     {}
 }; 

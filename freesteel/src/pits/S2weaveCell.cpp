@@ -183,7 +183,7 @@ int S2weaveCell::GetBoundListPosition(int sic, const P2& ptb, bool bOnBoundOutsi
 
 
 //////////////////////////////////////////////////////////////////////
-P2 S2weaveCell::GetBoundPoint(int ibl)  
+P2 S2weaveCell::GetBoundPoint(std::size_t ibl)
 {
 	bool binV = ((boundlist[ibl].first & 1) == 0); 
 	double wb = boundlist[ibl].second->w; 
@@ -193,7 +193,7 @@ P2 S2weaveCell::GetBoundPoint(int ibl)
 
 
 //////////////////////////////////////////////////////////////////////
-bool S2weaveCell::GetBoundLower(int ibl) 
+bool S2weaveCell::GetBoundLower(std::size_t ibl)
 {
 	// this takes account of the sides 2 and 3 going in reverse.  
 	return (((boundlist[ibl].first & 2) == 0) == boundlist[ibl].second->blower); 
@@ -206,7 +206,7 @@ bool S2weaveCell::GetBoundLower(int ibl)
 
 //////////////////////////////////////////////////////////////////////
 // we have some const_casts here so we can get at the 
-bool AddBoundListMatches(std::vector< std::pair<int, B1*> >& boundlist, const S1& fw, const I1& rg, int edgno, bool bGoingDown, bool bStartIn) 
+static bool AddBoundListMatches(std::vector< std::pair<std::size_t, B1*> >& boundlist, const S1& fw, const I1& rg, std::size_t edgno, bool bGoingDown, bool bStartIn)
 {
     ASSERT(((edgno & 2) != 0) == bGoingDown);
     auto ilr = fw.Loclohi(rg);
@@ -230,7 +230,7 @@ bool AddBoundListMatches(std::vector< std::pair<int, B1*> >& boundlist, const S1
     {
         for (auto i = ilr.first; i <= ilr.second; i++)
         {
-            boundlist.push_back(std::pair<int, B1*>(edgno, const_cast<B1*>(&(fw.ep[i]))));
+            boundlist.emplace_back(edgno, const_cast<B1*>(&(fw.ep[i])));
             ASSERT(rg.Contains(fw.ep[i].w));
         }
     }
@@ -238,7 +238,7 @@ bool AddBoundListMatches(std::vector< std::pair<int, B1*> >& boundlist, const S1
     {
         for (auto i = ilr.second; i >= ilr.first; i--)
         {
-            boundlist.push_back(std::pair<int, B1*>(edgno, const_cast<B1*>(&(fw.ep[i]))));
+            boundlist.emplace_back(edgno, const_cast<B1*>(&(fw.ep[i])));
             ASSERT(rg.Contains(fw.ep[i].w));
         }
     }
@@ -247,7 +247,7 @@ bool AddBoundListMatches(std::vector< std::pair<int, B1*> >& boundlist, const S1
 }
 
 //////////////////////////////////////////////////////////////////////
-int S2weaveCell::CreateBoundList() 
+std::size_t S2weaveCell::CreateBoundList()
 {
     ASSERT(boundlist.empty());
     ASSERT(bolistpairs.empty());
@@ -262,14 +262,14 @@ int S2weaveCell::CreateBoundList()
 	// for now, default resolve ambiguities, keeping the inside region connected.  
 	// (not as likely if there has been a flat-rad offset where the region will always have some radius, but the spaces may be narrow).  
 	DEBUG_ONLY(bool binD = bLDin); 
-	int ib = boundlist.size() - 1; 
-	for (int ibl = 0; ibl < boundlist.size(); ibl++) 
+    std::size_t ib = boundlist.size() - 1;
+    for (std::size_t ibl = 0; ibl < boundlist.size(); ibl++)
 	{
 		ASSERT(binD == !GetBoundLower(ibl)); 
 		if (GetBoundLower(ibl)) 
 		{
 			ASSERT(!GetBoundLower(ib)); 
-			bolistpairs.push_back(std::pair<int, int>(ib, ibl)); 
+            bolistpairs.emplace_back(ib, ibl);
 		}
 		ib = ibl; 
 		DEBUG_ONLY(binD = !binD); 

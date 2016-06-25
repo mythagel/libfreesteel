@@ -47,7 +47,7 @@ void GeometryStuffTogether::MakeRectBoundary(const I1& xrg, const I1& yrg, doubl
 	GSTtoolpath *gstbound = new GSTtoolpath();
 	gstees.push_back(gstbound);
 
-	gstbound->ftpaths.push_back(PathXSeries());
+    gstbound->ftpaths.emplace_back();
 	gstbound->ftpaths.back().z = z;
 	gstbound->ftpaths.back().Add(P2(xrg.lo, yrg.lo)); 
 	gstbound->ftpaths.back().Add(P2(xrg.hi, yrg.lo)); 

@@ -55,7 +55,7 @@ struct S2weaveCell
 
     // the list of endpoints of fibres in this cell.
     // first int is the edge (left is first), second is the B1 entry in the array.
-    std::vector< std::pair<int, B1*> > boundlist;
+    std::vector< std::pair<std::size_t, B1*> > boundlist;
     bool bLDin;
     bool bLUin;
     bool bRUin;
@@ -67,13 +67,13 @@ struct S2weaveCell
     std::vector< std::pair<int, int> > bolistpairs; 
 
 
-	P2 GetBoundPoint(int ibl); 
-	bool GetBoundLower(int ibl); 
+    P2 GetBoundPoint(std::size_t ibl);
+    bool GetBoundLower(std::size_t ibl);
 
 
 	// changing and construction functions 
 		void ConstructCellBounds(); 
-	    int CreateBoundList(); 
+        std::size_t CreateBoundList();
 	void FindCellIndex(const P2& lptc); 
 	void AdvanceCrossSide(int icn, const P2& cspt); 
 

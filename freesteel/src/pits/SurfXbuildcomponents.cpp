@@ -64,14 +64,14 @@ void SurfX::PushTriangle(const P3& p0, const P3& p1, const P3& p2)
 	lvd.push_back(p0); 
 	lvd.push_back(p1); 
 	lvd.push_back(p2); 
-}; 
+}
 
 
 //////////////////////////////////////////////////////////////////////
 struct p3X_order
 {
 	bool operator()(const P3* a, const P3* b)
-		{ return ((a->x < b->x) || ((a->x == b->x) && ((a->y < b->y) || ((a->y == b->y) && (a->z < b->z))))); }; 
+        { return ((a->x < b->x) || ((a->x == b->x) && ((a->y < b->y) || ((a->y == b->y) && (a->z < b->z))))); }
 };
 
 
@@ -166,7 +166,7 @@ edgeX::edgeX(P3* lp0, P3* lp1, triangX* ltpR, triangX* ltpL)
 struct edgeXr_order
 {
 	bool operator()(const edgeXr* a, const edgeXr* b)
-		{ return ((a->p0 < b->p0) || ((a->p0 == b->p0) && ((a->p1 < b->p1) || ((a->p1 == b->p1) && (a->itR < b->itR))))); }; 
+        { return ((a->p0 < b->p0) || ((a->p0 == b->p0) && ((a->p1 < b->p1) || ((a->p1 == b->p1) && (a->itR < b->itR))))); }
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -224,15 +224,15 @@ void SurfX::BuildComponents()
 	int nt = np / 3; 
     std::vector<triangXr> ttx; 
 	for (i = 0; i < nt; i++) 
-		ttx.push_back(triangXr(vdX[ltd[i * 3]], vdX[ltd[i * 3 + 1]], vdX[ltd[i * 3 + 2]])); 
+        ttx.emplace_back(vdX[ltd[i * 3]], vdX[ltd[i * 3 + 1]], vdX[ltd[i * 3 + 2]]);
 
 	// now make the array of linked edges
     std::vector<edgeXr> edXr; 
 	for (i = 0; i < (int)ttx.size(); i++) 
 	{
-		edXr.push_back(edgeXr(ttx[i].a, ttx[i].b1, i)); 
-		edXr.push_back(edgeXr(ttx[i].b1, ttx[i].b2, i)); 
-		edXr.push_back(edgeXr(ttx[i].b2, ttx[i].a, i)); 
+        edXr.emplace_back(ttx[i].a, ttx[i].b1, i);
+        edXr.emplace_back(ttx[i].b1, ttx[i].b2, i);
+        edXr.emplace_back(ttx[i].b2, ttx[i].a, i);
 	}
 
     std::vector<edgeXr*> pedXr; 
@@ -243,7 +243,7 @@ void SurfX::BuildComponents()
 
 	// build the final array of triangles into which the edges will point 
 	for (i = 0; i < (int)ttx.size(); i++)
-		trX.push_back(triangX(ttx[i].tnorm)); 
+        trX.emplace_back(ttx[i].tnorm);
 
 	// build the final array of edges with pointers into these triangles
 	i = 0; 
@@ -253,16 +253,16 @@ void SurfX::BuildComponents()
 		if ((i + 1 < (int)pedXr.size()) && (pedXr[i]->p0 == pedXr[i + 1]->p0) && (pedXr[i]->p1 == pedXr[i + 1]->p1) && ((pedXr[i]->itL == -1) != (pedXr[i + 1]->itL == -1))) 
 		{
 			if (pedXr[i]->itL == -1)
-				edX.push_back(edgeX(pedXr[i]->p0, pedXr[i]->p1, &(trX[pedXr[i]->itR]), &(trX[pedXr[i + 1]->itL]))); 
+                edX.emplace_back(pedXr[i]->p0, pedXr[i]->p1, &(trX[pedXr[i]->itR]), &(trX[pedXr[i + 1]->itL]));
 			else
-				edX.push_back(edgeX(pedXr[i]->p0, pedXr[i]->p1, &(trX[pedXr[i + 1]->itR]), &(trX[pedXr[i]->itL]))); 
+                edX.emplace_back(pedXr[i]->p0, pedXr[i]->p1, &(trX[pedXr[i + 1]->itR]), &(trX[pedXr[i]->itL]));
 			i += 2; 
 		}
 
 		// one triangle sided edge
 		else 
 		{
-			edX.push_back(edgeX(pedXr[i]->p0, pedXr[i]->p1, (pedXr[i]->itR != -1 ? &(trX[pedXr[i]->itR]) : NULL), (pedXr[i]->itL != -1 ? &(trX[pedXr[i]->itL]) : NULL))); 
+            edX.emplace_back(pedXr[i]->p0, pedXr[i]->p1, (pedXr[i]->itR != -1 ? &(trX[pedXr[i]->itR]) : NULL), (pedXr[i]->itL != -1 ? &(trX[pedXr[i]->itL]) : NULL));
 			i++; 
 		}
 	}
