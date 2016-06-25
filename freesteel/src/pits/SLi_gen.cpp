@@ -109,7 +109,7 @@ void SLi_gen::Convert(std::vector<I1>& res, const I1& xrg, const I1& yrg, const 
 
     std::sort(inter.begin(), inter.end()); 
 	ASSERT(inter.empty() || (inter.front() <= inter.back())); 
-	for (int i = 1; i < (int)inter.size(); i += 2) 
+    for (int i = 1; i < inter.size(); i += 2)
 	{
 		I1 lrg(inter[i - 1], inter[i]); 
 		if (lrg.Intersect(rg)) 
@@ -126,7 +126,7 @@ void SLi_gen::Convert(std::vector<I1>& res, const I1& xrg, const I1& yrg, const 
 void SurfX::SliceRay(SLi_gen& sgen)
 {
 	// triangles
-	for (int i = 0; i < (int)trX.size(); i++)
+    for (int i = 0; i < trX.size(); i++)
 		sgen.SliceTriangle(*(trX[i].b12->p0), *(trX[i].b12->p1), *(trX[i].ThirdPoint())); 
 
 	if (1)

@@ -35,8 +35,8 @@ struct S2weaveCell
 
 	// indexes for finding the cell.  
 	// With subdivision the indexing will be more complex.  
-	int iu; 
-	int iv; 
+    std::size_t iu;
+    std::size_t iv;
 
 	// cell boundary pointers (which get changed by splitting)
 	const S1* pfulo; 
@@ -64,7 +64,7 @@ struct S2weaveCell
 	// index into boundlist which marks connects the 
 	// points between the boundary with lines, resolving ambiguities.  
 	// not possible to control for order.  
-    std::vector< std::pair<int, int> > bolistpairs; 
+    std::vector< std::pair<std::size_t, std::size_t> > bolistpairs;
 
 
     P2 GetBoundPoint(std::size_t ibl);
@@ -78,7 +78,7 @@ struct S2weaveCell
 	void AdvanceCrossSide(int icn, const P2& cspt); 
 
 
-	int GetBoundListPosition(int sic, const P2& ptb, bool bOnBoundOutside); 
+    int GetBoundListPosition(std::size_t sic, const P2& ptb, bool bOnBoundOutside);
 };
 
 

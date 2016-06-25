@@ -205,12 +205,12 @@ void S2weaveCellLinearCut::FindBolistCrossings()
 		bool bDownCut = GetBoundLower(ib); 
 
 		// find other end of the cut 
-		int i = bolistpairs.size() - 1; 
+        std::ptrdiff_t i = bolistpairs.size() - 1;
 		for ( ; i >= 0; i--) 
 			if ((bDownCut ? bolistpairs[i].second : bolistpairs[i].first) == ib) 
 				break; 
 		ASSERT(i >= 0); 
-		int ibth = (bDownCut ? bolistpairs[i].first : bolistpairs[i].second); 
+        auto ibth = (bDownCut ? bolistpairs[i].first : bolistpairs[i].second);
 		
 		// we have other end.  Is this a crossing or a loop on this side?  
 		bool bloopcut; 
@@ -253,7 +253,7 @@ void S2weaveCellLinearCut::FindBolistCrossings()
 					if ((DlbDownCut ? bolistpairs[Dli].second : bolistpairs[Dli].first) == Dlib) 
 						break; 
 				ASSERT(Dli >= 0); 
-				int Dlibth = (bDownCut ? bolistpairs[Dli].first : bolistpairs[Dli].second); 
+                auto Dlibth = (bDownCut ? bolistpairs[Dli].first : bolistpairs[Dli].second);
 				if (ib < ibth) 
 					ASSERT((Dlibth > ib) && (Dlibth < ib)); 
 				else

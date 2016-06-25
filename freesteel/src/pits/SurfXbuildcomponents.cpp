@@ -212,7 +212,7 @@ void SurfX::BuildComponents()
 		P3* pi = p3X[i]; 
 		if (vdX.empty() || !(vdX.back() == *pi))
 			vdX.push_back(*pi); 
-		ltd[pi - &(lvd[0])] = (int)vdX.size() - 1; 
+        ltd[pi - &(lvd[0])] = vdX.size() - 1;
 	}
 
 	// kill the old arrays
@@ -228,29 +228,28 @@ void SurfX::BuildComponents()
 
 	// now make the array of linked edges
     std::vector<edgeXr> edXr; 
-	for (i = 0; i < (int)ttx.size(); i++) 
+    for (auto& tri : ttx)
 	{
-        edXr.emplace_back(ttx[i].a, ttx[i].b1, i);
-        edXr.emplace_back(ttx[i].b1, ttx[i].b2, i);
-        edXr.emplace_back(ttx[i].b2, ttx[i].a, i);
+        edXr.emplace_back(tri.a, tri.b1, i);
+        edXr.emplace_back(tri.b1, tri.b2, i);
+        edXr.emplace_back(tri.b2, tri.a, i);
 	}
 
     std::vector<edgeXr*> pedXr; 
-	for (i = 0; i < (int)edXr.size(); i++) 
-		pedXr.push_back(&(edXr[i])); 
+    for (auto& edge : edXr) pedXr.push_back(&edge);
     std::sort(pedXr.begin(), pedXr.end(), edgeXr_order()); 
 
 
 	// build the final array of triangles into which the edges will point 
-	for (i = 0; i < (int)ttx.size(); i++)
-        trX.emplace_back(ttx[i].tnorm);
+    for (auto& tri : ttx)
+        trX.emplace_back(tri.tnorm);
 
 	// build the final array of edges with pointers into these triangles
 	i = 0; 
-	while (i < (int)pedXr.size()) 
+    while (i < pedXr.size())
 	{
 		// two edges can fuse into one with triangles on both sides
-		if ((i + 1 < (int)pedXr.size()) && (pedXr[i]->p0 == pedXr[i + 1]->p0) && (pedXr[i]->p1 == pedXr[i + 1]->p1) && ((pedXr[i]->itL == -1) != (pedXr[i + 1]->itL == -1))) 
+        if ((i + 1 < pedXr.size()) && (pedXr[i]->p0 == pedXr[i + 1]->p0) && (pedXr[i]->p1 == pedXr[i + 1]->p1) && ((pedXr[i]->itL == -1) != (pedXr[i + 1]->itL == -1)))
 		{
 			if (pedXr[i]->itL == -1)
                 edX.emplace_back(pedXr[i]->p0, pedXr[i]->p1, &(trX[pedXr[i]->itR]), &(trX[pedXr[i + 1]->itL]));
@@ -270,12 +269,12 @@ void SurfX::BuildComponents()
 	pedXr.clear(); 
 
 	// put the backpointers to the edges into the triangles
-	for (i = 0; i < (int)edX.size(); i++)
+    for (auto& edge : edX)
 	{
-		if (edX[i].tpL != NULL)
-			edX[i].tpL->SetEdge(&(edX[i]), ttx[edX[i].tpL - &(trX[0])]); 
-		if (edX[i].tpR != NULL)
-			edX[i].tpR->SetEdge(&(edX[i]), ttx[edX[i].tpR - &(trX[0])]); 
+        if (edge.tpL != NULL)
+            edge.tpL->SetEdge(&edge, ttx[edge.tpL - &(trX[0])]);
+        if (edge.tpR != NULL)
+            edge.tpR->SetEdge(&edge, ttx[edge.tpR - &(trX[0])]);
 	}
 	ttx.clear(); 
 }

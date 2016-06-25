@@ -75,8 +75,8 @@ void PathXboxed::PutSegment(std::size_t iseg, bool bFirst, bool bRemove)
 	else 
 	{
 		ASSERT(gburg.Contains(pp.u)); 
-		int iu = upart.FindPart(pp.u); 
-		ASSERT(iu >= 0 && iu < (int)puckets.size());
+        auto iu = upart.FindPart(pp.u);
+        ASSERT(iu < puckets.size());
         puckets[iu].ckpoints.push_back(iseg);
 	}
 

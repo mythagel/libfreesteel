@@ -94,7 +94,7 @@ struct S2weaveCellLinearCutTraverse : S2weaveCellLinearCut
 	// these are different cases for the start of a cut, one works 
 	// geometrically and the other topologically, although the first 
 	// would be fairer to assume we always begin away from the area boundary.  
-		void Findibbfore(int libb); 
+        void Findibbfore(std::size_t libb);
 	void SetCellCutBegin(const P2& lptcst, const P2& lvbearing); 
 	bool SetCellCutContinue(const P2& lvbearing); 
 

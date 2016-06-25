@@ -22,7 +22,7 @@
 #include "bolts/smallfuncs.h"
 
 //////////////////////////////////////////////////////////////////////
-void S2weaveCellLinearCutTraverse::Findibbfore(int libb) 
+void S2weaveCellLinearCutTraverse::Findibbfore(std::size_t libb)
 {
 	for (ibb = libb; ibb < bolistcrossings.size(); ibb++) 
 	{
@@ -41,7 +41,7 @@ void S2weaveCellLinearCutTraverse::Findibbfore(int libb)
 		}
 		#endif
 	}
-	if (ibb == bolistcrossings.size()) 
+    if (static_cast<std::size_t>(ibb) == bolistcrossings.size())
 		ibb = -1; 
 }
 
@@ -63,7 +63,7 @@ void S2weaveCellLinearCutTraverse::SetCellCutBegin(const P2& lptcst, const P2& l
 
 
 //////////////////////////////////////////////////////////////////////
-bool VecBearingInwardCell(int sic, const P2& vbearing) 
+static bool VecBearingInwardCell(std::size_t sic, const P2& vbearing)
 {
 	if (sic == 0) 
 		return (vbearing.u >= 0.0); 
@@ -93,12 +93,11 @@ bool S2weaveCellLinearCutTraverse::SetCellCutContinue(const P2& lvbearing)
 	// boundary, because it's on it already.  
 	bool bOnBoundB = false; 
 	bool bOnBoundF = false; 
-	int pib = ib; 
 	if (bOnContour && EqualOr(lambb, 0.0, 1.0))  
 	{
 		// the going out case is then we we are on the bound on the 
 		// edge of a cell, and are heading back across the cell boundary.  
-		int sic = (lambb == 0.0 ? boundlist[bolistpairs[ib].first].first : boundlist[bolistpairs[ib].second].first); 
+        auto sic = (lambb == 0.0 ? boundlist[bolistpairs[ib].first].first : boundlist[bolistpairs[ib].second].first);
 		if (VecBearingInwardCell(sic, lvbearing)) 
 			bOnBoundB = true; 
 		else
@@ -127,10 +126,7 @@ bool S2weaveCellLinearCutTraverse::SetCellCutContinue(const P2& lvbearing)
 		{
 			#ifdef MDEBUG
 			if (!bOnBoundF) 
-			{
-				for (int libb = 0; libb < bolistcrossings.size(); libb++) 
-					ASSERT(ib != bolistcrossings[libb].first); 
-			}
+                for (auto& crossing : bolistcrossings) ASSERT(ib != crossing.first);
 			#endif
 			Findibbfore(0); 
 		}
@@ -275,7 +271,7 @@ void S2weaveCellLinearCutTraverse::AdvanceAlongContourAcrossCell()
 	#endif
 
 
-	int ibl = bolistpairs[ib].second; 
+    auto ibl = bolistpairs[ib].second;
 	ptcpbb = GetBoundPoint(ibl); 
 	ptcp = ptcpbb; 
 	ASSERT(GetBoundLower(ibl)); 
@@ -343,7 +339,7 @@ bool S2weaveCellLinearCutTraverse::OnContourFollowBearing(double dch, double fol
 		// we will cross this cell boundary.  Mark it if it's entirely cleared from the start.  
 		if (bContouribfvisited) 
 		{
-			int ibl = bolistpairs[ib].second; 
+            auto ibl = bolistpairs[ib].second;
 			ASSERT(GetBoundLower(ibl)); 
 			ASSERT(boundlist[ibl].second->cutcode == -1); 
 			boundlist[ibl].second->cutcode = 0; 

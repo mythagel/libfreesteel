@@ -22,7 +22,7 @@
 #include "cages/S2weave.h"
 
 //////////////////////////////////////////////////////////////////////
-int FindCellParal(const std::vector<S1>& wfibs, double lw) 
+std::size_t FindCellParal(const std::vector<S1>& wfibs, double lw)
 {
     std::size_t res;
 	for (res = 1; res < wfibs.size(); res++) 
@@ -137,7 +137,7 @@ void S2weaveCell::AdvanceCrossSide(int icn, const P2& cspt)
 
 
 //////////////////////////////////////////////////////////////////////
-int S2weaveCell::GetBoundListPosition(int sic, const P2& ptb, bool bOnBoundOutside)  
+int S2weaveCell::GetBoundListPosition(std::size_t sic, const P2& ptb, bool bOnBoundOutside)
 {
 	if (boundlist.empty()) 
 		return -1; 

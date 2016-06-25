@@ -73,16 +73,13 @@ void Ray_gen::BallSlice(const P3& a, const P3& b1, const P3& b2)
 void SurfX::SliceFibre(Ray_gen& rgen)  
 {
 	// points 
-	for (int ip = 0; ip < (int)vdX.size(); ip++)
-		rgen.BallSlice(vdX[ip]); 
+    for (auto& p : vdX) rgen.BallSlice(p);
 
     // edges
-	for (int ie = 0; ie < (int)edX.size(); ie++)
-		rgen.BallSlice(*(edX[ie].p0), *(edX[ie].p1)); 
+    for (auto& edge : edX) rgen.BallSlice(*(edge.p0), *(edge.p1));
 
 	// faces
-	for (int ic = 0; ic < (int)trX.size(); ic++)
-		rgen.BallSlice(*(trX[ic].b12->p0), *(trX[ic].b12->p1), *(trX[ic].ThirdPoint())); 
+    for (auto& tri : trX) rgen.BallSlice(*(tri.b12->p0), *(tri.b12->p1), *(tri.ThirdPoint()));
 }
 
 

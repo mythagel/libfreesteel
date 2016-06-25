@@ -14,6 +14,7 @@ include_directories(
 add_definitions(-Wall)
 
 add_library(actp STATIC
+    bolts/maybe.h
     bolts/debugfuncs.h
     bolts/I1.h
     bolts/P2.h

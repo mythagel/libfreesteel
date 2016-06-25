@@ -25,7 +25,7 @@
 Partition1::Partition1(const I1& lrg, double w) : 
 	bRegular(true) 
 {
-	int n = (int)(lrg.Leng() / w) + 1; 
+    int n = static_cast<int>(lrg.Leng() / w) + 1;
 	for (int i = 0; i <= n; i++)
 		b.push_back(lrg.Along((double)i / n)); 
 	ASSERT(GetPart(0).Leng() <= w); 

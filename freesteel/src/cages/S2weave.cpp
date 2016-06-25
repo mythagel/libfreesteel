@@ -20,6 +20,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "S2weave.h"
 #include "bolts/I1.h"
+#include "bolts/maybe.h"
 
 
 
@@ -34,8 +35,8 @@ void S2weave::SetShape(const I1& lurg, const I1& lvrg, double res)
 	urg = lurg; 
 	vrg = lvrg; 
 
-	int nufib = (int)(urg.Leng() / res + 2);
-	int nvfib = (int)(vrg.Leng() / res + 2); 
+    int nufib = static_cast<int>(urg.Leng() / res + 2);
+    int nvfib = static_cast<int>(vrg.Leng() / res + 2);
 
 	// generate the fibres
 	for (int i = 0; i <= nufib; i++) 
@@ -56,33 +57,36 @@ P2 S2weaveB1iter::GetPoint()
 
 
 //////////////////////////////////////////////////////////////////////
-int FindInwards(const std::vector<S1>& wfibs, double lw, bool blower, double lwp, double lwpend, bool bedge) 
+//optional int
+static maybe<std::size_t> FindInwards(const std::vector<S1>& wfibs, double lw, bool blower, double lwp, double lwpend, bool bedge)
 {
+    if (wfibs.empty()) return {};
+
 	// just do this as an inefficient loop for now.  
 	if (blower)
 	{
-		for (int i = 0; i < (int)wfibs.size(); i++) 
+        for (std::size_t i = 0; i < wfibs.size(); i++)
 		{
 			if (wfibs[i].wp > lwpend) 
 				break; 
 			if (bedge ? (wfibs[i].wp >= lwp) : (wfibs[i].wp > lwp)) 
 				if (wfibs[i].Contains(lw)) 
-					return i; 
+                    return {i};
 		}
-		return -1; 
 	}
 	else
 	{
-		for (int i = (int)wfibs.size() - 1; i >= 0; i--) 
+        for (std::size_t i = wfibs.size() - 1; i >= 0; i--)
 		{
 			if (wfibs[i].wp < lwpend) 
 				break; 
 			if (bedge ? (wfibs[i].wp <= lwp) : (wfibs[i].wp < lwp)) 
 				if (wfibs[i].Contains(lw)) 
-					return i; 
+                    return {i};
 		}
-		return -1; 
 	}
+
+    return {};
 }
 
 
@@ -97,16 +101,16 @@ void S2weave::Advance(S2weaveB1iter& al)
 		
 		I1 frg = (al.ftype == 1 ? ufibs : vfibs)[al.ixwp].ContainsRG(al.w); 
 		wend = (al.blower ? frg.hi : frg.lo); 
-		int lixwp = FindInwards((al.ftype == 1 ? vfibs : ufibs), al.wp, al.blower, al.w, wend, bedge); 
+        auto lixwp = FindInwards((al.ftype == 1 ? vfibs : ufibs), al.wp, al.blower, al.w, wend, bedge);
 
 		// hit an end.  
-		if (lixwp == -1) 
+        if (!lixwp)
 			break; 
 
 		// we always turn perpendicular
 		al.w = al.wp; 
 		al.ftype = (al.ftype == 1 ? 2 : 1); 
-		al.ixwp = lixwp; 
+        al.ixwp = *lixwp;
 		al.wp = (al.ftype == 2 ? vfibs[al.ixwp].wp : ufibs[al.ixwp].wp); 
 		if (al.ftype == 1)
 			al.blower = !al.blower; 
