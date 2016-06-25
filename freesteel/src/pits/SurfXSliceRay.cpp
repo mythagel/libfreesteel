@@ -18,55 +18,9 @@
 //
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
-#include "pits/SLi_gen.h"
+#include "pits/NormRay_gen.h"
 #include "cages/SurfX.h"
 #include "cages/SurfXboxed.h"
-#include "cages/Area2_gen.h"
-
-
-
-//////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-//////////////////////////////////////////////////////////////////////
-void Ray_gen::BallSlice(const P3& a) 
-{
-	if (NormRay_gen::BallSlice(Transform(a)))
-		pfib->Merge(reslo, binterncellboundlo, reshi, binterncellboundhi); 
-}
-
-
-//////////////////////////////////////////////////////////////////////
-void Ray_gen::BallSlice(const P3& a, const P3& b) 
-{
-	P3 ta = Transform(a); 
-	P3 tb = Transform(b); 
-	bool bres = (ta.z < tb.z ? NormRay_gen::BallSlice(ta, tb) : NormRay_gen::BallSlice(tb, ta)); 
-	if (bres) 
-		pfib->Merge(reslo, binterncellboundlo, reshi, binterncellboundhi); 
-}
-
-
-//////////////////////////////////////////////////////////////////////
-void Ray_gen::BallSlice(const P3& a, const P3& b1, const P3& b2)  
-{
-	P3 ta = Transform(a); 
-	P3 tb1 = Transform(b1); 
-	P3 tb2 = Transform(b2); 
-
-	// not quite saving the value I'd hoped here
-	P3 xprod = P3::CrossProd(tb1 - ta, tb2 - ta); 
-
-	bool bres = (xprod.z >= 0.0 ? NormRay_gen::BallSlice(ta, tb1, tb2, xprod) : NormRay_gen::BallSlice(ta, tb2, tb1, -xprod)); 
-	if (bres) 
-		pfib->Merge(reslo, binterncellboundlo, reshi, binterncellboundhi); 
-}
-
 
 
 //////////////////////////////////////////////////////////////////////

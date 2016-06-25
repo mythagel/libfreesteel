@@ -41,12 +41,12 @@ add_library(actp STATIC
     pits/CircCrossingStructure.cpp
     pits/CoreRoughGeneration.h
     pits/NormRay_gen.cpp
+    pits/NormRay_gen.h
     pits/S2weaveCell.cpp
     pits/S2weaveCell.h
     pits/S2weaveCellLinearCut.cpp
     pits/S2weaveCellLinearCut.h
     pits/S2weaveCellLinearCutTraverse.cpp
-    pits/S2weaveCircle.cpp
     pits/SLi_gen.cpp
     pits/SLi_gen.h
     pits/SurfXbuildcomponents.cpp

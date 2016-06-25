@@ -28,61 +28,6 @@
 #include "bolts/smallfuncs.h"
 #include <vector>
 
-
-//////////////////////////////////////////////////////////////////////
-// normalized ray (where the triangle points have been transformed)  
-class NormRay_gen
-{
-public:
-	// the endpoints of the ray are at (0,0,zrg.lo) and (0, 0, zrg.hi)
-	I1 zrg; 
-
-	// the ball size
-	double radball; 
-	double radballsq; 
-
-	// result value (a range), validity from return function.  
-	double reslo; 
-	bool binterncellboundlo; // tells it's the flat end of the cylinder, which must be covered by a ball.  
-	double reshi; 
-	bool binterncellboundhi; 
-
-	// puts zrg over the res range.  
-	bool TrimToZrg(); 
-
-	NormRay_gen(double lradball, const I1& lzrg) : 
-		zrg(lzrg), radball(lradball), radballsq(radball * radball) {;}; 
-
-	// primary validity comes from return value  
-	bool BallSlice(const P3& a); 
-	bool BallSlice(const P3& a, const P3& b); 
-	bool BallSlice(const P3& a, const P3& b1, const P3& b2, const P3& xprod); 
-};
-
-
-//////////////////////////////////////////////////////////////////////
-class Ray_gen : public NormRay_gen
-{
-public: 
-	double z; 
-	S1* pfib; 
-
-	Ray_gen(double lradball, const I1& lwrg) : 
-		NormRay_gen(lradball, lwrg) {;}; 
-
-	void HoldFibre(S1* lpfib, double lz); 
-
-	P3 Transform(const P3& p) 
-		{ return (pfib->ftype == 1 ? P3(p.x - pfib->wp, p.z - radball - z, p.y) : P3(p.z - radball - z, p.y - pfib->wp, p.x)); }  
-
-
-	void BallSlice(const P3& a); 
-	void BallSlice(const P3& a, const P3& b); 
-	void BallSlice(const P3& a, const P3& b1, const P3& b2); 
-}; 
-
-
-
 //////////////////////////////////////////////////////////////////////
 class SLi_gen
 {
@@ -106,8 +51,4 @@ public:
 	void Convert(std::vector<I1>& res, const I1& xrg, const I1& yrg, const I1& zrg); 
 };
 
-
-
 #endif
-
-

@@ -20,18 +20,25 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "SurfX.h"
 
+//////////////////////////////////////////////////////////////////////
+SurfX::SurfX(const I1& lgxrg, const I1& lgyrg, const I1& lgzrg)
+ : gxrg(lgxrg), gyrg(lgyrg), gzrg(lgzrg), rangestate(2)
+{}
 
 
 //////////////////////////////////////////////////////////////////////
-SurfX::SurfX(const I1& lgxrg, const I1& lgyrg, const I1& lgzrg) : 
-	gxrg(lgxrg), gyrg(lgyrg), gzrg(lgzrg), rangestate(2)  
-{;}; 
+SurfX::SurfX()
+ : rangestate(0)
+{}
+
 
 //////////////////////////////////////////////////////////////////////
-SurfX::SurfX() : 
-	rangestate(0)  
-{;}; 
-
+void SurfX::SliceRay(SLi_gen& sgen)
+{
+    // triangles
+    for (auto& tri : trX)
+        sgen.SliceTriangle(*(tri.b12->p0), *(tri.b12->p1), *(tri.ThirdPoint()));
+}
 
 
 //////////////////////////////////////////////////////////////////////
