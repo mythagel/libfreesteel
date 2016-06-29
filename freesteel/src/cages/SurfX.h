@@ -32,50 +32,41 @@ class SurfX;
 /////////////////////////////////////////////////////////////////////
 struct edgeX
 {
-	P3* p0; 
-	P3* p1; 
-	triangX* tpR; // face index 
-	triangX* tpL; 
+    P3* p0;
+    P3* p1;
+    triangX* tpR; // face index
+    triangX* tpL;
 
-	// the dot product with the 01-perp vector 
-	// where we hit the triangle on right and left
-	double rdR; 
-	double rdL; 
+    // the dot product with the 01-perp vector
+    // where we hit the triangle on right and left
+    double rdR;
+    double rdL;
 
-	// lower two bits say which side we hit, 
-	// upper bits march forward to clear this register.  
-	int sidecheck4; 
-
-	edgeX(P3* lp0, P3* lp1, triangX* ltpR, triangX* ltpL); 
-
-
-
-//	edgeX* NextEdgeRound(P3* pC, bool bRight); 
-
-//	P3 Getv(const P3* pC); 
-
+    edgeX(P3* lp0, P3* lp1, triangX* ltpR, triangX* ltpL)
+     : p0(lp0), p1(lp1), tpR(ltpR), tpL(ltpL), rdR(), rdL()
+    {}
 };
 
 //////////////////////////////////////////////////////////////////////
 struct triangX // : public Facet
 {
-	edgeX* ab1; 
-	edgeX* ab2; 
-	edgeX* b12; 
-	
-	P3 tnorm;	// displacement of the triangle to hit the tool
-	double tp;  // plane of the triangle
+    edgeX* ab1;
+    edgeX* ab2;
+    edgeX* b12;
 
-	triangX(const P3& ltnorm)
+    P3 tnorm;	// displacement of the triangle to hit the tool
+    double tp;  // plane of the triangle
+
+    triangX(const P3& ltnorm)
      : ab1(), ab2(), b12(), tnorm(ltnorm)
-    { }
+    {}
 
-	void SetEdge(edgeX* pe, struct triangXr& r); 
+    void SetEdge(edgeX* pe, struct triangXr& r);
 
-  inline P3* FirstPoint() { return b12->p0; }
-  inline P3* SecondPoint() { return b12->p1; }
-	P3* ThirdPoint(edgeX* pe); 
-	P3* ThirdPoint(); 
+    inline P3* FirstPoint() { return b12->p0; }
+    inline P3* SecondPoint() { return b12->p1; }
+    P3* ThirdPoint(edgeX* pe);
+    P3* ThirdPoint();
 };
 
 //////////////////////////////////////////////////////////////////////

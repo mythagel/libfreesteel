@@ -89,33 +89,32 @@ struct triangXr
 
 
 /////////////////////////////////////////////////////////////////////
-triangXr::triangXr(P3& p0, P3& p1, P3& p2) 
+triangXr::triangXr(P3& p0, P3& p1, P3& p2)
+ : a(&p0), b1(&p1), b2(&p2), tnorm()
 {
     using std::swap;
 
-	a = &p0; 
-	b1 = &p1; 
-	b2 = &p2; 
+    auto less = p3X_order();
 
-	if (!p3X_order()(a, b1))
+    if (!less(a, b1))
 		swap(a, b1);
-	if (!p3X_order()(b1, b2))
+    if (!less(b1, b2))
 		swap(a, b2);
 
 	P3 v1 = *b1 - *a;
-	P3 v2 = *b2 - *a; 
+    P3 v2 = *b2 - *a;
 
-	P3 ncross = -P3::CrossProd(v1, v2); 
-	double fac = 1.0; 
+    P3 ncross = -P3::CrossProd(v1, v2);
+    double fac = 1.0;
 	if (ncross.z < 0.0)
 	{
-		swap(b1, b2); 
+        swap(b1, b2);
 		fac = -1.0;
 	}
-	double nclen = ncross.Len(); 
+    double nclen = ncross.Len();
 	if (nclen != 0.0)
-		fac = fac / nclen; 
-	tnorm = ncross * fac; 
+        fac = fac / nclen;
+    tnorm = ncross * fac;
 }
 
 
@@ -149,16 +148,6 @@ edgeXr::edgeXr(P3* lp0, P3* lp1, int it)
 		p0 = lp1; 
 		p1 = lp0; 
 	}
-}
-
-
-//////////////////////////////////////////////////////////////////////
-edgeX::edgeX(P3* lp0, P3* lp1, triangX* ltpR, triangX* ltpL)  
-{
-	p0 = lp0; 
-	p1 = lp1; 
-	tpR = ltpR; 
-	tpL = ltpL; 
 }
 
 

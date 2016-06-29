@@ -31,40 +31,36 @@
 //////////////////////////////////////////////////////////////////////
 struct MachineParams
 {
-	// linking parameters
-		double leadoffdz; 
-		double leadofflen;
-		double leadoffrad;
-		double retractzheight;
-		double leadoffsamplestep;
+    // linking parameters
+    double leadoffdz;
+    double leadofflen;
+    double leadoffrad;
+    double retractzheight;
+    double leadoffsamplestep;
 
-	// cutting parameters
-		double toolcornerrad;
-		double toolflatrad;
-		double samplestep;
-		double stepdown;
-		double clearcuspheight;
+    // cutting parameters
+    double toolcornerrad;
+    double toolflatrad;
+    double samplestep;
+    double stepdown;
+    double clearcuspheight;
 
-	// weave parameters
-		double triangleweaveres;
-		double flatradweaveres;
+    // weave parameters
+    double triangleweaveres;
+    double flatradweaveres;
 
-	// steering parameters
-		double dchangright; 
-		double dchangrightoncontour;
-		double dchangleft;
+    // steering parameters
+    double dchangright;
+    double dchangrightoncontour;
+    double dchangleft;
 
-		double dchangefreespace;
-		double sidecutdisplch;
+    double dchangefreespace;
+    double sidecutdisplch;
 
-	// post processing
-		int fcut;
-		int fretract;
-		double thintol;
-
-
-
-
+    // post processing
+    int fcut;
+    int fretract;
+    double thintol;
 };
 
 //////////////////////////////////////////////////////////////////////
