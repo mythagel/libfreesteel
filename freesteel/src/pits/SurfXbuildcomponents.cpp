@@ -189,14 +189,14 @@ void SurfX::BuildComponents()
 	// first sort all the points by increasing x
 	int np = lvd.size(); // 3 times the number of triangles.  
     std::vector<P3*> p3X;
-  int i; 
-	for (i = 0; i < np; i++)
+
+    for (int i = 0; i < np; i++)
 		p3X.push_back(&(lvd[i])); 
     std::sort(p3X.begin(), p3X.end(), p3X_order()); 
 
 	// make the indexes into this array with duplicates removed 
 	ltd.resize(np);
-	for (i = 0; i < np; i++)
+    for (int i = 0; i < np; i++)
 	{
 		P3* pi = p3X[i]; 
 		if (vdX.empty() || !(vdX.back() == *pi))
@@ -212,13 +212,14 @@ void SurfX::BuildComponents()
 	// build up oriented triangles with normals and remove degenerate ones
 	int nt = np / 3; 
     std::vector<triangXr> ttx; 
-	for (i = 0; i < nt; i++) 
+    for (int i = 0; i < nt; i++)
         ttx.emplace_back(vdX[ltd[i * 3]], vdX[ltd[i * 3 + 1]], vdX[ltd[i * 3 + 2]]);
 
 	// now make the array of linked edges
     std::vector<edgeXr> edXr; 
-    for (auto& tri : ttx)
+    for (std::size_t i = 0; i < ttx.size(); ++i)
 	{
+        auto& tri = ttx[i];
         edXr.emplace_back(tri.a, tri.b1, i);
         edXr.emplace_back(tri.b1, tri.b2, i);
         edXr.emplace_back(tri.b2, tri.a, i);
@@ -234,8 +235,7 @@ void SurfX::BuildComponents()
         trX.emplace_back(tri.tnorm);
 
 	// build the final array of edges with pointers into these triangles
-	i = 0; 
-    while (i < pedXr.size())
+    for (int i = 0; i < pedXr.size(); )
 	{
 		// two edges can fuse into one with triangles on both sides
         if ((i + 1 < pedXr.size()) && (pedXr[i]->p0 == pedXr[i + 1]->p0) && (pedXr[i]->p1 == pedXr[i + 1]->p1) && ((pedXr[i]->itL == -1) != (pedXr[i + 1]->itL == -1)))
