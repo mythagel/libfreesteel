@@ -127,6 +127,11 @@ void Ray_gen2::DiscSliceCapN(const P2& a, const P2& b)
 		lvlo = a.v + d.v * llamlo - d.u * raddisc / dlen * (lamd < 0.0 ? -1 : 1); 
 		binterncellboundlo = false; 
 	}
+    else
+    {
+        ASSERT(!"wtf");
+    }
+
 
 	// now work at the top end of the piece, the one with the dome.  
 	double lvhi; 

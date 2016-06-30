@@ -23,7 +23,7 @@
 #include "bolts/I1.h"
 #include "bolts/vo.h"
 #include "cages/SurfX.h"
-#include "pits/toolshape.h"
+#include "toolshape.h"
 #include <vector>
 
 //struct vector_PathX : vector<PathX> {;}; 

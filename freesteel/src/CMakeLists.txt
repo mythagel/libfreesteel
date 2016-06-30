@@ -3,10 +3,6 @@ IF(UNIX)
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 ENDIF()
 
-
-find_package(VTK REQUIRED)
-include(${VTK_USE_FILE})
-
 include_directories(
     ${PROJECT_SOURCE_DIR}/src
 )
@@ -51,13 +47,12 @@ add_library(actp STATIC
     pits/SLi_gen.h
     pits/SurfXbuildcomponents.cpp
     pits/SurfXSliceRay.cpp
-    pits/toolshape.cpp
-    pits/toolshape.h
 )
 
-target_link_libraries(actp
-    ${VTK_LIBRARIES} # vtk only needed by toolshape + xenon/visuals
-)
+#target_link_libraries(actp )
+
+find_package(VTK REQUIRED)
+include(${VTK_USE_FILE})
 
 find_package(wxWidgets REQUIRED gl core base)
 include(${wxWidgets_USE_FILE})
@@ -78,6 +73,8 @@ add_executable(freesteel
     visuals/gstsurface.h
     visuals/MakeToolpath.cpp
     visuals/MakeToolpath.h
+    visuals/toolshape.cpp
+    visuals/toolshape.h
     xenon/AnimationFrame.cpp
     xenon/AnimationFrame.h
     xenon/BoundingBoxDlg.cpp
@@ -94,6 +91,12 @@ add_executable(freesteel
     xenon/wxVTKRenderWindowInteractor.h    
 )
 
-target_link_libraries(freesteel ${wxWidgets_LIBRARIES} ${GTK2_LIBRARIES} ${OPENGL_LIBRARY} actp)
+target_link_libraries(freesteel
+    ${wxWidgets_LIBRARIES}
+    ${GTK2_LIBRARIES}
+    ${OPENGL_LIBRARY}
+    ${VTK_LIBRARIES}
+    actp
+)
 
 

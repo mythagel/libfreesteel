@@ -18,7 +18,7 @@
 //
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
-#include "pits/toolshape.h"
+#include "toolshape.h"
 #include "pits/CircCrossingStructure.h"
 
 #include "vtkOpenGLPolyDataMapper.h"

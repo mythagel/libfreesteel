@@ -159,28 +159,26 @@ struct edgeXr_order
 };
 
 //////////////////////////////////////////////////////////////////////
-void triangX::SetEdge(edgeX* pe, struct triangXr& r)  
+void triangX::SetEdge(edgeX* pe, struct triangXr& r)
 {
-	if (((r.a == pe->p0) && (r.b1 == pe->p1)) || ((r.a == pe->p1) && (r.b1 == pe->p0)))  
-	{
-		ASSERT(ab1 == NULL); 
-		ab1 = pe;
-	}
-	else if (((r.a == pe->p0) && (r.b2 == pe->p1)) || ((r.a == pe->p1) && (r.b2 == pe->p0)))  
-	{
-		ASSERT(ab2 == NULL); 
-		ab2 = pe;
-	}
-	else if (((r.b1 == pe->p0) && (r.b2 == pe->p1)) || ((r.b1 == pe->p1) && (r.b2 == pe->p0)))  
-	{
-		ASSERT(b12 == NULL); 
-		b12 = pe;  
-	}
-	else 
-		ASSERT(0); 
+    if (((r.a == pe->p0) && (r.b1 == pe->p1)) || ((r.a == pe->p1) && (r.b1 == pe->p0)))
+    {
+        ASSERT(ab1 == NULL);
+        ab1 = pe;
+    }
+    else if (((r.a == pe->p0) && (r.b2 == pe->p1)) || ((r.a == pe->p1) && (r.b2 == pe->p0)))
+    {
+        ASSERT(ab2 == NULL);
+        ab2 = pe;
+    }
+    else if (((r.b1 == pe->p0) && (r.b2 == pe->p1)) || ((r.b1 == pe->p1) && (r.b2 == pe->p0)))
+    {
+        ASSERT(b12 == NULL);
+        b12 = pe;
+    }
+    else
+        ASSERT(0);
 }
-
-
 
 //////////////////////////////////////////////////////////////////////
 // this is the tooldef specific part  
