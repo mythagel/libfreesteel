@@ -44,7 +44,7 @@
 #include "vtkPointData.h"
 #include "vtkInteractorStyleSwitch.h"
 
-#include "visuals/MakeToolpath.h"
+#include "pits/CoreRoughGeneration.h"
 #include "visuals/fsvtkToolpathMapper.h"
 #include "visuals/gstsurface.h"
 #include "visuals/gst.h"
@@ -409,7 +409,7 @@ void MainFrame::OnMachiningAreaclear(wxCommandEvent& WXUNUSED(event) )
 		sx.BuildComponents(); // compress thing 
 
 		ASSERT(gstbound->ftpaths.size() == 1);
-		MakeCorerough(gsttpath->ftpaths, sx, gstbound->ftpaths[0], params);
+        gsttpath->ftpaths = MakeCorerough(sx, gstbound->ftpaths[0], params);
 
 		// write result to a file
 		FILE* fpost = fopen("freesteel.tp", "w");

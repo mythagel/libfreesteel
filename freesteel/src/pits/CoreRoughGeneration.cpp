@@ -19,25 +19,13 @@
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "vtkPolyData.h"
-#include "vtkCellArray.h"
-#include "vtkActor.h"
-#include "vtkActorCollection.h"
-#include "vtkSTLReader.h"
-#include "vtkPolyDataMapper.h"
-#include "vtkOpenGLPolyDataMapper.h"
-
-#include "visuals/MakeToolpath.h"
-#include "visuals/fsvtkToolpathMapper.h"
-#include "visuals/gstsurface.h"
-
-
-
-
+#include "CoreRoughGeneration.h"
 
 /////////////////////////////////////////////////////////// 
-void MakeCorerough(std::vector<PathXSeries>& vpathseries, SurfX& sx, const PathXSeries&  bound, const MachineParams& params) 
+std::vector<PathXSeries> MakeCorerough(SurfX& sx, const PathXSeries&  bound, const MachineParams& params)
 {
+    std::vector<PathXSeries> vpathseries;
+
 	// boxed surfaces 
 	SurfXboxed sxb(&sx); 
 	sxb.BuildBoxes(10.0); 
@@ -53,11 +41,11 @@ void MakeCorerough(std::vector<PathXSeries>& vpathseries, SurfX& sx, const PathX
 	a2gfl.SetShape(sx.gxrg.Inflate(areaoversize), sx.gyrg.Inflate(areaoversize), params.flatradweaveres);
 
 	double hz = sx.gzrg.hi - params.stepdown / 2; 
-double htopz = sx.gzrg.lo + 5;
+    double htopz = sx.gzrg.lo + 5;
 	a2g.z = sx.gzrg.hi - params.stepdown / 2;
 	while (hz > htopz)
 	{
-		vpathseries.push_back(PathXSeries());
+        vpathseries.emplace_back();
 		// make the core roughing algorithm thing
 		CoreRoughGeneration crg(&vpathseries.back(), sx.gxrg.Inflate(10), sx.gyrg.Inflate(10)); 
 		// the stock boundary 
@@ -93,6 +81,8 @@ double htopz = sx.gzrg.lo + 5;
 //break;
 		hz -= params.stepdown; 
 	}
+
+    return vpathseries;
 }
 
 
@@ -110,7 +100,7 @@ void CoreRoughGeneration::AddPoint(const P2& ppt)
 
 
 /////////////////////////////////////////////////////////// 
-void BuildRetract(std::vector<P3>& lnkpth, const P3& pts, const P3& pte, const MachineParams& params)
+static void BuildRetract(std::vector<P3>& lnkpth, const P3& pts, const P3& pte, const MachineParams& params)
 {
 	ASSERT((params.retractzheight > pts.z) && (params.retractzheight > pte.z));
 	lnkpth.push_back(pts);
@@ -120,7 +110,7 @@ void BuildRetract(std::vector<P3>& lnkpth, const P3& pts, const P3& pte, const M
 }
 
 /////////////////////////////////////////////////////////// 
-void BuildCurl(std::vector<P2>& lnkpth, const P2& pts, const P2& dirs, const MachineParams& params, bool bCurlIn)
+static void BuildCurl(std::vector<P2>& lnkpth, const P2& pts, const P2& dirs, const MachineParams& params, bool bCurlIn)
 {
 	TOL_ZERO(dirs.Len() - 1.0);
 
@@ -161,7 +151,7 @@ void BuildCurl(std::vector<P2>& lnkpth, const P2& pts, const P2& dirs, const Mac
 	}
 }
 
-void BuildLink(std::vector<P2>& lnkpth, const P2& pts, const P2& dirs, const P2& pte, const P2& dire, const MachineParams& params)
+static void BuildLink(std::vector<P2>& lnkpth, const P2& pts, const P2& dirs, const P2& pte, const P2& dire, const MachineParams& params)
 {
 	TOL_ZERO(dirs.Len() - 1.0);
 	TOL_ZERO(dire.Len() - 1.0);
@@ -222,7 +212,7 @@ void BuildLink(std::vector<P2>& lnkpth, const P2& pts, const P2& dirs, const P2&
 		lnkpth.push_back(pte);
 }
 
-void BuildLinkZ(std::vector<P3>& lnkpth, const std::vector<P2>& lnk2D, double z, const MachineParams& params) 
+static void BuildLinkZ(std::vector<P3>& lnkpth, const std::vector<P2>& lnk2D, double z, const MachineParams& params)
 {
 	// total length
 	double totallen = 0;

@@ -36,7 +36,6 @@
 #include "vtkCellArray.h"
 #include "vtkSTLReader.h"
 
-#include "visuals/MakeToolpath.h"
 #include "visuals/gst.h"
 #include "visuals/gstsurface.h"
 
@@ -73,6 +72,6 @@ GeometryStuffTogether::GeometryStuffTogether(vtkRenderWindow* lrenWin)
 
 GeometryStuffTogether::~GeometryStuffTogether()
 {
-	for (int i = 0; i < gstees.size(); ++i)
-		delete gstees[i];
+    for (auto gst : gstees)
+        delete gst;
 }

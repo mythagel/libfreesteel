@@ -32,8 +32,7 @@
 #include "vtkPolyDataMapper.h"
 #include "vtkOpenGLPolyDataMapper.h"
 
-#include "visuals/MakeToolpath.h"
-#include "visuals/MakeToolpath.h"
+#include "pits/CoreRoughGeneration.h"
 #include "visuals/fsvtkToolpathMapper.h"
 #include "visuals/gstsurface.h"
 #include "visuals/gst.h"

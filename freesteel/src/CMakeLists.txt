@@ -36,6 +36,7 @@ add_library(actp STATIC
     pits/CircCrossingStructure.h
     pits/CircCrossingStructure.cpp
     pits/CoreRoughGeneration.h
+    pits/CoreRoughGeneration.cpp
     pits/NormRay_gen.cpp
     pits/NormRay_gen.h
     pits/S2weaveCell.cpp
@@ -50,6 +51,9 @@ add_library(actp STATIC
 )
 
 #target_link_libraries(actp )
+
+add_executable(canary canary.cpp)
+target_link_libraries(canary actp)
 
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
@@ -71,8 +75,6 @@ add_executable(freesteel
     visuals/gst.h
     visuals/gstsurface.cpp
     visuals/gstsurface.h
-    visuals/MakeToolpath.cpp
-    visuals/MakeToolpath.h
     visuals/toolshape.cpp
     visuals/toolshape.h
     xenon/AnimationFrame.cpp

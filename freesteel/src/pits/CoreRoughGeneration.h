@@ -63,6 +63,8 @@ struct MachineParams
     double thintol;
 };
 
+std::vector<PathXSeries> MakeCorerough(SurfX& sx, const PathXSeries& bound, const MachineParams& params);
+
 //////////////////////////////////////////////////////////////////////
 class CoreRoughGeneration 
 {
