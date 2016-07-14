@@ -80,9 +80,9 @@ public:
 		return brks[i]; 
 	}
 
-    std::size_t GetNlnks(std::size_t i) const
+    std::size_t GetNlnks(std::size_t j) const
 	{
-		return linkpths[i].size(); 
+        return linkpths[j].size();
 	}
 
     double GetLinkX(std::size_t j, std::size_t i) const

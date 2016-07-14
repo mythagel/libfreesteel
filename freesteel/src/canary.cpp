@@ -84,6 +84,19 @@ int usage()
     return 0;
 }
 
+template<class InputIt, class BinaryOperation>
+void transform_adjacent(InputIt first, InputIt last, BinaryOperation op) {
+    if (first == last) return;
+
+    auto acc = *first;
+    while (++first != last) {
+        auto val = *first;
+        op(acc, val);
+        acc = std::move(val);
+    }
+}
+
+
 int main(int argc, char* argv[]) {
 
     std::vector<std::string> args(argv, argv+argc);
@@ -136,11 +149,29 @@ int main(int argc, char* argv[]) {
 
     for (auto& path : tp)
     {
-        for (auto& p2 : path.pths)
-        {
-            // lazy, doesn't link properly ( WILL (!) crash into part )
-            std::cout << "G01 " << "X" << p2.u << " Y" << p2.v << " Z" << path.z << " F250\n";
-        }
+        auto brks = path.brks;
+        if (brks.empty() || brks[0] != 0)
+            brks.insert(brks.begin(), 0);
+
+        if (brks.back() != path.pths.size())
+            brks.push_back(path.pths.size());
+
+        unsigned link_path = 0;
+        transform_adjacent(begin(brks), end(brks), [&](std::size_t a, std::size_t b) {
+            for (std::size_t i = a; i < b; ++i)
+            {
+                std::cout << "G01 " << "X" << path.GetX(i) << " Y" << path.GetY(i) << " Z" << path.z << " F250\n";
+            }
+
+            if (link_path < path.GetNbrks())    // No link for last path
+            {
+                for (unsigned i = 0; i < path.GetNlnks(link_path); ++i)
+                {
+                    std::cout << "G00 " << "X" << path.GetLinkX(link_path, i) << " Y" << path.GetLinkY(link_path, i) << " Z" << path.GetLinkZ(link_path, i) << "\n";
+                }
+                ++link_path;
+            }
+        });
     }
 }
 
