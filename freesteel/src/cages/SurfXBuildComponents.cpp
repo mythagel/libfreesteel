@@ -29,7 +29,7 @@ void SurfX::PushTriangle(const P3& p0, const P3& p1, const P3& p2)
 	// does the triangle touch the region?  
 	// this condition overestimates it.  
 	// we can have triangles that go diagonally but miss it.  
-	if (rangestate == 2)
+    if (rangestate == RangeState::hardset)
 	{
 		if ((p0.x < gxrg.lo) && (p1.x < gxrg.lo) && (p2.x < gxrg.lo)) 
 			return; 
@@ -46,12 +46,12 @@ void SurfX::PushTriangle(const P3& p0, const P3& p1, const P3& p2)
 	}
 	else
 	{
-		ASSERT(EqualOr(rangestate, 0, 1)); 
-		bool bFirst = (rangestate == 0);
+        ASSERT(EqualOr(rangestate, RangeState::none, RangeState::adsorbing));
+        bool bFirst = (rangestate == RangeState::none);
 		gxrg.Absorb(p0.x, bFirst); 
 		gyrg.Absorb(p0.y, bFirst); 
 		gzrg.Absorb(p0.z, bFirst); 
-		rangestate = 1; 
+        rangestate = RangeState::adsorbing;
 		gxrg.Absorb(p1.x, bFirst); 
 		gyrg.Absorb(p1.y, bFirst); 
 		gzrg.Absorb(p1.z, bFirst); 
@@ -233,7 +233,7 @@ void SurfX::BuildComponents()
         trX.emplace_back(tri.tnorm);
 
 	// build the final array of edges with pointers into these triangles
-    for (int i = 0; i < pedXr.size(); )
+    for (std::size_t i = 0; i < pedXr.size(); )
 	{
 		// two edges can fuse into one with triangles on both sides
         if ((i + 1 < pedXr.size()) && (pedXr[i]->p0 == pedXr[i + 1]->p0) && (pedXr[i]->p1 == pedXr[i + 1]->p1) && ((pedXr[i]->itL == -1) != (pedXr[i + 1]->itL == -1)))

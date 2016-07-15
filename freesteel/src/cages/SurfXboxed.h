@@ -87,7 +87,7 @@ public:
 
 	// raw case where all we have is the surface itself.  
 	SurfXboxed(SurfX* lpsurfx) : 
-		psurfx(lpsurfx) {;}; 
+        psurfx(lpsurfx) {}
 		
 		void AddPointBucket(P3* pp); 
 		void AddEdgeBucket(edgeX* ped); 

@@ -5,6 +5,16 @@
 #include <vector>
 #include <bolts/I1.h>
 
+void OutputDebugStringG(const char* str)
+{
+    std::cerr << str << "\n";
+}
+
+void OutputDebugStringG(const char* str0, const char* strf, int line1)
+{
+    std::cerr << strf << ":" << line1 << " " << str0 << "\n";
+}
+
 bool ReadOFF(const std::string& off, SurfX& sx) {
     std::ifstream is(off);
     is.exceptions(std::ifstream::failbit);
@@ -48,24 +58,6 @@ bool ReadOFF(const std::string& off, SurfX& sx) {
     return true;
 }
 
-void BoundingBox(const SurfX& sx, I1& xrg, I1& yrg, I1& zrg)
-{
-    bool bInit = false;
-    for (auto& p : sx.vdX)
-    {
-        if (!bInit)
-        {
-            xrg = I1(p.x, p.x);
-            yrg = I1(p.y, p.y);
-            zrg = I1(p.z, p.z);
-            bInit = true;
-        }
-        xrg.Absorb(p.x);
-        yrg.Absorb(p.y);
-        zrg.Absorb(p.z);
-    }
-}
-
 PathXSeries MakeRectBoundary(const I1& xrg, const I1& yrg, double z)
 {
     PathXSeries bound(z);
@@ -106,13 +98,17 @@ int main(int argc, char* argv[]) {
 
     SurfX sx;
 
-    if (!ReadOFF(args[0], sx)) return 1;
+    if (!ReadOFF(args[0], sx))
+    {
+        fprintf(stderr, "failed to read OFF %s\n", args[0].c_str());
+        return 1;
+    }
 
     auto bound = MakeRectBoundary(sx.gxrg, sx.gyrg, sx.gzrg.hi + 1);
 
     double cr = 3.;
     double fr = 0.;
-    double sd = 15.;
+    double sd = 1.;
     MachineParams params;
     // linking parameters
         params.leadoffdz = 0.1;
@@ -159,19 +155,16 @@ int main(int argc, char* argv[]) {
         unsigned link_path = 0;
         transform_adjacent(begin(brks), end(brks), [&](std::size_t a, std::size_t b) {
             for (std::size_t i = a; i < b; ++i)
-            {
-                std::cout << "G01 " << "X" << path.GetX(i) << " Y" << path.GetY(i) << " Z" << path.z << " F250\n";
-            }
+                std::cout << std::fixed << "G01 " << "X" << path.GetX(i) << " Y" << path.GetY(i) << " Z" << path.z << " F" << params.fcut << "\n";
 
             if (link_path < path.GetNbrks())    // No link for last path
             {
                 for (unsigned i = 0; i < path.GetNlnks(link_path); ++i)
-                {
-                    std::cout << "G00 " << "X" << path.GetLinkX(link_path, i) << " Y" << path.GetLinkY(link_path, i) << " Z" << path.GetLinkZ(link_path, i) << "\n";
-                }
+                    std::cout << std::fixed << "G00 " << "X" << path.GetLinkX(link_path, i) << " Y" << path.GetLinkY(link_path, i) << " Z" << path.GetLinkZ(link_path, i) << "\n";
                 ++link_path;
             }
         });
+        std::cout << "\n";
     }
 }
 

@@ -26,8 +26,7 @@
 #include "bolts/I1.h"
 #include "pits/SLi_gen.h"
 
-struct triangX; 
-class SurfX; 
+struct triangX;
 
 /////////////////////////////////////////////////////////////////////
 struct edgeX
@@ -81,9 +80,14 @@ public:
 	// this is why the input into this class is done by triangles 
 	// so that ones which do not span this region can be ignored.  
 	I1 gxrg, gyrg, gzrg; 
-	int rangestate; // 0 none set, 1 absorbing, 2 hardset
+    enum class RangeState
+    {
+        none,
+        adsorbing,
+        hardset
+    } rangestate;
 
-	SurfX(const I1& lgxrg, const I1& lgyrg, const I1& lgzrg); 
+    SurfX(const I1& lgxrg, const I1& lgyrg, const I1& lgzrg);
 	SurfX(); // one that builds the ranges
 
 	// these are the arrays we initially load the points and the triangles 
@@ -101,14 +105,21 @@ public:
 	// the functions which pull it all together in the 3 arrays above.  
 	void BuildComponents(); 
 
-	// this setup the incrementing flags 
-	// we will use to tell which edges have been visited.  
-//	void ResetSidecheck(); 
-//	void SetSidecheck(); 
-
 // new horizontal slicing code 
 	void SliceFibre(class Ray_gen& rgen);  
 	void SliceRay(class SLi_gen& sgen); 
 };
+
+/*class SurfXBuilder
+{
+    // these are the arrays we initially load the points and the triangles
+    // as triples of points, from which we then work.
+    // they are erased after the components have been built.
+    std::vector<P3> lvd;
+    std::vector<int> ltd;
+    void PushTriangle(const P3& p0, const P3& p1, const P3& p2);
+
+    SurfX Build();
+};*/
 
 #endif

@@ -24,21 +24,6 @@
 
 
 //////////////////////////////////////////////////////////////////////
-void SurfX::SliceFibre(Ray_gen& rgen)  
-{
-	// points 
-    for (auto& p : vdX) rgen.BallSlice(p);
-
-    // edges
-    for (auto& edge : edX) rgen.BallSlice(*(edge.p0), *(edge.p1));
-
-	// faces
-    for (auto& tri : trX) rgen.BallSlice(*(tri.b12->p0), *(tri.b12->p1), *(tri.ThirdPoint()));
-}
-
-
-
-//////////////////////////////////////////////////////////////////////
 void SurfXboxed::SliceFibreBox(std::size_t iu, std::size_t iv, Ray_gen& rgen)
 {
 	bucketX& bu = buckets[iu][iv]; 

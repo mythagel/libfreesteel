@@ -19,18 +19,31 @@
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
 #include "SurfX.h"
+#include "pits/NormRay_gen.h"
 
 //////////////////////////////////////////////////////////////////////
 SurfX::SurfX(const I1& lgxrg, const I1& lgyrg, const I1& lgzrg)
- : gxrg(lgxrg), gyrg(lgyrg), gzrg(lgzrg), rangestate(2)
+ : gxrg(lgxrg), gyrg(lgyrg), gzrg(lgzrg), rangestate(RangeState::hardset)
 {}
 
 
 //////////////////////////////////////////////////////////////////////
 SurfX::SurfX()
- : rangestate(0)
+ : rangestate(RangeState::none)
 {}
 
+//////////////////////////////////////////////////////////////////////
+void SurfX::SliceFibre(Ray_gen& rgen)
+{
+    // points
+    for (auto& p : vdX) rgen.BallSlice(p);
+
+    // edges
+    for (auto& edge : edX) rgen.BallSlice(*(edge.p0), *(edge.p1));
+
+    // faces
+    for (auto& tri : trX) rgen.BallSlice(*(tri.b12->p0), *(tri.b12->p1), *(tri.ThirdPoint()));
+}
 
 //////////////////////////////////////////////////////////////////////
 void SurfX::SliceRay(SLi_gen& sgen)
@@ -56,12 +69,4 @@ P3* triangX::ThirdPoint(edgeX* pe)
 		return ThirdPoint(); 
 	return (((b12->p0 != pe->p0) && (b12->p0 != pe->p1)) ? b12->p0 : b12->p1); 
 }
-
-
-
-
-
-
-
-
 

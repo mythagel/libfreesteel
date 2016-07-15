@@ -31,6 +31,7 @@ add_library(actp STATIC
     cages/S2weave.h
     cages/SurfXboxed.cpp
     cages/SurfXboxed.h
+    cages/SurfXBuildComponents.cpp
     cages/SurfX.cpp
     cages/SurfX.h
     pits/CircCrossingStructure.h
@@ -46,7 +47,6 @@ add_library(actp STATIC
     pits/S2weaveCellLinearCutTraverse.cpp
     pits/SLi_gen.cpp
     pits/SLi_gen.h
-    pits/SurfXbuildcomponents.cpp
     pits/SurfXSliceRay.cpp
 )
 
