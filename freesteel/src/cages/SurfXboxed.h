@@ -64,7 +64,7 @@ struct bucketX
 class SurfXboxed
 {
 public: 
-	SurfX* psurfx; // this could be const.  
+    SurfX* psurfx; // this could be const.
 
 	// dimensions of the buckets 
 	I1 gbxrg; 

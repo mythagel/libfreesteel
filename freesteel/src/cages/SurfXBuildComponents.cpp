@@ -36,51 +36,51 @@ SurfXBuilder::SurfXBuilder()
 //////////////////////////////////////////////////////////////////////
 void SurfXBuilder::PushTriangle(const P3& p0, const P3& p1, const P3& p2)
 {
-	// does the triangle touch the region?  
-	// this condition overestimates it.  
-	// we can have triangles that go diagonally but miss it.  
+    // does the triangle touch the region?
+    // this condition overestimates it.
+    // we can have triangles that go diagonally but miss it.
     if (rangestate == RangeState::hardset)
-	{
-		if ((p0.x < gxrg.lo) && (p1.x < gxrg.lo) && (p2.x < gxrg.lo)) 
-			return; 
-		if ((p0.x > gxrg.hi) && (p1.x > gxrg.hi) && (p2.x > gxrg.hi)) 
-			return; 
-		if ((p0.y < gyrg.lo) && (p1.y < gyrg.lo) && (p2.y < gyrg.lo)) 
-			return; 
-		if ((p0.y > gyrg.hi) && (p1.y > gyrg.hi) && (p2.y > gyrg.hi)) 
-			return; 
-		if ((p0.z < gzrg.lo) && (p1.z < gzrg.lo) && (p2.z < gzrg.lo)) 
-			return; 
-		if ((p0.z > gzrg.hi) && (p1.z > gzrg.hi) && (p2.z > gzrg.hi)) 
-			return; 
-	}
-	else
-	{
+    {
+        if ((p0.x < gxrg.lo) && (p1.x < gxrg.lo) && (p2.x < gxrg.lo))
+            return;
+        if ((p0.x > gxrg.hi) && (p1.x > gxrg.hi) && (p2.x > gxrg.hi))
+            return;
+        if ((p0.y < gyrg.lo) && (p1.y < gyrg.lo) && (p2.y < gyrg.lo))
+            return;
+        if ((p0.y > gyrg.hi) && (p1.y > gyrg.hi) && (p2.y > gyrg.hi))
+            return;
+        if ((p0.z < gzrg.lo) && (p1.z < gzrg.lo) && (p2.z < gzrg.lo))
+            return;
+        if ((p0.z > gzrg.hi) && (p1.z > gzrg.hi) && (p2.z > gzrg.hi))
+            return;
+    }
+    else
+    {
         ASSERT(EqualOr(rangestate, RangeState::none, RangeState::adsorbing));
         bool bFirst = (rangestate == RangeState::none);
-		gxrg.Absorb(p0.x, bFirst); 
-		gyrg.Absorb(p0.y, bFirst); 
-		gzrg.Absorb(p0.z, bFirst); 
         rangestate = RangeState::adsorbing;
-		gxrg.Absorb(p1.x, bFirst); 
-		gyrg.Absorb(p1.y, bFirst); 
-		gzrg.Absorb(p1.z, bFirst); 
-		gxrg.Absorb(p2.x, bFirst); 
-		gyrg.Absorb(p2.y, bFirst); 
-		gzrg.Absorb(p2.z, bFirst); 
-	}
+        gxrg.Absorb(p0.x, bFirst);
+        gyrg.Absorb(p0.y, bFirst);
+        gzrg.Absorb(p0.z, bFirst);
+        gxrg.Absorb(p1.x, bFirst);
+        gyrg.Absorb(p1.y, bFirst);
+        gzrg.Absorb(p1.z, bFirst);
+        gxrg.Absorb(p2.x, bFirst);
+        gyrg.Absorb(p2.y, bFirst);
+        gzrg.Absorb(p2.z, bFirst);
+    }
 
-	// push the triangle in.  
-	lvd.push_back(p0); 
-	lvd.push_back(p1); 
-	lvd.push_back(p2); 
+    // push the triangle in.
+    lvd.push_back(p0);
+    lvd.push_back(p1);
+    lvd.push_back(p2);
 }
 
 
 //////////////////////////////////////////////////////////////////////
 struct p3X_order
 {
-	bool operator()(const P3* a, const P3* b)
+    bool operator()(const P3* a, const P3* b)
         { return ((a->x < b->x) || ((a->x == b->x) && ((a->y < b->y) || ((a->y == b->y) && (a->z < b->z))))); }
 };
 
@@ -202,86 +202,79 @@ SurfX SurfXBuilder::Build()
     auto& edX = sx.edX;
     auto& trX = sx.trX;
 
-	// first sort all the points by increasing x
-	int np = lvd.size(); // 3 times the number of triangles.  
-    std::vector<P3*> p3X;
+    auto np = lvd.size(); // 3 times the number of triangles.
 
-    for (int i = 0; i < np; i++)
-		p3X.push_back(&(lvd[i])); 
-    std::sort(p3X.begin(), p3X.end(), p3X_order()); 
+    std::vector<std::size_t> ltd;
+    {
+        // first sort all the points by increasing x
+        std::vector<const P3*> p3X;
+        p3X.reserve(lvd.size());
+        for (auto& p : lvd) p3X.push_back(&p);
+        std::sort(p3X.begin(), p3X.end(), p3X_order());
 
-	// make the indexes into this array with duplicates removed 
-	ltd.resize(np);
-    for (int i = 0; i < np; i++)
-	{
-		P3* pi = p3X[i]; 
-		if (vdX.empty() || !(vdX.back() == *pi))
-			vdX.push_back(*pi); 
-        ltd[pi - &(lvd[0])] = vdX.size() - 1;
-	}
+        // make the indexes into this array with duplicates removed
+        ltd.resize(lvd.size());
+        for (auto& pi : p3X)
+        {
+            if (vdX.empty() || !(vdX.back() == *pi))
+                vdX.push_back(*pi);
+            ltd[pi - &(lvd[0])] = vdX.size() - 1;
+        }
+    }
 
-	// kill the old arrays
-	lvd.clear(); 
-	p3X.clear(); 
+    // kill the old arrays
+    lvd.clear();
 
-
-	// build up oriented triangles with normals and remove degenerate ones
-	int nt = np / 3; 
-    std::vector<triangXr> ttx; 
-    for (int i = 0; i < nt; i++)
+    // build up oriented triangles with normals and remove degenerate ones
+    auto nt = np / 3;
+    std::vector<triangXr> ttx;
+    for (std::size_t i = 0; i < nt; ++i)
         ttx.emplace_back(vdX[ltd[i * 3]], vdX[ltd[i * 3 + 1]], vdX[ltd[i * 3 + 2]]);
 
-	// now make the array of linked edges
-    std::vector<edgeXr> edXr; 
+    // now make the array of linked edges
+    std::vector<edgeXr> edXr;
     for (std::size_t i = 0; i < ttx.size(); ++i)
-	{
+    {
         auto& tri = ttx[i];
         edXr.emplace_back(tri.a, tri.b1, i);
         edXr.emplace_back(tri.b1, tri.b2, i);
         edXr.emplace_back(tri.b2, tri.a, i);
-	}
+    }
 
-    std::vector<edgeXr*> pedXr; 
+    std::vector<edgeXr*> pedXr;
     for (auto& edge : edXr) pedXr.push_back(&edge);
-    std::sort(pedXr.begin(), pedXr.end(), edgeXr_order()); 
+    std::sort(pedXr.begin(), pedXr.end(), edgeXr_order());
 
+    // build the final array of triangles into which the edges will point
+    for (auto& tri : ttx) trX.emplace_back(tri.tnorm);
 
-	// build the final array of triangles into which the edges will point 
-    for (auto& tri : ttx)
-        trX.emplace_back(tri.tnorm);
-
-	// build the final array of edges with pointers into these triangles
+    // build the final array of edges with pointers into these triangles
     for (std::size_t i = 0; i < pedXr.size(); )
-	{
-		// two edges can fuse into one with triangles on both sides
+    {
+        // two edges can fuse into one with triangles on both sides
         if ((i + 1 < pedXr.size()) && (pedXr[i]->p0 == pedXr[i + 1]->p0) && (pedXr[i]->p1 == pedXr[i + 1]->p1) && ((pedXr[i]->itL == -1) != (pedXr[i + 1]->itL == -1)))
-		{
-			if (pedXr[i]->itL == -1)
+        {
+            if (pedXr[i]->itL == -1)
                 edX.emplace_back(pedXr[i]->p0, pedXr[i]->p1, &(trX[pedXr[i]->itR]), &(trX[pedXr[i + 1]->itL]));
-			else
+            else
                 edX.emplace_back(pedXr[i]->p0, pedXr[i]->p1, &(trX[pedXr[i + 1]->itR]), &(trX[pedXr[i]->itL]));
-			i += 2; 
-		}
-
-		// one triangle sided edge
-		else 
-		{
+            i += 2;
+        }
+        else // one triangle sided edge
+        {
             edX.emplace_back(pedXr[i]->p0, pedXr[i]->p1, (pedXr[i]->itR != -1 ? &(trX[pedXr[i]->itR]) : NULL), (pedXr[i]->itL != -1 ? &(trX[pedXr[i]->itL]) : NULL));
-			i++; 
-		}
-	}
-	edXr.clear(); 
-	pedXr.clear(); 
+            i++;
+        }
+    }
 
-	// put the backpointers to the edges into the triangles
+    // put the backpointers to the edges into the triangles
     for (auto& edge : edX)
-	{
+    {
         if (edge.tpL != NULL)
             edge.tpL->SetEdge(&edge, ttx[edge.tpL - &(trX[0])]);
         if (edge.tpR != NULL)
             edge.tpR->SetEdge(&edge, ttx[edge.tpR - &(trX[0])]);
-	}
-	ttx.clear(); 
+    }
 
     return sx;
 }

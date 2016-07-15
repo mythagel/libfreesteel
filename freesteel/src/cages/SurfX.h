@@ -107,7 +107,6 @@ private:
     // as triples of points, from which we then work.
     // they are erased after the components have been built.
     std::vector<P3> lvd;
-    std::vector<int> ltd;
 public:
     SurfXBuilder(const I1& lgxrg, const I1& lgyrg, const I1& lgzrg);
     SurfXBuilder(); // one that builds the ranges
