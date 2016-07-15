@@ -42,7 +42,7 @@ struct edgeX
     double rdL;
 
     edgeX(P3* lp0, P3* lp1, triangX* ltpR, triangX* ltpL)
-     : p0(lp0), p1(lp1), tpR(ltpR), tpL(ltpL), rdR(), rdL()
+        : p0(lp0), p1(lp1), tpR(ltpR), tpL(ltpL), rdR(), rdL()
     {}
 };
 
@@ -57,7 +57,7 @@ struct triangX // : public Facet
     double tp;  // plane of the triangle
 
     triangX(const P3& ltnorm)
-     : ab1(), ab2(), b12(), tnorm(ltnorm)
+        : ab1(), ab2(), b12(), tnorm(ltnorm)
     {}
 
     void SetEdge(edgeX* pe, struct triangXr& r);
@@ -74,12 +74,28 @@ struct triangX // : public Facet
 // we are making a piece of the offset surface.  
 class SurfX		// extra special made surface for a tool
 {
-public: 
-	// we pull in all geometry which touches these ranges 
-	// triangles may extend far beyond these ranges, so be careful.  
-	// this is why the input into this class is done by triangles 
-	// so that ones which do not span this region can be ignored.  
-	I1 gxrg, gyrg, gzrg; 
+public:
+
+    // vectors components
+    std::vector<P3> vdX;
+    std::vector<edgeX> edX;
+    std::vector<triangX> trX;
+
+    I1 gxrg, gyrg, gzrg;
+
+    // new horizontal slicing code
+    void SliceFibre(class Ray_gen& rgen);
+    void SliceRay(class SLi_gen& sgen);
+};
+
+class SurfXBuilder
+{
+private:
+    // we pull in all geometry which touches these ranges
+    // triangles may extend far beyond these ranges, so be careful.
+    // this is why the input into this class is done by triangles
+    // so that ones which do not span this region can be ignored.
+    I1 gxrg, gyrg, gzrg;
     enum class RangeState
     {
         none,
@@ -87,39 +103,18 @@ public:
         hardset
     } rangestate;
 
-    SurfX(const I1& lgxrg, const I1& lgyrg, const I1& lgzrg);
-	SurfX(); // one that builds the ranges
-
-	// these are the arrays we initially load the points and the triangles 
-	// as triples of points, from which we then work.  
-	// they are erased after the components have been built.  
-    std::vector<P3> lvd; 
-    std::vector<int> ltd; 
-	void PushTriangle(const P3& p0, const P3& p1, const P3& p2); 
-
-	// vectors components
-    std::vector<P3> vdX;  
-    std::vector<edgeX> edX; 
-    std::vector<triangX> trX; 
-
-	// the functions which pull it all together in the 3 arrays above.  
-	void BuildComponents(); 
-
-// new horizontal slicing code 
-	void SliceFibre(class Ray_gen& rgen);  
-	void SliceRay(class SLi_gen& sgen); 
-};
-
-/*class SurfXBuilder
-{
     // these are the arrays we initially load the points and the triangles
     // as triples of points, from which we then work.
     // they are erased after the components have been built.
     std::vector<P3> lvd;
     std::vector<int> ltd;
+public:
+    SurfXBuilder(const I1& lgxrg, const I1& lgyrg, const I1& lgzrg);
+    SurfXBuilder(); // one that builds the ranges
+
     void PushTriangle(const P3& p0, const P3& p1, const P3& p2);
 
     SurfX Build();
-};*/
+};
 
 #endif

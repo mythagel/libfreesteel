@@ -173,13 +173,12 @@ void GSTtoolpath::UpdateFromPax()
 }
 
 /////////////////////////////////////////////////////////// 
-void GSTsurface::PushTrianglesIntoSurface(SurfX& sx) 
+SurfX GSTsurface::PushTrianglesIntoSurface(SurfXBuilder &builder)
 {
 	// make the list of triangles
 	vtkPolyData* surf = stl->GetOutput(); 
 
-	vtkCellArray* poly  = surf->GetPolys();
-	int p_c = poly->GetNumberOfCells();
+    vtkCellArray* poly  = surf->GetPolys();
 	poly->InitTraversal();
 	vtkIdType npts;
 	vtkIdType* pts;
@@ -194,8 +193,10 @@ void GSTsurface::PushTrianglesIntoSurface(SurfX& sx)
 		values = surf->GetPoint(pts[2]); 
 		P3 p2(values[0], values[1], values[2]); 
 
-		sx.PushTriangle(p0, p1, p2); 
+        builder.PushTriangle(p0, p1, p2);
 	}
+
+    return builder.Build();
 }
 
 

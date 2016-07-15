@@ -404,9 +404,8 @@ void MainFrame::OnMachiningAreaclear(wxCommandEvent& WXUNUSED(event) )
 		gst->gstees.push_back(gsttpath);
 		
 		// define the empty surface
-		SurfX sx(gstsurf->xrg.Inflate(2), gstsurf->yrg.Inflate(2), gstsurf->zrg); 
-		gstsurf->PushTrianglesIntoSurface(sx); 
-		sx.BuildComponents(); // compress thing 
+        SurfXBuilder builder(gstsurf->xrg.Inflate(2), gstsurf->yrg.Inflate(2), gstsurf->zrg);
+        auto sx = gstsurf->PushTrianglesIntoSurface(builder);
 
 		ASSERT(gstbound->ftpaths.size() == 1);
         gsttpath->ftpaths = MakeCorerough(sx, gstbound->ftpaths[0], params);

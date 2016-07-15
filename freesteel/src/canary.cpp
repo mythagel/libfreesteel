@@ -15,13 +15,14 @@ void OutputDebugStringG(const char* str0, const char* strf, int line1)
     std::cerr << strf << ":" << line1 << " " << str0 << "\n";
 }
 
-bool ReadOFF(const std::string& off, SurfX& sx) {
+SurfX ReadOFF(const std::string& off) {
     std::ifstream is(off);
     is.exceptions(std::ifstream::failbit);
 
     std::string line;
     std::getline(is, line);
-    if (line != "OFF") return false;
+    if (line != "OFF")
+        throw std::runtime_error("Invalid OFF format");
     unsigned nvertices;
     unsigned nfaces;
     unsigned nedges;
@@ -41,21 +42,22 @@ bool ReadOFF(const std::string& off, SurfX& sx) {
         vertices.push_back(v);
     }
 
+    SurfXBuilder builder;
     for (unsigned i = 0; i < nfaces; ++i) {
         unsigned n;
         is >> n;
-        if (n != 3) return false;
+        if (n != 3)
+            throw std::runtime_error("Invalid OFF format - triangles only");
         unsigned a;
         unsigned b;
         unsigned c;
         is >> a >> b >> c;
-        sx.PushTriangle(
+        builder.PushTriangle(
             {vertices[a].x, vertices[a].y, vertices[a].z},
             {vertices[b].x, vertices[b].y, vertices[b].z},
             {vertices[c].x, vertices[c].y, vertices[c].z});
     }
-    sx.BuildComponents();
-    return true;
+    return builder.Build();
 }
 
 PathXSeries MakeRectBoundary(const I1& xrg, const I1& yrg, double z)
@@ -96,14 +98,7 @@ int main(int argc, char* argv[]) {
 
     if (args.empty()) return usage();
 
-    SurfX sx;
-
-    if (!ReadOFF(args[0], sx))
-    {
-        fprintf(stderr, "failed to read OFF %s\n", args[0].c_str());
-        return 1;
-    }
-
+    auto sx = ReadOFF(args[0]);
     auto bound = MakeRectBoundary(sx.gxrg, sx.gyrg, sx.gzrg.hi + 1);
 
     double cr = 3.;

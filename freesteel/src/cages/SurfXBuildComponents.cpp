@@ -22,9 +22,19 @@
 #include <algorithm>
 
 
+//////////////////////////////////////////////////////////////////////
+SurfXBuilder::SurfXBuilder(const I1& lgxrg, const I1& lgyrg, const I1& lgzrg)
+ : gxrg(lgxrg), gyrg(lgyrg), gzrg(lgzrg), rangestate(RangeState::hardset)
+{}
+
 
 //////////////////////////////////////////////////////////////////////
-void SurfX::PushTriangle(const P3& p0, const P3& p1, const P3& p2)
+SurfXBuilder::SurfXBuilder()
+ : rangestate(RangeState::none)
+{}
+
+//////////////////////////////////////////////////////////////////////
+void SurfXBuilder::PushTriangle(const P3& p0, const P3& p1, const P3& p2)
 {
 	// does the triangle touch the region?  
 	// this condition overestimates it.  
@@ -182,8 +192,16 @@ void triangX::SetEdge(edgeX* pe, struct triangXr& r)
 
 //////////////////////////////////////////////////////////////////////
 // this is the tooldef specific part  
-void SurfX::BuildComponents()  
+SurfX SurfXBuilder::Build()
 {
+    SurfX sx;
+    sx.gxrg = gxrg;
+    sx.gyrg = gyrg;
+    sx.gzrg = gzrg;
+    auto& vdX = sx.vdX;
+    auto& edX = sx.edX;
+    auto& trX = sx.trX;
+
 	// first sort all the points by increasing x
 	int np = lvd.size(); // 3 times the number of triangles.  
     std::vector<P3*> p3X;
@@ -264,5 +282,7 @@ void SurfX::BuildComponents()
             edge.tpR->SetEdge(&edge, ttx[edge.tpR - &(trX[0])]);
 	}
 	ttx.clear(); 
+
+    return sx;
 }
 

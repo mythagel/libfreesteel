@@ -22,17 +22,6 @@
 #include "pits/NormRay_gen.h"
 
 //////////////////////////////////////////////////////////////////////
-SurfX::SurfX(const I1& lgxrg, const I1& lgyrg, const I1& lgzrg)
- : gxrg(lgxrg), gyrg(lgyrg), gzrg(lgzrg), rangestate(RangeState::hardset)
-{}
-
-
-//////////////////////////////////////////////////////////////////////
-SurfX::SurfX()
- : rangestate(RangeState::none)
-{}
-
-//////////////////////////////////////////////////////////////////////
 void SurfX::SliceFibre(Ray_gen& rgen)
 {
     // points
@@ -69,4 +58,3 @@ P3* triangX::ThirdPoint(edgeX* pe)
 		return ThirdPoint(); 
 	return (((b12->p0 != pe->p0) && (b12->p0 != pe->p1)) ? b12->p0 : b12->p1); 
 }
-

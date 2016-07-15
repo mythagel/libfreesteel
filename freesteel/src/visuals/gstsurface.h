@@ -51,7 +51,7 @@ public:
 	vo<vtkPolyDataMapper> stlMap; 
 
 	void LoadSTL(const char* fname); 
-	void PushTrianglesIntoSurface(SurfX& sx); 
+    SurfX PushTrianglesIntoSurface(SurfXBuilder& builder);
 
 	virtual ~GSTsurface() {};
 }; 
