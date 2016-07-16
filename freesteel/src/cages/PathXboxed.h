@@ -63,7 +63,6 @@ public:
     std::vector<pucketX> puckets;
 
     // integer places where the duplicate counters are looked up.
-    PathXSeries tsbound;
     std::vector<int> idups;
     mutable int maxidup;
 

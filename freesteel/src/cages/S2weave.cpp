@@ -33,10 +33,11 @@ S2weave::S2weave(const I1& lurg, const I1& lvrg, double res)
     // generate the fibres
     ufibs.reserve(nufib);
     for (std::size_t i = 0; i <= nufib; i++)
-        ufibs.emplace_back(urg.Along((double)i / nufib), vrg, 1);
+        ufibs.emplace_back(urg.Along((double)i / nufib), vrg, S1::ufibre);
+
     vfibs.reserve(nvfib);
     for (std::size_t j = 0; j <= nvfib; j++)
-        vfibs.emplace_back(vrg.Along((double)j / nvfib), urg, 2);
+        vfibs.emplace_back(vrg.Along((double)j / nvfib), urg, S1::vfibre);
 }
 
 

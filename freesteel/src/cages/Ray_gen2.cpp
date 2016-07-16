@@ -25,8 +25,10 @@
 #include "cages/Area2_gen.h"
 #include <algorithm>
 
-Ray_gen2::Ray_gen2(double lraddisc) :
-    raddisc(lraddisc), raddiscsq(Square(raddisc)) {}
+Ray_gen2::Ray_gen2(double lraddisc)
+    : pfib(nullptr), scuts(), raddisc(lraddisc), raddiscsq(Square(raddisc))
+{
+}
 
 //////////////////////////////////////////////////////////////////////
 void Ray_gen2::HoldFibre(S1* lpfib) 
@@ -67,9 +69,10 @@ void Ray_gen2::LineCut(const P2& a, const P2& b)
 	}
 }
 
-
-
-
+P2 Ray_gen2::Transform(const P2& p)
+{
+    return (pfib->ftype == 1 ? P2(p.u - pfib->wp, p.v) : P2(p.v - pfib->wp, p.u));
+}
 
 
 //////////////////////////////////////////////////////////////////////

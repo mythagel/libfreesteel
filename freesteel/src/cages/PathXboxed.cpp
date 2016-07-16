@@ -24,7 +24,7 @@
 //////////////////////////////////////////////////////////////////////
 PathXboxed::PathXboxed(PathXSeries* lppathx, const I1& lgburg, double boxwidth)
  : ppathx(lppathx), gburg(lgburg), bGeoOutLeft(false), bGeoOutRight(false),
-   upart(gburg, boxwidth), puckets(upart.NumParts()), tsbound(),
+   upart(gburg, boxwidth), puckets(upart.NumParts()),
    idups(), maxidup(0)
 
 {

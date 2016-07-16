@@ -38,24 +38,21 @@ public:
     std::vector<B1> scuts; // local for cutting and offsetting.
 
     // the endpoints of the ray are at (0,0,zrg.lo) and (0, 0, zrg.hi)
-    I1 urg;
 
     // the disc size
     double raddisc;
     double raddiscsq;
 
+    Ray_gen2(double lraddisc);
+
     // result value (a range), validity from return function.
     void HoldFibre(S1* lpfib);
     void ReleaseFibre();
 
-
-    Ray_gen2(double lraddisc);
-
     void DiscSliceCapN(const P2& a, const P2& b);
     void LineCut(const P2& a, const P2& b); // fills in the scuts
 
-    P2 Transform(const P2& p)
-        { return (pfib->ftype == 1 ? P2(p.u - pfib->wp, p.v) : P2(p.v - pfib->wp, p.u)); }
+    P2 Transform(const P2& p);
 };
 
 void HackToolpath(Ray_gen2& rgen2, const PathXSeries& pathxs, std::size_t iseg, const P2& ptpath);

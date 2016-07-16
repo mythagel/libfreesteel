@@ -39,10 +39,8 @@ public:
     // runs parallel to the brks array.
     std::vector< std::vector<P3> > linkpths;
 
-    PathXSeries() {}
-    PathXSeries(double lz)
-        : z(lz)
-    {}
+    PathXSeries() : z(0) {}
+    PathXSeries(double lz) : z(lz) {}
 
     void Add(const P2& pt)
     {

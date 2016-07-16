@@ -49,35 +49,42 @@ struct B1
 struct S1
 {
     std::vector<B1> ep;
-	double wp; // the perpendicular position.  
-	I1 wrg; 
+    double wp; // the perpendicular position.
+    I1 wrg;
 
-	int ftype; // 1 for ufibre, 2 for vfibre
+    enum FibreType
+    {
+        none,
+        ufibre,
+        vfibre,
 
-	void Merge(const I1& rg); 
-	void Merge(double rglo, bool binterncellboundlo, double rghi, bool binterncellboundhi); 
-	void Minus(const I1& rg); 
-	void Minus(double rglo, bool binterncellboundlo, double rghi, bool binterncellboundhi);
+        circ
+    } ftype; // 1 for ufibre, 2 for vfibre
+
+    void Merge(const I1& rg);
+    void Merge(double rglo, bool binterncellboundlo, double rghi, bool binterncellboundhi);
+    void Minus(const I1& rg);
+    void Minus(double rglo, bool binterncellboundlo, double rghi, bool binterncellboundhi);
 
     std::pair<std::ptrdiff_t, std::ptrdiff_t> Loclohi(const I1& rg) const;
 
-	void Invert(); 
+    void Invert();
 
-	bool Check() const; 
+    bool Check() const;
 
-	bool Contains(double lw) const; 
-	I1 ContainsRG(double lw) const; 
+    bool Contains(double lw) const;
+    I1 ContainsRG(double lw) const;
 
-	void SetNew(double lwp, const I1& lwrg, int lftype)
-        { wp = lwp; wrg = lwrg; ftype = lftype; ep.clear(); }
+    void SetNew(double lwp, const I1& lwrg, FibreType lftype)
+    { wp = lwp; wrg = lwrg; ftype = lftype; ep.clear(); }
 
     S1()
-     : ep(), wp(), wrg(I1unit), ftype()
+        : ep(), wp(), wrg(I1unit), ftype()
     {}
-	S1(double lwp, I1& lwrg, int lftype) 
-        { SetNew(lwp, lwrg, lftype); }
+    S1(double lwp, I1& lwrg, FibreType lftype)
+    { SetNew(lwp, lwrg, lftype); }
 
-	void SetAllCutCodes(int lcutcode); 
+    void SetAllCutCodes(int lcutcode);
 }; 
 
 

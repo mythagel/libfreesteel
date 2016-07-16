@@ -74,7 +74,7 @@ public:
 	void HoldFibre(S1* lpfib, double lz); 
 
 	P3 Transform(const P3& p) 
-		{ return (pfib->ftype == 1 ? P3(p.x - pfib->wp, p.z - radball - z, p.y) : P3(p.z - radball - z, p.y - pfib->wp, p.x)); }  
+        { return (pfib->ftype == S1::ufibre ? P3(p.x - pfib->wp, p.z - radball - z, p.y) : P3(p.z - radball - z, p.y - pfib->wp, p.x)); }
 
 
 	void BallSlice(const P3& a); 
