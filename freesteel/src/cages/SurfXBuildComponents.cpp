@@ -71,6 +71,7 @@ void SurfXBuilder::PushTriangle(const P3& p0, const P3& p1, const P3& p2)
     }
 
     // push the triangle in.
+    lvd.reserve(lvd.size() + 3);
     lvd.push_back(p0);
     lvd.push_back(p1);
     lvd.push_back(p2);
@@ -169,22 +170,23 @@ struct edgeXr_order
 };
 
 //////////////////////////////////////////////////////////////////////
-void triangX::SetEdge(edgeX* pe, struct triangXr& r)
+
+void SetEdge(triangX& trX, edgeX* pe, triangXr& r)
 {
     if (((r.a == pe->p0) && (r.b1 == pe->p1)) || ((r.a == pe->p1) && (r.b1 == pe->p0)))
     {
-        ASSERT(ab1 == NULL);
-        ab1 = pe;
+        ASSERT(trX.ab1 == NULL);
+        trX.ab1 = pe;
     }
     else if (((r.a == pe->p0) && (r.b2 == pe->p1)) || ((r.a == pe->p1) && (r.b2 == pe->p0)))
     {
-        ASSERT(ab2 == NULL);
-        ab2 = pe;
+        ASSERT(trX.ab2 == NULL);
+        trX.ab2 = pe;
     }
     else if (((r.b1 == pe->p0) && (r.b2 == pe->p1)) || ((r.b1 == pe->p1) && (r.b2 == pe->p0)))
     {
-        ASSERT(b12 == NULL);
-        b12 = pe;
+        ASSERT(trX.b12 == NULL);
+        trX.b12 = pe;
     }
     else
         ASSERT(0);
@@ -192,7 +194,7 @@ void triangX::SetEdge(edgeX* pe, struct triangXr& r)
 
 //////////////////////////////////////////////////////////////////////
 // this is the tooldef specific part  
-SurfX SurfXBuilder::Build()
+SurfX SurfXBuilder::Build() const
 {
     SurfX sx;
     sx.gxrg = gxrg;
@@ -208,12 +210,13 @@ SurfX SurfXBuilder::Build()
     {
         // first sort all the points by increasing x
         std::vector<const P3*> p3X;
-        p3X.reserve(lvd.size());
+        p3X.reserve(np);
         for (auto& p : lvd) p3X.push_back(&p);
         std::sort(p3X.begin(), p3X.end(), p3X_order());
 
         // make the indexes into this array with duplicates removed
-        ltd.resize(lvd.size());
+        ltd.resize(np);
+        vdX.reserve(np);    // optimistic
         for (auto& pi : p3X)
         {
             if (vdX.empty() || !(vdX.back() == *pi))
@@ -222,17 +225,16 @@ SurfX SurfXBuilder::Build()
         }
     }
 
-    // kill the old arrays
-    lvd.clear();
-
     // build up oriented triangles with normals and remove degenerate ones
     auto nt = np / 3;
     std::vector<triangXr> ttx;
+    ttx.reserve(nt);
     for (std::size_t i = 0; i < nt; ++i)
         ttx.emplace_back(vdX[ltd[i * 3]], vdX[ltd[i * 3 + 1]], vdX[ltd[i * 3 + 2]]);
 
     // now make the array of linked edges
     std::vector<edgeXr> edXr;
+    edXr.reserve(ttx.size());
     for (std::size_t i = 0; i < ttx.size(); ++i)
     {
         auto& tri = ttx[i];
@@ -242,13 +244,16 @@ SurfX SurfXBuilder::Build()
     }
 
     std::vector<edgeXr*> pedXr;
+    pedXr.reserve(edXr.size());
     for (auto& edge : edXr) pedXr.push_back(&edge);
     std::sort(pedXr.begin(), pedXr.end(), edgeXr_order());
 
     // build the final array of triangles into which the edges will point
+    trX.reserve(ttx.size());
     for (auto& tri : ttx) trX.emplace_back(tri.tnorm);
 
     // build the final array of edges with pointers into these triangles
+    edX.reserve(pedXr.size());
     for (std::size_t i = 0; i < pedXr.size(); )
     {
         // two edges can fuse into one with triangles on both sides
@@ -271,11 +276,16 @@ SurfX SurfXBuilder::Build()
     for (auto& edge : edX)
     {
         if (edge.tpL != NULL)
-            edge.tpL->SetEdge(&edge, ttx[edge.tpL - &(trX[0])]);
+            SetEdge(*edge.tpL, &edge, ttx[edge.tpL - &(trX[0])]);
         if (edge.tpR != NULL)
-            edge.tpR->SetEdge(&edge, ttx[edge.tpR - &(trX[0])]);
+            SetEdge(*edge.tpR, &edge, ttx[edge.tpR - &(trX[0])]);
     }
 
     return sx;
 }
 
+void SurfXBuilder::Reset()
+{
+    // kill the old arrays
+    lvd.clear();
+}

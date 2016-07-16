@@ -19,6 +19,7 @@
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
 #include "CircCrossingStructure.h"
+#include "cages/PathXboxed.h"
 #include "cages/PathXSeries.h"
 #include <utility>
 #include <algorithm>

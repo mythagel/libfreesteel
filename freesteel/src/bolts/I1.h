@@ -24,7 +24,7 @@
 #include "debugfuncs.h"
 
 //////////////////////////////////////////////////////////////////////
-struct I1	// Interval
+struct I1   // Closed Interval [lo, hi]
 {
 	double lo;
 	double hi;
@@ -120,7 +120,6 @@ struct I1	// Interval
 }; 
 
 
-// this should be a const global variable 
-#define I1unit I1(0.0, 1.0) 
+static const I1 I1unit(0.0, 1.0);
 
 #endif

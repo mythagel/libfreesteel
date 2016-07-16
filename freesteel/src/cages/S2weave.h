@@ -25,6 +25,7 @@
 #include "bolts/I1.h"
 #include "bolts/S1.h"
 #include "cages/PathXSeries.h"
+#include "cages/PathXboxed.h"
 #include <vector>
 
 //////////////////////////////////////////////////////////////////////

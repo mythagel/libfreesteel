@@ -24,6 +24,7 @@ add_library(actp STATIC
     cages/Area2_gen.cpp
     cages/Area2_gen.h
     cages/PathXboxed.cpp
+    cages/PathXboxed.h
     cages/Ray_gen2.cpp
     cages/Ray_gen2.h
     cages/PathXSeries.h

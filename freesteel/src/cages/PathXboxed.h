@@ -18,47 +18,63 @@
 //
 // See fslicense.txt and gpl.txt for further details
 ////////////////////////////////////////////////////////////////////////////////
-#include "Partition1.h"
+
+#ifndef PathXboxed__h
+#define PathXboxed__h
+#include "PathXSeries.h"
+#include <vector>
+#include "bolts/I1.h"
+#include "bolts/P2.h"
+#include "bolts/Partition1.h"
 
 //////////////////////////////////////////////////////////////////////
-Partition1::Partition1(const I1& lrg, double w)
-    : bRegular(true)
+struct ckpline 
 {
-    auto n = static_cast<std::size_t>(lrg.Leng() / w) + 1;
-    b.reserve(n);
-    for (std::size_t i = 0; i <= n; i++)
-        b.push_back(lrg.Along(static_cast<double>(i) / n));
-    ASSERT(GetPart(0).Leng() <= w);
-}
+    std::size_t iseg;
+    mutable std::ptrdiff_t idup;
+    double vmid; // the vrange is (vmid - vrad, vmid + vrad)
+    double vrad;
+
+    ckpline(std::size_t liseg, std::ptrdiff_t lidup, double lvmid, double lvrad)
+        : iseg(liseg), idup(lidup), vmid(lvmid), vrad(lvrad)
+    {}
+};
 
 //////////////////////////////////////////////////////////////////////
-std::size_t Partition1::FindPart(double x) const
+struct pucketX
 {
-    ASSERT(Getrg().Contains(x));
-    if (bRegular)
-    {
-        std::ptrdiff_t i = Getrg().InvAlong(x) * (NumParts() + 1);
-        if (i < 0)
-            i = 0;
-        else if (static_cast<std::size_t>(i) > NumParts() - 1)
-            i = NumParts() - 1;
-        else if (b[i] > x)
-            i--;
-        else if (b[i + 1] <= x)
-            i++;
-        ASSERT(GetPart(i).Contains(x));
-        return i;
-    }
-
-    // otherwise some sort of binary search
-    ASSERT(0);
-    return 0;
-}
+    std::vector<std::size_t> ckpoints;
+    std::vector<ckpline> cklines;
+};
 
 //////////////////////////////////////////////////////////////////////
-// this can be optimized when binary searching 
-std::pair<std::size_t, std::size_t> Partition1::FindPartRG(const I1& xrg) const
+class PathXboxed
 {
-    return { FindPart(xrg.lo), FindPart(xrg.hi) };
-}
+public: 
+    PathXSeries* ppathx;
+
+    I1 gburg;
+    bool bGeoOutLeft;
+    bool bGeoOutRight;
+
+    Partition1 upart;
+
+    // simple buckets running parallel to the partitions.
+    std::vector<pucketX> puckets;
+
+    // integer places where the duplicate counters are looked up.
+    PathXSeries tsbound;
+    std::vector<int> idups;
+    mutable int maxidup;
+
+    PathXboxed(PathXSeries* lppathx, const I1& lgburg, double boxwidth);
+
+    void PutSegment(std::size_t iseg, bool bFirst, bool bRemove);
+    void Add(const P2& p1);
+    void Break();
+    void Pop_back();
+};
+
+#endif
+
 

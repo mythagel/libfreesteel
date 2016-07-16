@@ -22,7 +22,7 @@
 #include "pits/NormRay_gen.h"
 
 //////////////////////////////////////////////////////////////////////
-void SurfX::SliceFibre(Ray_gen& rgen)
+void SurfX::SliceFibre(Ray_gen& rgen) const
 {
     // points
     for (auto& p : vdX) rgen.BallSlice(p);
@@ -35,7 +35,7 @@ void SurfX::SliceFibre(Ray_gen& rgen)
 }
 
 //////////////////////////////////////////////////////////////////////
-void SurfX::SliceRay(SLi_gen& sgen)
+void SurfX::SliceRay(SLi_gen& sgen) const
 {
     // triangles
     for (auto& tri : trX)
@@ -48,6 +48,11 @@ void SurfX::SliceRay(SLi_gen& sgen)
 P3* triangX::ThirdPoint()
 {
 	return (((ab1->p0 != b12->p0) && (ab1->p0 != b12->p1)) ? ab1->p0 : ab1->p1); 
+}
+const P3* triangX::ThirdPoint() const
+{
+    // TODO address redundancy
+    return (((ab1->p0 != b12->p0) && (ab1->p0 != b12->p1)) ? ab1->p0 : ab1->p1);
 }
 
 //////////////////////////////////////////////////////////////////////

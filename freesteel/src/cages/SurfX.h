@@ -60,12 +60,11 @@ struct triangX // : public Facet
         : ab1(), ab2(), b12(), tnorm(ltnorm)
     {}
 
-    void SetEdge(edgeX* pe, struct triangXr& r);
-
     inline P3* FirstPoint() { return b12->p0; }
     inline P3* SecondPoint() { return b12->p1; }
     P3* ThirdPoint(edgeX* pe);
     P3* ThirdPoint();
+    const P3* ThirdPoint() const;
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -84,8 +83,8 @@ public:
     I1 gxrg, gyrg, gzrg;
 
     // new horizontal slicing code
-    void SliceFibre(class Ray_gen& rgen);
-    void SliceRay(class SLi_gen& sgen);
+    void SliceFibre(class Ray_gen& rgen) const;
+    void SliceRay(class SLi_gen& sgen) const;
 };
 
 class SurfXBuilder
@@ -113,7 +112,9 @@ public:
 
     void PushTriangle(const P3& p0, const P3& p1, const P3& p2);
 
-    SurfX Build();
+    SurfX Build() const;
+
+    void Reset();
 };
 
 #endif

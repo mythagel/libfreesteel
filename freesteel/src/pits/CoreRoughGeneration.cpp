@@ -27,8 +27,7 @@ std::vector<PathXSeries> MakeCorerough(SurfX& sx, const PathXSeries&  bound, con
     std::vector<PathXSeries> vpathseries;
 
 	// boxed surfaces 
-	SurfXboxed sxb(&sx); 
-	sxb.BuildBoxes(10.0); 
+    SurfXboxed sxb(&sx, 10.0);
 
 	// interior close to tool, or absolute intersections with triangle faces
 	double areaoversize = (params.toolcornerrad + params.toolflatrad) * 2 + 13; 
@@ -569,11 +568,9 @@ bool CoreRoughGeneration::RestartAtBCI(BCellIndex& bci, const MachineParams& par
 
 /////////////////////////////////////////////////////////// 
 CoreRoughGeneration::CoreRoughGeneration(PathXSeries* px, const I1& lxrg, const I1& lyrg) : 
-	machxrg(lxrg), machyrg(lyrg), pathxb(px) 
+    machxrg(lxrg), machyrg(lyrg), pathxb(px, machxrg, 2.0)
 {
-	pathxb.BuildBoxes(machxrg, 2.0); 
 }
-
 
 
 /////////////////////////////////////////////////////////// 
