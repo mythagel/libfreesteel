@@ -187,11 +187,11 @@ void fsvtkToolpathMapper::CalculateStock(double zstock)
 	double zpath = (*pftpaths)[pos.ipathx].z;
     double rad = ptoolshape->RadAtHeight(zstock - zpath);
     
-    stockweave.SetShape(xrg, yrg, .5);
-    HackAreaOffset(stockweave, *bound, 0);
+    stockweave = S2weave(xrg, yrg, .5);
+    HackAreaOffset(*stockweave, *bound, 0);
 
     // inverse weave
-    stockweave.Invert();
+    stockweave->Invert();
 
     // hack in toolpath up to position
 	// hack in up to point in animation, but exclude any retract
@@ -204,10 +204,10 @@ void fsvtkToolpathMapper::CalculateStock(double zstock)
 	*/ 
 	
 	ASSERT(pos.ipathx < pftpaths->size());  
-    HackToolpath(stockweave, (*pftpaths)[pos.ipathx], pos.isegOnPath, pos.ptOnPath, rad);    
+    HackToolpath(*stockweave, (*pftpaths)[pos.ipathx], pos.isegOnPath, pos.ptOnPath, rad);
 
     // inverse weave
-    stockweave.Invert();
+    stockweave->Invert();
 }
 
 ///////////////////////////////////////////////////////////
@@ -234,12 +234,11 @@ void fsvtkToolpathMapper::DrawStock()
     glDisable(GL_LIGHTING);
     glColor3d(0.91, 0.09, 0.92);
 
-    
 	// do the fibres in each direction
-    for (int iu = 0; iu < stockweave.ufibs.size(); iu++)
-        DrawFibre(stockweave.ufibs[iu], stockweave.vrg, (*pftpaths)[pos.ipathx].z);
-    for (int iv = 0; iv < stockweave.vfibs.size(); iv++)
-        DrawFibre(stockweave.vfibs[iv], stockweave.urg, (*pftpaths)[pos.ipathx].z);
+    for (auto& fib : stockweave->ufibs)
+        DrawFibre(fib, stockweave->vrg, (*pftpaths)[pos.ipathx].z);
+    for (auto& fib : stockweave->vfibs)
+        DrawFibre(fib, stockweave->urg, (*pftpaths)[pos.ipathx].z);
 }
 
 /*

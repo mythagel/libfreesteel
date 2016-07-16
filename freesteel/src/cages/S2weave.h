@@ -32,16 +32,16 @@
 // point location which iterates through the weave.  
 struct S2weaveB1iter
 {
-	int ftype; 
-	bool blower; 
+    int ftype;
+    bool blower;
 
-	double w; // in fibre
-	double wp; // perpendicular to fibre.  
+    double w; // in fibre
+    double wp; // perpendicular to fibre.
 
     std::size_t ixwp; // index of fibre
-	//int ixw;  // index of point in fibre  
+    //int ixw;  // index of point in fibre
 
-	P2 GetPoint(); 
+    P2 GetPoint();
 }; 
 
 
@@ -49,38 +49,35 @@ struct S2weaveB1iter
 // this is a general model of a 2D area.  
 class S2weave 
 {
-// this will have subdividing capability later.  
+    // this will have subdividing capability later.
 public: 
-	I1 urg; 
-	I1 vrg; 
+    I1 urg;
+    I1 vrg;
 
-	// the fibres
-	// look forward to handling subdividing types.  
-	// maybe a bucket between each of the main framework.  
-    std::vector<S1> ufibs; 
-    std::vector<S1> vfibs; 
-	int firstcontournumber; // contour numbers less than this are counted as unvisited.  
-	int lastcontournumber; 
+    // the fibres
+    // look forward to handling subdividing types.
+    // maybe a bucket between each of the main framework.
+    std::vector<S1> ufibs;
+    std::vector<S1> vfibs;
+    int firstcontournumber; // contour numbers less than this are counted as unvisited.
+    int lastcontournumber;
 
-	// this is where the path goes
-	void SetShape(const I1& urg, const I1& vrg, double res); 
+    // this is where the path goes
+    S2weave(const I1& urg, const I1& vrg, double res);
 
-	// contouring type functions 
-	void Advance(S2weaveB1iter& al); 
-	int& ContourNumber(S2weaveB1iter& al); 
-	void TrackContour(std::vector<P2>& pth, S2weaveB1iter al); 
+    // contouring type functions
+    void Advance(S2weaveB1iter& al);
+    int& ContourNumber(S2weaveB1iter& al);
+    void TrackContour(std::vector<P2>& pth, S2weaveB1iter al);
 
-	void SetAllCutCodes(int lcutcode);
-        void Invert();
+    void SetAllCutCodes(int lcutcode);
+    void Invert();
 };
 
 
 
 //////////////////////////////////////////////////////////////////////
 void CircleIntersectNew(std::vector<I1>& res, const P2& cpt, double crad, const PathXSeries& bound, const PathXboxed& pathxb, double prad); 
-
-// working with lines tracking and heading into the contour weave.
-//double RayIntersectWeave(const S2weave& s2w, const P2& a, const P2& v);
 
 
 #endif

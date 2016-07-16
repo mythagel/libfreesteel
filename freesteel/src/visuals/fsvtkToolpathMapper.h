@@ -26,6 +26,7 @@
 #include "bolts/I1.h"
 #include "cages/S2weave.h"
 #include <vector>
+#include <boost/optional.hpp>
 
 class ToolShape;
 
@@ -56,7 +57,7 @@ public:
 		ToolShape* ptoolshape;
 		PathXSeries* bound;
 		I1 xrg, yrg;
-		S2weave stockweave;
+        boost::optional<S2weave> stockweave;
 
 
 	// this mark out a visible interval of the ftpaths.  

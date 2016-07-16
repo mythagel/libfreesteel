@@ -25,7 +25,7 @@
 #include <utility>
 #include "I1.h"
 
-class Partition1 
+class Partition1    // Regular partition of Interval
 {
 private:
     std::vector<double> b;

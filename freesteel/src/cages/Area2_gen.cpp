@@ -22,6 +22,16 @@
 #include "pits/NormRay_gen.h"
 #include "cages/Ray_gen2.h"
 
+Area2_gen::Area2_gen(const I1& urg, const I1& vrg, double res)
+ : S2weave(urg, vrg, res), psxb(), z(), r()
+{
+}
+
+Area2_gen::Area2_gen(const I1& urg, const I1& vrg, double res, SurfXboxed* lpsxb, double lr)
+ : S2weave(urg, vrg, res), psxb(lpsxb), z(psxb->psurfx->gzrg.hi), r(lr)
+{
+}
+
 //////////////////////////////////////////////////////////////////////
 void Area2_gen::FindInterior(SurfX& sx)
 {
@@ -54,17 +64,6 @@ void Area2_gen::FindInterior(SurfX& sx)
         }
     }
 }
-
-
-
-//////////////////////////////////////////////////////////////////////
-void Area2_gen::SetSurfaceTop(SurfXboxed* lpsxb, double lr)
-{
-    r = lr;
-    psxb = lpsxb;
-    z = psxb->psurfx->gzrg.hi;
-}
-
 
 //////////////////////////////////////////////////////////////////////
 void Area2_gen::HackDowntoZ(float lz)

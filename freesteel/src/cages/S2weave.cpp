@@ -22,30 +22,21 @@
 #include "bolts/I1.h"
 #include "bolts/maybe.h"
 
-
-
-
-
 //////////////////////////////////////////////////////////////////////
-void S2weave::SetShape(const I1& lurg, const I1& lvrg, double res) 
+S2weave::S2weave(const I1& lurg, const I1& lvrg, double res)
+ : urg(lurg), vrg(lvrg), ufibs(), vfibs(),
+   firstcontournumber(0), lastcontournumber(firstcontournumber - 1)
 {
-	ASSERT(ufibs.empty()); 
-	ASSERT(vfibs.empty()); 
+    std::size_t nufib = urg.Leng() / res + 2;
+    std::size_t nvfib = vrg.Leng() / res + 2;
 
-	urg = lurg; 
-	vrg = lvrg; 
-
-    int nufib = static_cast<int>(urg.Leng() / res + 2);
-    int nvfib = static_cast<int>(vrg.Leng() / res + 2);
-
-	// generate the fibres
-	for (int i = 0; i <= nufib; i++) 
+    // generate the fibres
+    ufibs.reserve(nufib);
+    for (std::size_t i = 0; i <= nufib; i++)
         ufibs.emplace_back(urg.Along((double)i / nufib), vrg, 1);
-	for (int j = 0; j <= nvfib; j++) 
+    vfibs.reserve(nvfib);
+    for (std::size_t j = 0; j <= nvfib; j++)
         vfibs.emplace_back(vrg.Along((double)j / nvfib), urg, 2);
-
-	firstcontournumber = 0; 
-	lastcontournumber = firstcontournumber - 1; 
 }
 
 
@@ -140,8 +131,6 @@ void S2weave::TrackContour(std::vector<P2>& pth, S2weaveB1iter al)
 }
 
 
-
-
 //////////////////////////////////////////////////////////////////////
 int& S2weave::ContourNumber(S2weaveB1iter& al)  
 {
@@ -170,7 +159,3 @@ void S2weave::Invert()
     for (auto& vfib : vfibs)
         vfib.Invert();
 }
-
-
-
-

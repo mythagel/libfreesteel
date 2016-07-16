@@ -32,12 +32,9 @@ std::vector<PathXSeries> MakeCorerough(SurfX& sx, const PathXSeries&  bound, con
 	// interior close to tool, or absolute intersections with triangle faces
 	double areaoversize = (params.toolcornerrad + params.toolflatrad) * 2 + 13; 
 
-	Area2_gen a2g; 
-	a2g.SetShape(sx.gxrg.Inflate(areaoversize), sx.gyrg.Inflate(areaoversize), params.triangleweaveres); 
-	a2g.SetSurfaceTop(&sxb, params.toolcornerrad); 
+    Area2_gen a2g(sx.gxrg.Inflate(areaoversize), sx.gyrg.Inflate(areaoversize), params.triangleweaveres, &sxb, params.toolcornerrad);
 
-	Area2_gen a2gfl; 
-	a2gfl.SetShape(sx.gxrg.Inflate(areaoversize), sx.gyrg.Inflate(areaoversize), params.flatradweaveres);
+    Area2_gen a2gfl(sx.gxrg.Inflate(areaoversize), sx.gyrg.Inflate(areaoversize), params.flatradweaveres);
 
 	double hz = sx.gzrg.hi - params.stepdown / 2; 
     double htopz = sx.gzrg.lo + 5;

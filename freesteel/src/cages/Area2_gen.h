@@ -28,36 +28,28 @@
 #include "cages/SurfXboxed.h"
 
 
-
 //////////////////////////////////////////////////////////////////////
 void HackAreaOffset(S2weave& wve, const PathXSeries& paths, double rad);
 void HackToolpath(S2weave& wve, const PathXSeries& paths, std::size_t ixseg, const P2& ptpath, double rad);
-
-
 
 //////////////////////////////////////////////////////////////////////
 // this is a general model of a 2D area.  
 class Area2_gen : public S2weave
 {
 public: 
-	double z; 
-	double r; 
-	SurfXboxed* psxb; 
+    SurfXboxed* psxb;
+    double z;
+    double r;
 
-	void SetSurfaceTop(SurfXboxed* lpsxb, double lr); 
+    Area2_gen(const I1& urg, const I1& vrg, double res);
+    Area2_gen(const I1& urg, const I1& vrg, double res, SurfXboxed* lpsxb, double lr);
 
-	// pull the path up to tolerance
-	void HackDowntoZ(float lz); 
-	void FindInterior(SurfX& sx); 
+    // pull the path up to tolerance
+    void HackDowntoZ(float lz);
+    void FindInterior(SurfX& sx);
 
-//	void FindInteriorFlat(PathX& sx, double r); 
-
-	void MakeContours(PathXSeries& ftpaths); 
+    void MakeContours(PathXSeries& ftpaths);
 };
-
-
-
-
 
 #endif
 
