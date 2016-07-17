@@ -35,13 +35,13 @@ struct B1
 	bool binterncellbound; 
 	int contournumber; 
 
-	mutable int cutcode; 
+    int cutcode;
 
     B1(double lw, bool lblower, bool lbinterncellbound = false)
      : w(lw), blower(lblower), binterncellbound(lbinterncellbound), contournumber(-1), cutcode()
     {}
 
-	bool operator<(const B1& b) const { return (w < b.w); }
+    bool operator<(const B1& b) const { return w < b.w; }
 }; 
 
 //////////////////////////////////////////////////////////////////////
@@ -52,11 +52,11 @@ struct S1
     double wp; // the perpendicular position.
     I1 wrg;
 
-    enum FibreType
+    enum class Fibre
     {
         none,
-        ufibre,
-        vfibre,
+        u,
+        v,
 
         circ
     } ftype; // 1 for ufibre, 2 for vfibre
@@ -75,13 +75,13 @@ struct S1
     bool Contains(double lw) const;
     I1 ContainsRG(double lw) const;
 
-    void SetNew(double lwp, const I1& lwrg, FibreType lftype)
+    void SetNew(double lwp, const I1& lwrg, Fibre lftype)
     { wp = lwp; wrg = lwrg; ftype = lftype; ep.clear(); }
 
     S1()
         : ep(), wp(), wrg(I1unit), ftype()
     {}
-    S1(double lwp, I1& lwrg, FibreType lftype)
+    S1(double lwp, I1& lwrg, Fibre lftype)
     { SetNew(lwp, lwrg, lftype); }
 
     void SetAllCutCodes(int lcutcode);

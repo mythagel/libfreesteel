@@ -41,7 +41,7 @@ public:
 	double radballsq; 
 
 	// result value (a range), validity from return function.  
-	double reslo; 
+    double reslo;
 	bool binterncellboundlo; // tells it's the flat end of the cylinder, which must be covered by a ball.  
 	double reshi; 
 	bool binterncellboundhi; 
@@ -50,7 +50,8 @@ public:
 	bool TrimToZrg(); 
 
     NormRay_gen(double lradball, const I1& lzrg)
-     : zrg(lzrg), radball(lradball), radballsq(radball * radball)
+     : zrg(lzrg), radball(lradball), radballsq(radball * radball),
+       reslo(), binterncellboundlo(), reshi(), binterncellboundhi()
     {}
 
 	// primary validity comes from return value  
@@ -68,13 +69,14 @@ public:
 	S1* pfib; 
 
     Ray_gen(double lradball, const I1& lwrg)
-     : NormRay_gen(lradball, lwrg)
+     : NormRay_gen(lradball, lwrg),
+       z(), pfib()
     {}
 
 	void HoldFibre(S1* lpfib, double lz); 
 
 	P3 Transform(const P3& p) 
-        { return (pfib->ftype == S1::ufibre ? P3(p.x - pfib->wp, p.z - radball - z, p.y) : P3(p.z - radball - z, p.y - pfib->wp, p.x)); }
+        { return (pfib->ftype == S1::Fibre::u ? P3(p.x - pfib->wp, p.z - radball - z, p.y) : P3(p.z - radball - z, p.y - pfib->wp, p.x)); }
 
 
 	void BallSlice(const P3& a); 

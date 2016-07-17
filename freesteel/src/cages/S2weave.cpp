@@ -33,18 +33,18 @@ S2weave::S2weave(const I1& lurg, const I1& lvrg, double res)
     // generate the fibres
     ufibs.reserve(nufib);
     for (std::size_t i = 0; i <= nufib; i++)
-        ufibs.emplace_back(urg.Along((double)i / nufib), vrg, S1::ufibre);
+        ufibs.emplace_back(urg.Along((double)i / nufib), vrg, S1::Fibre::u);
 
     vfibs.reserve(nvfib);
     for (std::size_t j = 0; j <= nvfib; j++)
-        vfibs.emplace_back(vrg.Along((double)j / nvfib), urg, S1::vfibre);
+        vfibs.emplace_back(vrg.Along((double)j / nvfib), urg, S1::Fibre::v);
 }
 
 
 //////////////////////////////////////////////////////////////////////
 P2 S2weaveB1iter::GetPoint()  
 {
-	return (ftype == 1 ? P2(wp, w) : P2(w, wp)); 
+    return (ftype == S2weaveB1iter::Fibre::u ? P2(wp, w) : P2(w, wp));
 }
 
 
@@ -91,9 +91,9 @@ void S2weave::Advance(S2weaveB1iter& al)
 	while (true)
 	{
 		
-		I1 frg = (al.ftype == 1 ? ufibs : vfibs)[al.ixwp].ContainsRG(al.w); 
+        I1 frg = (al.ftype == S2weaveB1iter::Fibre::u ? ufibs : vfibs)[al.ixwp].ContainsRG(al.w);
 		wend = (al.blower ? frg.hi : frg.lo); 
-        auto lixwp = FindInwards((al.ftype == 1 ? vfibs : ufibs), al.wp, al.blower, al.w, wend, bedge);
+        auto lixwp = FindInwards((al.ftype == S2weaveB1iter::Fibre::u ? vfibs : ufibs), al.wp, al.blower, al.w, wend, bedge);
 
 		// hit an end.  
         if (!lixwp)
@@ -101,10 +101,10 @@ void S2weave::Advance(S2weaveB1iter& al)
 
 		// we always turn perpendicular
 		al.w = al.wp; 
-		al.ftype = (al.ftype == 1 ? 2 : 1); 
+        al.ftype = (al.ftype == S2weaveB1iter::Fibre::u ? S2weaveB1iter::Fibre::v : S2weaveB1iter::Fibre::u);
         al.ixwp = *lixwp;
-		al.wp = (al.ftype == 2 ? vfibs[al.ixwp].wp : ufibs[al.ixwp].wp); 
-		if (al.ftype == 1)
+        al.wp = (al.ftype == S2weaveB1iter::Fibre::v ? vfibs[al.ixwp].wp : ufibs[al.ixwp].wp);
+        if (al.ftype == S2weaveB1iter::Fibre::u)
 			al.blower = !al.blower; 
 
 		bedge = false; 
@@ -135,7 +135,7 @@ void S2weave::TrackContour(std::vector<P2>& pth, S2weaveB1iter al)
 //////////////////////////////////////////////////////////////////////
 int& S2weave::ContourNumber(S2weaveB1iter& al)  
 {
-	S1& wfib = (al.ftype == 1 ? ufibs : vfibs)[al.ixwp]; 
+    S1& wfib = (al.ftype == S2weaveB1iter::Fibre::u ? ufibs : vfibs)[al.ixwp];
     for (std::size_t i = (al.blower ? 0 : 1); i < wfib.ep.size(); i += 2)
         if (wfib.ep[i].w == al.w)
             return wfib.ep[i].contournumber;

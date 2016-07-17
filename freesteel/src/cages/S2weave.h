@@ -32,7 +32,12 @@
 // point location which iterates through the weave.  
 struct S2weaveB1iter
 {
-    int ftype;
+    enum class Fibre
+    {
+        none,
+        u,
+        v
+    } ftype;
     bool blower;
 
     double w; // in fibre

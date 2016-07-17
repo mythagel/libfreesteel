@@ -93,7 +93,7 @@ void Area2_gen::MakeContours(PathXSeries& ftpaths)
     firstcontournumber = lastcontournumber + 1;
 
     S2weaveB1iter alscan;
-    alscan.ftype = 1;
+    alscan.ftype = S2weaveB1iter::Fibre::u;
     for (alscan.ixwp = 0; alscan.ixwp < ufibs.size(); alscan.ixwp++)
     {
         alscan.wp = ufibs[alscan.ixwp].wp;

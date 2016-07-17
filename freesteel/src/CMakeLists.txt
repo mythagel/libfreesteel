@@ -48,7 +48,6 @@ add_library(actp STATIC
     pits/S2weaveCellLinearCutTraverse.cpp
     pits/SLi_gen.cpp
     pits/SLi_gen.h
-    pits/SurfXSliceRay.cpp
 )
 
 #target_link_libraries(actp )

@@ -22,7 +22,7 @@
 #include "CoreRoughGeneration.h"
 
 /////////////////////////////////////////////////////////// 
-std::vector<PathXSeries> MakeCorerough(SurfX& sx, const PathXSeries&  bound, const MachineParams& params)
+std::vector<PathXSeries> MakeCorerough(SurfX& sx, const PathXSeries& bound, const MachineParams& params)
 {
     std::vector<PathXSeries> vpathseries;
 
@@ -44,8 +44,8 @@ std::vector<PathXSeries> MakeCorerough(SurfX& sx, const PathXSeries&  bound, con
         vpathseries.emplace_back();
 		// make the core roughing algorithm thing
 		CoreRoughGeneration crg(&vpathseries.back(), sx.gxrg.Inflate(10), sx.gyrg.Inflate(10)); 
+
 		// the stock boundary 
-	//	crg.tsbound.paths.insert(crg.tsbound.paths.end(), bound.ftpaths.paths.begin(), bound.ftpaths.paths.end()); 
 		crg.tsbound.Append(bound.pths); 
 
 		// the material boundary weave used in the core roughing.  
@@ -336,7 +336,7 @@ void CoreRoughGeneration::GrabberAlg(const MachineParams& params)
 	
 	// put the first position in into our set of links, 
 	// for we will return here.  
-	bcellixs.push_back(BCellIndex(wc, P2(0.0, 1.0))); 
+    bcellixs.emplace_back(wc, P2(0.0, 1.0));
 
 	S2weaveCellLinearCutTraverse wclink;
 

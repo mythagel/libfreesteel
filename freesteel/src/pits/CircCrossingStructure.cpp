@@ -29,7 +29,7 @@
 void CircCrossingStructure::ChopOutBoundary(const std::vector<P2>& bound)  
 {
 	// we now make the circrange thing (not quite the appropriate class)  
-    circrange.SetNew(0.0, I1(0, 4), S1::circ);
+    circrange.SetNew(0.0, I1(0, 4), S1::Fibre::circ);
 
 	// special case of empty boundary returns everywhere is stock.  
 	if (bound.empty())

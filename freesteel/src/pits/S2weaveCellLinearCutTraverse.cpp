@@ -333,7 +333,7 @@ bool S2weaveCellLinearCutTraverse::OnContourFollowBearing(double dch, double fol
 	}
 	else
 	{
-		double res = (1.0 - lambb) * clen; 
+        DEBUG_ONLY(double res = (1.0 - lambb) * clen);
 		ASSERT(res <= folldist); 
 
 		// we will cross this cell boundary.  Mark it if it's entirely cleared from the start.  

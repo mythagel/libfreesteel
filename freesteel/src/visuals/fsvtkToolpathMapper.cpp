@@ -222,7 +222,7 @@ void fsvtkToolpathMapper::DrawFibre(S1& fib, I1& wrg, double z)
             glBegin(GL_LINE_STRIP);
         }
         //P2 p = ((fib.value_type == 1) ? P2(fib[i].w, fib.wp) : P2(fib.wp, fib[i].w));
-        P2 p = ((fib.ftype == 2) ? P2(fib.ep[i].w, fib.wp) : P2(fib.wp, fib.ep[i].w));
+        P2 p = ((fib.ftype == S1::Fibre::v) ? P2(fib.ep[i].w, fib.wp) : P2(fib.wp, fib.ep[i].w));
         glVertex3d(p.u, p.v, z);
     }
 

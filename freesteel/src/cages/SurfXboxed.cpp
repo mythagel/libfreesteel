@@ -20,6 +20,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "cages/SurfXboxed.h"
 #include <algorithm>
+#include "pits/NormRay_gen.h"
 
 //////////////////////////////////////////////////////////////////////
 // we could do proper allocation of partitions based on density analysis.
@@ -346,3 +347,89 @@ void SurfXboxed::SortBuckets()
 }
 
 
+//////////////////////////////////////////////////////////////////////
+void SurfXboxed::SliceFibreBox(std::size_t iu, std::size_t iv, Ray_gen& rgen)
+{
+    bucketX& bu = buckets[iu][iv];
+
+    for (auto& p : bu.ckpoints)
+        rgen.BallSlice(*p);
+
+    for (auto& edge : bu.ckedges)
+        rgen.BallSlice(*(edge.edx->p0), *(edge.edx->p1));
+
+    for (auto& tri : bu.cktriangs)
+        rgen.BallSlice(*(tri.trx->b12->p0), *(tri.trx->b12->p1), *(tri.trx->ThirdPoint()));
+}
+
+
+//////////////////////////////////////////////////////////////////////
+void SurfXboxed::SliceUFibre(Ray_gen& rgen)
+{
+    ASSERT(rgen.pfib->ftype == S1::Fibre::u);
+
+    // case of drop down to the underlying surfx -- could also do if outside the region.
+    // some detection of region limits and anything on the far side of them is needed.
+    if (buckets.empty())
+    {
+        psurfx->SliceFibre(rgen);
+        return;
+    }
+
+    // make the urange strip we scan within
+    double r = rgen.radball + searchbox_epsilon;
+    I1 urg = I1(rgen.pfib->wp - r, rgen.pfib->wp + r);
+    if (urg.Intersect(gbxrg))
+    {
+        auto iurg = xpart.FindPartRG(urg);
+
+        // could loop in a more optimal order
+        for (auto iu = iurg.first; iu <= iurg.second; iu++)
+        {
+            I1 vrg = rgen.pfib->wrg.Inflate(r);
+            if (vrg.Intersect(gbyrg))
+            {
+                std::pair<int, int> ivrg = yparts[iu].FindPartRG(vrg);
+
+                for (int iv = ivrg.first; iv <= ivrg.second; iv++)
+                    SliceFibreBox(iu, iv, rgen);
+            }
+        }
+    }
+}
+
+
+//////////////////////////////////////////////////////////////////////
+void SurfXboxed::SliceVFibre(Ray_gen& rgen)
+{
+    ASSERT(rgen.pfib->ftype == S1::Fibre::v);
+
+    // case of drop down to the underlying surfx -- could also do if outside the region.
+    // some detection of bGeoOut region limits and anything on the far side of them is needed.
+    if (buckets.empty())
+    {
+        psurfx->SliceFibre(rgen);
+        return;
+    }
+
+    // make the vrange strip we scan within
+    double r = rgen.radball + searchbox_epsilon;
+    I1 urg = rgen.pfib->wrg.Inflate(r);
+    if (urg.Intersect(gbxrg))
+    {
+        auto iurg = xpart.FindPartRG(urg);
+
+        // could loop in a more optimal order
+        for (auto iu = iurg.first; iu <= iurg.second; iu++)
+        {
+            I1 vrg = I1(rgen.pfib->wp - r, rgen.pfib->wp + r);
+            if (vrg.Intersect(gbyrg))
+            {
+                std::pair<int, int> ivrg = yparts[iu].FindPartRG(vrg);
+
+                for (int iv = ivrg.first; iv <= ivrg.second; iv++)
+                    SliceFibreBox(iu, iv, rgen);
+            }
+        }
+    }
+}

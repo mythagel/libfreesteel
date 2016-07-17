@@ -64,14 +64,14 @@ void Ray_gen2::LineCut(const P2& a, const P2& b)
 	{
 		double al = a.u / (a.u - b.u); 
 		double lw = Along(al, a.v, b.v); 
-		bool lblower = ((a.u < 0.0) != (pfib->ftype == 1)); // account for reflection 
+        bool lblower = ((a.u < 0.0) != (pfib->ftype == S1::Fibre::u)); // account for reflection
         scuts.emplace_back(lw, !lblower);
 	}
 }
 
 P2 Ray_gen2::Transform(const P2& p)
 {
-    return (pfib->ftype == 1 ? P2(p.u - pfib->wp, p.v) : P2(p.v - pfib->wp, p.u));
+    return (pfib->ftype == S1::Fibre::u ? P2(p.u - pfib->wp, p.v) : P2(p.v - pfib->wp, p.u));
 }
 
 

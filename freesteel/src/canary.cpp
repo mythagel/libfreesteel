@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
 
     double cr = 3.;
     double fr = 0.;
-    double sd = 1.;
+    double sd = 3.;
     MachineParams params;
     // linking parameters
         params.leadoffdz = 0.1;
