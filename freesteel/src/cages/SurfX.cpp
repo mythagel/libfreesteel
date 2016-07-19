@@ -31,7 +31,7 @@ void SurfX::SliceFibre(Ray_gen& rgen) const
     for (auto& edge : edX) rgen.BallSlice(*(edge.p0), *(edge.p1));
 
     // faces
-    for (auto& tri : trX) rgen.BallSlice(*(tri.b12->p0), *(tri.b12->p1), *(tri.ThirdPoint()));
+    for (auto& tri : trX) rgen.BallSlice(*tri.FirstPoint(), *tri.SecondPoint(), *tri.ThirdPoint());
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -39,27 +39,21 @@ void SurfX::SliceRay(SLi_gen& sgen) const
 {
     // triangles
     for (auto& tri : trX)
-        sgen.SliceTriangle(*(tri.b12->p0), *(tri.b12->p1), *(tri.ThirdPoint()));
+        sgen.SliceTriangle(*tri.FirstPoint(), *tri.SecondPoint(), *tri.ThirdPoint());
 }
 
 
 //////////////////////////////////////////////////////////////////////
-// the first two come from b12
-P3* triangX::ThirdPoint()
-{
-	return (((ab1->p0 != b12->p0) && (ab1->p0 != b12->p1)) ? ab1->p0 : ab1->p1); 
-}
 const P3* triangX::ThirdPoint() const
 {
-    // TODO address redundancy
     return (((ab1->p0 != b12->p0) && (ab1->p0 != b12->p1)) ? ab1->p0 : ab1->p1);
 }
 
 //////////////////////////////////////////////////////////////////////
-P3* triangX::ThirdPoint(edgeX* pe)  
+const P3* triangX::ThirdPoint(edgeX* pe) const
 {
-	ASSERT((pe == ab1) || (pe == ab2) || (pe == b12));  
-	if (pe == b12)
-		return ThirdPoint(); 
-	return (((b12->p0 != pe->p0) && (b12->p0 != pe->p1)) ? b12->p0 : b12->p1); 
+    ASSERT((pe == ab1) || (pe == ab2) || (pe == b12));
+    if (pe == b12)
+        return ThirdPoint();
+    return (((b12->p0 != pe->p0) && (b12->p0 != pe->p1)) ? b12->p0 : b12->p1);
 }

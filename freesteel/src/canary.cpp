@@ -101,9 +101,14 @@ int main(int argc, char* argv[]) {
     auto sx = ReadOFF(args[0]);
     auto bound = MakeRectBoundary(sx.gxrg, sx.gyrg, sx.gzrg.hi + 1);
 
+    std::cerr << "bbox "
+              << "min (" << sx.gxrg.lo << ", " << sx.gyrg.lo << ", " << sx.gzrg.lo << ") "
+              << "max (" << sx.gxrg.hi << ", " << sx.gyrg.hi << ", " << sx.gzrg.hi << ") "
+              << "\n";
+
     double cr = 3.;
     double fr = 0.;
-    double sd = 3.;
+    double sd = 1.;
     MachineParams params;
     // linking parameters
         params.leadoffdz = 0.1;
@@ -150,7 +155,14 @@ int main(int argc, char* argv[]) {
         unsigned link_path = 0;
         transform_adjacent(begin(brks), end(brks), [&](std::size_t a, std::size_t b) {
             for (std::size_t i = a; i < b; ++i)
-                std::cout << std::fixed << "G01 " << "X" << path.GetX(i) << " Y" << path.GetY(i) << " Z" << path.z << " F" << params.fcut << "\n";
+            {
+                std::cout << std::fixed << "G01";
+                std::cout << " X" << path.GetX(i);
+                std::cout << " Y" << path.GetY(i);
+                std::cout << " Z" << path.z;
+                std::cout << " F" << params.fcut;
+                std::cout << "\n";
+            }
 
             if (link_path < path.GetNbrks())    // No link for last path
             {

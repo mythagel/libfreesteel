@@ -22,27 +22,9 @@
 #include "bolts/I1.h"
 #include "bolts/maybe.h"
 
-//////////////////////////////////////////////////////////////////////
-S2weave::S2weave(const I1& lurg, const I1& lvrg, double res)
- : urg(lurg), vrg(lvrg), ufibs(), vfibs(),
-   firstcontournumber(0), lastcontournumber(firstcontournumber - 1)
-{
-    std::size_t nufib = urg.Leng() / res + 2;
-    std::size_t nvfib = vrg.Leng() / res + 2;
-
-    // generate the fibres
-    ufibs.reserve(nufib);
-    for (std::size_t i = 0; i <= nufib; i++)
-        ufibs.emplace_back(urg.Along((double)i / nufib), vrg, S1::Fibre::u);
-
-    vfibs.reserve(nvfib);
-    for (std::size_t j = 0; j <= nvfib; j++)
-        vfibs.emplace_back(vrg.Along((double)j / nvfib), urg, S1::Fibre::v);
-}
-
 
 //////////////////////////////////////////////////////////////////////
-P2 S2weaveB1iter::GetPoint()  
+P2 S2weaveB1iter::GetPoint() const
 {
     return (ftype == S2weaveB1iter::Fibre::u ? P2(wp, w) : P2(w, wp));
 }
@@ -83,6 +65,24 @@ static maybe<std::size_t> FindInwards(const std::vector<S1>& wfibs, double lw, b
 
 
 //////////////////////////////////////////////////////////////////////
+S2weave::S2weave(const I1& lurg, const I1& lvrg, double res)
+ : urg(lurg), vrg(lvrg), ufibs(), vfibs(),
+   firstcontournumber(0), lastcontournumber(firstcontournumber - 1)
+{
+    std::size_t nufib = urg.Leng() / res + 2;
+    std::size_t nvfib = vrg.Leng() / res + 2;
+
+    // generate the fibres
+    ufibs.reserve(nufib);
+    for (std::size_t i = 0; i <= nufib; i++)
+        ufibs.emplace_back(urg.Along((double)i / nufib), vrg, S1::Fibre::u);
+
+    vfibs.reserve(nvfib);
+    for (std::size_t j = 0; j <= nvfib; j++)
+        vfibs.emplace_back(vrg.Along((double)j / nvfib), urg, S1::Fibre::v);
+}
+
+//////////////////////////////////////////////////////////////////////
 // this is the real code 
 void S2weave::Advance(S2weaveB1iter& al)
 {
@@ -90,7 +90,6 @@ void S2weave::Advance(S2weaveB1iter& al)
 	double wend; 
 	while (true)
 	{
-		
         I1 frg = (al.ftype == S2weaveB1iter::Fibre::u ? ufibs : vfibs)[al.ixwp].ContainsRG(al.w);
 		wend = (al.blower ? frg.hi : frg.lo); 
         auto lixwp = FindInwards((al.ftype == S2weaveB1iter::Fibre::u ? vfibs : ufibs), al.wp, al.blower, al.w, wend, bedge);

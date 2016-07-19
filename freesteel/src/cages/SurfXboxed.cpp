@@ -77,7 +77,7 @@ void SurfXboxed::AddPointBucket(P3* pp)
 
 
 //////////////////////////////////////////////////////////////////////
-static P2 TcrossX(double lx, P3* pp0, P3* pp1)
+static P2 TcrossX(double lx, const P3* pp0, const P3* pp1)
 {
     ASSERT(pp0->x <= pp1->x);
     P2 fp0(pp0->z, pp0->y);
@@ -182,18 +182,17 @@ void SurfXboxed::AddEdgeBucket(edgeX* ped)
 }
 
 
-
 //////////////////////////////////////////////////////////////////////
-static std::pair<P2, P2> TcrossX(double lx, P3* pp0, P3* pp1, P3* pp2)
+static std::pair<P2, P2> TcrossX(double lx, const P3* pp0, const P3* pp1, const P3* pp2)
 {
     ASSERT((pp0->x <= pp1->x) && (pp1->x <= pp2->x));
     P2 fp0(pp0->z, pp0->y);
     P2 fp1(pp1->z, pp1->y);
     P2 fp2(pp2->z, pp2->y);
     if (lx <= pp0->x)
-        return std::pair<P2, P2>(fp0, fp0);
+        return {fp0, fp0};
     if (lx >= pp2->x)
-        return std::pair<P2, P2>(fp2, fp2);
+        return {fp2, fp2};
 
     std::pair<P2, P2> res;
     double lam02 = InvAlong(lx, pp0->x, pp2->x);
@@ -214,7 +213,7 @@ static std::pair<P2, P2> TcrossX(double lx, P3* pp0, P3* pp1, P3* pp2)
 }
 
 //////////////////////////////////////////////////////////////////////
-static double TcrossY(double ly, std::pair<P2, P2>& fp)
+static double TcrossY(double ly, const std::pair<P2, P2>& fp)
 {
 	if (fp.first.v <= fp.second.v)  
 	{
@@ -238,13 +237,13 @@ static double TcrossY(double ly, std::pair<P2, P2>& fp)
 
 
 //////////////////////////////////////////////////////////////////////
-void SurfXboxed::AddTriangBucket(triangX* ptr) 
+void SurfXboxed::AddTriangBucket(const triangX* ptr)
 {
     // order the triangle corners by increasing x
-    bool bxinc = (ptr->b12->p0->x <= ptr->b12->p1->x);
-    P3* pp0 = (bxinc ? ptr->b12->p0 : ptr->b12->p1);
-    P3* pp2 = (!bxinc ? ptr->b12->p0 : ptr->b12->p1);
-    P3* pp1 = ptr->ThirdPoint();
+    bool bxinc = (ptr->FirstPoint()->x <= ptr->SecondPoint()->x);
+    auto pp0 = (bxinc ? ptr->FirstPoint() : ptr->SecondPoint());
+    auto pp2 = (!bxinc ? ptr->FirstPoint() : ptr->SecondPoint());
+    auto pp1 = ptr->ThirdPoint();
     if (pp1->x < pp0->x)
         std::swap(pp0, pp1);
     else if (pp1->x > pp2->x)
@@ -359,7 +358,7 @@ void SurfXboxed::SliceFibreBox(std::size_t iu, std::size_t iv, Ray_gen& rgen)
         rgen.BallSlice(*(edge.edx->p0), *(edge.edx->p1));
 
     for (auto& tri : bu.cktriangs)
-        rgen.BallSlice(*(tri.trx->b12->p0), *(tri.trx->b12->p1), *(tri.trx->ThirdPoint()));
+        rgen.BallSlice(*tri.trx->FirstPoint(), *tri.trx->SecondPoint(), *tri.trx->ThirdPoint());
 }
 
 

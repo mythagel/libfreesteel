@@ -27,19 +27,25 @@
 #include "bolts/smallfuncs.h"
 #include <vector>
 
+class PathXSeries;
+class PathXboxed;
+
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 struct CPara
 {
-	P2 pt; 
-	double darg; 
-	bool bClockwiseIn; // clockwise of this point is inside.  
+    P2 pt;
+    double darg;
+    bool bClockwiseIn; // clockwise of this point is inside.
 
-	CPara(const P2& lpt, double ldarg, bool lbClockwiseIn) : 
-		pt(lpt), darg(ldarg), bClockwiseIn(lbClockwiseIn) {;}; 
+    CPara(const P2& lpt, double ldarg, bool lbClockwiseIn)
+        : pt(lpt), darg(ldarg), bClockwiseIn(lbClockwiseIn)
+    {}
 
-	bool operator<(const CPara& oth) const
-		{ return (darg < oth.darg); }; 
+    bool operator<(const CPara& oth) const
+    {
+        return darg < oth.darg;
+    }
 }; 
 
 //////////////////////////////////////////////////////////////////////
@@ -56,8 +62,9 @@ struct CircCrossingStructure
 	// we may in future make a radial series of S1s from the centre so we 
 	// can model the thickness of the chip.  
 
-	CircCrossingStructure(const P2& lcpt, double lcrad) : 
-		cpt(lcpt), crad(lcrad), cradsq(Square(lcrad)) {;}; 
+    CircCrossingStructure(const P2& lcpt, double lcrad)
+        : cpt(lcpt), crad(lcrad), cradsq(Square(lcrad))
+    {}
 
 	// should be a set of boundaries 
 	void ChopOutBoundary(const std::vector<P2>& bound); // creates circrange
@@ -76,6 +83,9 @@ struct CircCrossingStructure
 	void HackToolRectangle(const P2& tpt0, const P2& tpt1); 
 };
 
+
+//////////////////////////////////////////////////////////////////////
+void CircleIntersectNew(std::vector<I1>& res, const P2& cpt, double crad, const PathXSeries& bound, const PathXboxed& pathxb, double prad);
 
 #endif
 

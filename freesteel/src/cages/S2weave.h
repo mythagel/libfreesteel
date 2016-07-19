@@ -44,9 +44,8 @@ struct S2weaveB1iter
     double wp; // perpendicular to fibre.
 
     std::size_t ixwp; // index of fibre
-    //int ixw;  // index of point in fibre
 
-    P2 GetPoint();
+    P2 GetPoint() const;
 }; 
 
 
@@ -78,11 +77,6 @@ public:
     void SetAllCutCodes(int lcutcode);
     void Invert();
 };
-
-
-
-//////////////////////////////////////////////////////////////////////
-void CircleIntersectNew(std::vector<I1>& res, const P2& cpt, double crad, const PathXSeries& bound, const PathXboxed& pathxb, double prad); 
 
 
 #endif

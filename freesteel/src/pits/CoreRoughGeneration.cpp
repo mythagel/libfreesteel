@@ -20,6 +20,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "CoreRoughGeneration.h"
+#include "CircCrossingStructure.h"
 
 /////////////////////////////////////////////////////////// 
 std::vector<PathXSeries> MakeCorerough(SurfX& sx, const PathXSeries& bound, const MachineParams& params)
@@ -37,7 +38,7 @@ std::vector<PathXSeries> MakeCorerough(SurfX& sx, const PathXSeries& bound, cons
     Area2_gen a2gfl(sx.gxrg.Inflate(areaoversize), sx.gyrg.Inflate(areaoversize), params.flatradweaveres);
 
 	double hz = sx.gzrg.hi - params.stepdown / 2; 
-    double htopz = sx.gzrg.lo + 5;
+    double htopz = sx.gzrg.lo;
 	a2g.z = sx.gzrg.hi - params.stepdown / 2;
 	while (hz > htopz)
 	{

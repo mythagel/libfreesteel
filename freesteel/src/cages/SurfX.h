@@ -60,10 +60,9 @@ struct triangX // : public Facet
         : ab1(), ab2(), b12(), tnorm(ltnorm)
     {}
 
-    inline P3* FirstPoint() { return b12->p0; }
-    inline P3* SecondPoint() { return b12->p1; }
-    P3* ThirdPoint(edgeX* pe);
-    P3* ThirdPoint();
+    inline const P3* FirstPoint() const { return b12->p0; }
+    inline const P3* SecondPoint() const { return b12->p1; }
+    const P3* ThirdPoint(edgeX* pe) const;
     const P3* ThirdPoint() const;
 };
 
@@ -73,6 +72,9 @@ struct triangX // : public Facet
 // we are making a piece of the offset surface.  
 class SurfX		// extra special made surface for a tool
 {
+private:
+    friend class SurfXBuilder;
+    SurfX() = default;
 public:
 
     // vectors components

@@ -43,10 +43,10 @@ struct ckedgeX
 struct cktriX
 {
     double zh; // highest z value in this bucket
-    triangX* trx;
+    const triangX* trx;
     int idup; // -1 if no duplicates, otherwise points into the duplicates vector.
 
-    cktriX(double lzh, triangX* ptrx, int lidup) :
+    cktriX(double lzh, const triangX* ptrx, int lidup) :
         zh(lzh), trx(ptrx), idup(lidup) {;}
 }; 
 
@@ -93,7 +93,7 @@ public:
 
     void AddPointBucket(P3* pp);
     void AddEdgeBucket(edgeX* ped);
-    void AddTriangBucket(triangX* ptr);
+    void AddTriangBucket(const triangX* ptr);
     void SortBuckets();
 
     // apply boxed triangles to a weave ray.

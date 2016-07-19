@@ -171,7 +171,7 @@ struct edgeXr_order
 
 //////////////////////////////////////////////////////////////////////
 
-void SetEdge(triangX& trX, edgeX* pe, triangXr& r)
+static void SetEdge(triangX& trX, edgeX* pe, triangXr& r)
 {
     if (((r.a == pe->p0) && (r.b1 == pe->p1)) || ((r.a == pe->p1) && (r.b1 == pe->p0)))
     {
